@@ -77,3 +77,6 @@ target
 # testsuite #
 #############
 *offline-token.txt
+.metals/
+.vscode/
+node/
