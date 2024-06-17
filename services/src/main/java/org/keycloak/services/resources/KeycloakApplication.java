@@ -275,8 +275,8 @@ public class KeycloakApplication extends Application {
 					new ClearExpiredClientInitialAccessTokens(), interval), interval,
 					"ClearExpiredClientInitialAccessTokens");
             
-			// timer.schedule(new ScheduledTaskRunner(sessionFactory, new
-			// ClearExpiredUserSessions()), interval, ClearExpiredUserSessions.TASK_NAME);
+			timer.schedule(new ScheduledTaskRunner(sessionFactory, new
+			ClearExpiredUserSessions()), interval, ClearExpiredUserSessions.TASK_NAME);
 			new UserStorageSyncManager().bootstrapPeriodic(sessionFactory, timer);
         } finally {
             logger.debug(" At the finally of setupScheduledTasks");
