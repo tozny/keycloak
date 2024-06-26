@@ -68,7 +68,7 @@ public class LiquibaseJpaUpdaterProvider implements JpaUpdaterProvider {
 
     private static final Logger logger = Logger.getLogger(LiquibaseJpaUpdaterProvider.class);
 
-    public static final String CHANGELOG = "META-INF/jpa-changelog-master-tozny.xml";
+    public static final String CHANGELOG = "META-INF/jpa-changelog-master.xml";
 
     public static final String DEPLOYMENT_ID_COLUMN = "DEPLOYMENT_ID";
 
@@ -95,8 +95,7 @@ public class LiquibaseJpaUpdaterProvider implements JpaUpdaterProvider {
     private void updateSynch(Connection connection, File file, String defaultSchema) {
         logger.debug("Starting database update");
 
-        // Need ThreadLocal as liquibase doesn't seem to have API to inject custom
-        // objects into tasks
+        // Need ThreadLocal as liquibase doesn't seem to have API to inject custom objects into tasks
         ThreadLocalSessionContext.setCurrentSession(session);
 
         Writer exportWriter = null;
@@ -115,8 +114,7 @@ public class LiquibaseJpaUpdaterProvider implements JpaUpdaterProvider {
                 if (customChangelog != null) {
                     String factoryId = jpaProvider.getFactoryId();
                     String changelogTableName = JpaUtils.getCustomChangelogTableName(factoryId);
-                    liquibase = getLiquibaseForCustomProviderUpdate(connection, defaultSchema, customChangelog,
-                            jpaProvider.getClass().getClassLoader(), changelogTableName);
+                    liquibase = getLiquibaseForCustomProviderUpdate(connection, defaultSchema, customChangelog, jpaProvider.getClass().getClassLoader(), changelogTableName);
                     updateChangeSet(liquibase, exportWriter);
                 }
             }
@@ -138,36 +136,29 @@ public class LiquibaseJpaUpdaterProvider implements JpaUpdaterProvider {
     protected void updateChangeSet(Liquibase liquibase, Writer exportWriter) throws LiquibaseException, SQLException {
         String changelog = liquibase.getChangeLogFile();
         Database database = liquibase.getDatabase();
-        Table changelogTable = SnapshotGeneratorFactory.getInstance()
-                .getDatabaseChangeLogTable(new SnapshotControl(database, false, Table.class, Column.class), database);
+        Table changelogTable = SnapshotGeneratorFactory.getInstance().getDatabaseChangeLogTable(new SnapshotControl(database, false, Table.class, Column.class), database);
 
         if (changelogTable != null) {
             boolean hasDeploymentIdColumn = changelogTable.getColumn(DEPLOYMENT_ID_COLUMN) != null;
 
             // create DEPLOYMENT_ID column if it doesn't exist
             if (!hasDeploymentIdColumn) {
-                ChangeLogHistoryService changelogHistoryService = ChangeLogHistoryServiceFactory.getInstance()
-                        .getChangeLogService(database);
+                ChangeLogHistoryService changelogHistoryService = ChangeLogHistoryServiceFactory.getInstance().getChangeLogService(database);
                 changelogHistoryService.generateDeploymentId();
                 String deploymentId = changelogHistoryService.getDeploymentId();
 
-                logger.debugv("Adding missing column {0}={1} to {2} table", DEPLOYMENT_ID_COLUMN, deploymentId,
-                        changelogTable.getName());
+                logger.debugv("Adding missing column {0}={1} to {2} table", DEPLOYMENT_ID_COLUMN, deploymentId,changelogTable.getName());
 
                 List<SqlStatement> statementsToExecute = new ArrayList<>();
-                statementsToExecute.add(
-                        new AddColumnStatement(database.getLiquibaseCatalogName(), database.getLiquibaseSchemaName(),
-                                changelogTable.getName(), DEPLOYMENT_ID_COLUMN, "VARCHAR(10)", null));
-                statementsToExecute.add(new UpdateStatement(database.getLiquibaseCatalogName(),
-                        database.getLiquibaseSchemaName(), changelogTable.getName())
+                statementsToExecute.add(new AddColumnStatement(database.getLiquibaseCatalogName(), database.getLiquibaseSchemaName(),
+                        changelogTable.getName(), DEPLOYMENT_ID_COLUMN, "VARCHAR(10)", null));
+                statementsToExecute.add(new UpdateStatement(database.getLiquibaseCatalogName(), database.getLiquibaseSchemaName(), changelogTable.getName())
                         .addNewColumnValue(DEPLOYMENT_ID_COLUMN, deploymentId));
-                statementsToExecute.add(
-                        new SetNullableStatement(database.getLiquibaseCatalogName(), database.getLiquibaseSchemaName(),
-                                changelogTable.getName(), DEPLOYMENT_ID_COLUMN, "VARCHAR(10)", false));
+                statementsToExecute.add(new SetNullableStatement(database.getLiquibaseCatalogName(), database.getLiquibaseSchemaName(),
+                        changelogTable.getName(), DEPLOYMENT_ID_COLUMN, "VARCHAR(10)", false));
 
                 ExecutorService executorService = Scope.getCurrentScope().getSingleton(ExecutorService.class);
-                Executor executor = executorService.getExecutor(LiquibaseConstants.JDBC_EXECUTOR,
-                        liquibase.getDatabase());
+                Executor executor = executorService.getExecutor(LiquibaseConstants.JDBC_EXECUTOR, liquibase.getDatabase());
 
                 for (SqlStatement sql : statementsToExecute) {
                     executor.execute(sql);
@@ -183,9 +174,7 @@ public class LiquibaseJpaUpdaterProvider implements JpaUpdaterProvider {
                 logger.infov("Initializing database schema. Using changelog {0}", changelog);
             } else {
                 if (logger.isDebugEnabled()) {
-                    logger.debugv("Updating database from {0} to {1}. Using changelog {2}",
-                            ranChangeSets.get(ranChangeSets.size() - 1).getId(),
-                            changeSets.get(changeSets.size() - 1).getId(), changelog);
+                    logger.debugv("Updating database from {0} to {1}. Using changelog {2}", ranChangeSets.get(ranChangeSets.size() - 1).getId(), changeSets.get(changeSets.size() - 1).getId(), changelog);
                 } else {
                     logger.infov("Updating database. Using changelog {0}", changelog);
                 }
@@ -205,15 +194,12 @@ public class LiquibaseJpaUpdaterProvider implements JpaUpdaterProvider {
             logger.debugv("Database is up to date for changelog {0}", changelog);
         }
 
-        // Needs to restart liquibase services to clear
-        // ChangeLogHistoryServiceFactory.getInstance().
-        // See https://issues.jboss.org/browse/KEYCLOAK-3769 for discussion relevant to
-        // why reset needs to be here
+        // Needs to restart liquibase services to clear ChangeLogHistoryServiceFactory.getInstance().
+        // See https://issues.jboss.org/browse/KEYCLOAK-3769 for discussion relevant to why reset needs to be here
         resetLiquibaseServices(liquibase);
     }
 
-    private void outputChangeLogTableCreationScript(Liquibase liquibase, final Writer exportWriter)
-            throws DatabaseException {
+    private void outputChangeLogTableCreationScript(Liquibase liquibase, final Writer exportWriter) throws DatabaseException {
         Database database = liquibase.getDatabase();
 
         ExecutorService executorService = Scope.getCurrentScope().getSingleton(ExecutorService.class);
@@ -223,20 +209,14 @@ public class LiquibaseJpaUpdaterProvider implements JpaUpdaterProvider {
 
         loggingExecutor.comment("*********************************************************************");
         loggingExecutor.comment("* Keycloak database creation script - apply this script to empty DB *");
-        loggingExecutor.comment("*********************************************************************"
-                + StreamUtil.getLineSeparator());
+        loggingExecutor.comment("*********************************************************************" + StreamUtil.getLineSeparator());
 
         loggingExecutor.execute(new CreateDatabaseChangeLogTableStatement());
-        // DatabaseChangeLogLockTable is created before this code is executed and
-        // recreated if it does not exist automatically
-        // in
-        // org.keycloak.connections.jpa.updater.liquibase.lock.CustomLockService.init()
-        // called indirectly from
-        // KeycloakApplication constructor (search for waitForLock() call). Hence it is
-        // not included in the creation script.
+        // DatabaseChangeLogLockTable is created before this code is executed and recreated if it does not exist automatically
+        // in org.keycloak.connections.jpa.updater.liquibase.lock.CustomLockService.init() called indirectly from
+        // KeycloakApplication constructor (search for waitForLock() call). Hence it is not included in the creation script.
 
-        loggingExecutor.comment("*********************************************************************"
-                + StreamUtil.getLineSeparator());
+        loggingExecutor.comment("*********************************************************************" + StreamUtil.getLineSeparator());
 
         executorService.setExecutor(LiquibaseConstants.JDBC_EXECUTOR, database, oldTemplate);
     }
@@ -269,8 +249,7 @@ public class LiquibaseJpaUpdaterProvider implements JpaUpdaterProvider {
                 if (customChangelog != null) {
                     String factoryId = jpaProvider.getFactoryId();
                     String changelogTableName = JpaUtils.getCustomChangelogTableName(factoryId);
-                    liquibase = getLiquibaseForCustomProviderUpdate(connection, defaultSchema, customChangelog,
-                            jpaProvider.getClass().getClassLoader(), changelogTableName);
+                    liquibase = getLiquibaseForCustomProviderUpdate(connection, defaultSchema, customChangelog, jpaProvider.getClass().getClassLoader(), changelogTableName);
                     if (validateChangeSet(liquibase, liquibase.getChangeLogFile()) != Status.VALID) {
                         return Status.OUTDATED;
                     }
@@ -299,10 +278,8 @@ public class LiquibaseJpaUpdaterProvider implements JpaUpdaterProvider {
             result = Status.VALID;
         }
 
-        // Needs to restart liquibase services to clear
-        // ChangeLogHistoryServiceFactory.getInstance().
-        // See https://issues.jboss.org/browse/KEYCLOAK-3769 for discussion relevant to
-        // why reset needs to be here
+        // Needs to restart liquibase services to clear ChangeLogHistoryServiceFactory.getInstance().
+        // See https://issues.jboss.org/browse/KEYCLOAK-3769 for discussion relevant to why reset needs to be here
         resetLiquibaseServices(liquibase);
 
         return result;
@@ -319,17 +296,14 @@ public class LiquibaseJpaUpdaterProvider implements JpaUpdaterProvider {
         return liquibase.listUnrunChangeSets(null, new LabelExpression(), false);
     }
 
-    private Liquibase getLiquibaseForKeycloakUpdate(Connection connection, String defaultSchema)
-            throws LiquibaseException {
+    private Liquibase getLiquibaseForKeycloakUpdate(Connection connection, String defaultSchema) throws LiquibaseException {
         LiquibaseConnectionProvider liquibaseProvider = session.getProvider(LiquibaseConnectionProvider.class);
         return liquibaseProvider.getLiquibase(connection, defaultSchema);
     }
 
-    private Liquibase getLiquibaseForCustomProviderUpdate(Connection connection, String defaultSchema,
-            String changelogLocation, ClassLoader classloader, String changelogTableName) throws LiquibaseException {
+    private Liquibase getLiquibaseForCustomProviderUpdate(Connection connection, String defaultSchema, String changelogLocation, ClassLoader classloader, String changelogTableName) throws LiquibaseException {
         LiquibaseConnectionProvider liquibaseProvider = session.getProvider(LiquibaseConnectionProvider.class);
-        return liquibaseProvider.getLiquibaseForCustomUpdate(connection, defaultSchema, changelogLocation, classloader,
-                changelogTableName);
+        return liquibaseProvider.getLiquibaseForCustomUpdate(connection, defaultSchema, changelogLocation, classloader, changelogTableName);
     }
 
     @Override
