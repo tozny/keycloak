@@ -250,6 +250,7 @@ public class QuarkusJpaUpdaterProvider implements JpaUpdaterProvider {
                     String factoryId = jpaProvider.getFactoryId();
                     String changelogTableName = JpaUtils.getCustomChangelogTableName(factoryId);
                     Liquibase liquibase = getLiquibaseForCustomProviderUpdate(connection, defaultSchema, customChangelog, jpaProvider.getClass().getClassLoader(), changelogTableName);
+                    liquibase.clearCheckSums();
                     if (validateChangeSet(liquibase, liquibase.getChangeLogFile()) != Status.VALID) {
                         return Status.OUTDATED;
                     }
