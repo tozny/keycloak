@@ -101,6 +101,7 @@ public class QuarkusJpaUpdaterProvider implements JpaUpdaterProvider {
             if (needVerifyMasterChangelog()) {
                 // Run update with keycloak master changelog first
                 Liquibase liquibase = getLiquibaseForKeycloakUpdate(connection, defaultSchema);
+                liquibase.clearCheckSums();
                 if (file != null) {
                     exportWriter = new FileWriter(file);
                 }
