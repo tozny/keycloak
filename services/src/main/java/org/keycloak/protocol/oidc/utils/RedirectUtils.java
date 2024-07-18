@@ -43,6 +43,7 @@ public class RedirectUtils {
 
     public static String verifyRealmRedirectUri(KeycloakSession session, String redirectUri) {
         Set<String> validRedirects = getValidateRedirectUris(session);
+        logger.debug("IN FIRST ONE");
         return verifyRedirectUri(session, null, redirectUri, validRedirects, true);
     }
 
@@ -50,14 +51,19 @@ public class RedirectUtils {
         return verifyRedirectUri(session, redirectUri, client, true);
     }
 
-    public static String verifyRedirectUri(KeycloakSession session, String redirectUri, ClientModel client, boolean requireRedirectUri) {
+    public static String verifyRedirectUri(KeycloakSession session, String redirectUri, ClientModel client,
+            boolean requireRedirectUri) {
+        logger.debug("IN SECOND ONE");
         if (client != null)
-            return verifyRedirectUri(session, client.getRootUrl(), redirectUri, client.getRedirectUris(), requireRedirectUri);
+            return verifyRedirectUri(session, client.getRootUrl(), redirectUri, client.getRedirectUris(),
+                    requireRedirectUri);
         return null;
     }
 
-    public static Set<String> resolveValidRedirects(KeycloakSession session, String rootUrl, Set<String> validRedirects) {
-        // If the valid redirect URI is relative (no scheme, host, port) then use the request's scheme, host, and port
+    public static Set<String> resolveValidRedirects(KeycloakSession session, String rootUrl,
+            Set<String> validRedirects) {
+        // If the valid redirect URI is relative (no scheme, host, port) then use the
+        // request's scheme, host, and port
         Set<String> resolveValidRedirects = new HashSet<>();
         for (String validRedirect : validRedirects) {
             if (validRedirect.startsWith("/")) {
@@ -74,16 +80,20 @@ public class RedirectUtils {
     private static Set<String> getValidateRedirectUris(KeycloakSession session) {
         RealmModel realm = session.getContext().getRealm();
         return session.clientStorageManager().getAllRedirectUrisOfEnabledClients(realm).entrySet().stream()
-          .filter(me -> me.getKey().isEnabled() && OIDCLoginProtocol.LOGIN_PROTOCOL.equals(me.getKey().getProtocol()) && !me.getKey().isBearerOnly() && (me.getKey().isStandardFlowEnabled() || me.getKey().isImplicitFlowEnabled()))
-          .map(me -> resolveValidRedirects(session, me.getKey().getRootUrl(), me.getValue()))
-          .flatMap(Collection::stream)
-          .collect(Collectors.toSet());
+                .filter(me -> me.getKey().isEnabled()
+                        && OIDCLoginProtocol.LOGIN_PROTOCOL.equals(me.getKey().getProtocol())
+                        && !me.getKey().isBearerOnly()
+                        && (me.getKey().isStandardFlowEnabled() || me.getKey().isImplicitFlowEnabled()))
+                .map(me -> resolveValidRedirects(session, me.getKey().getRootUrl(), me.getValue()))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
     }
 
-    public static String verifyRedirectUri(KeycloakSession session, String rootUrl, String redirectUri, Set<String> validRedirects, boolean requireRedirectUri) {
+    public static String verifyRedirectUri(KeycloakSession session, String rootUrl, String redirectUri,
+            Set<String> validRedirects, boolean requireRedirectUri) {
         KeycloakUriInfo uriInfo = session.getContext().getUri();
         RealmModel realm = session.getContext().getRealm();
-
+        logger.debugv("Root URL: {0}", rootUrl);
         if (redirectUri != null) {
             try {
                 URI uri = URI.create(redirectUri);
@@ -117,7 +127,8 @@ public class RedirectUtils {
 
             boolean valid = matchesRedirects(resolveValidRedirects, r);
 
-            if (!valid && (r.startsWith(Constants.INSTALLED_APP_URL) || r.startsWith(Constants.INSTALLED_APP_LOOPBACK)) && r.indexOf(':', Constants.INSTALLED_APP_URL.length()) >= 0) {
+            if (!valid && (r.startsWith(Constants.INSTALLED_APP_URL) || r.startsWith(Constants.INSTALLED_APP_LOOPBACK))
+                    && r.indexOf(':', Constants.INSTALLED_APP_URL.length()) >= 0) {
                 int i = r.indexOf(':', Constants.INSTALLED_APP_URL.length());
 
                 StringBuilder sb = new StringBuilder();
@@ -171,23 +182,29 @@ public class RedirectUtils {
     private static boolean matchesRedirects(Set<String> validRedirects, String redirect) {
         for (String validRedirect : validRedirects) {
             if (validRedirect.endsWith("*") && !validRedirect.contains("?")) {
-                // strip off the query component - we don't check them when wildcards are effective
+                // strip off the query component - we don't check them when wildcards are
+                // effective
                 String r = redirect.contains("?") ? redirect.substring(0, redirect.indexOf("?")) : redirect;
                 // strip off *
                 int length = validRedirect.length() - 1;
                 validRedirect = validRedirect.substring(0, length);
-                if (r.startsWith(validRedirect)) return true;
+                if (r.startsWith(validRedirect))
+                    return true;
                 // strip off trailing '/'
-                if (length - 1 > 0 && validRedirect.charAt(length - 1) == '/') length--;
+                if (length - 1 > 0 && validRedirect.charAt(length - 1) == '/')
+                    length--;
                 validRedirect = validRedirect.substring(0, length);
-                if (validRedirect.equals(r)) return true;
-            } else if (validRedirect.equals(redirect)) return true;
+                if (validRedirect.equals(r))
+                    return true;
+            } else if (validRedirect.equals(redirect))
+                return true;
         }
         return false;
     }
 
     private static String getSingleValidRedirectUri(Collection<String> validRedirects) {
-        if (validRedirects.size() != 1) return null;
+        if (validRedirects.size() != 1)
+            return null;
         String validRedirect = validRedirects.iterator().next();
         return validateRedirectUriWildcard(validRedirect);
     }
