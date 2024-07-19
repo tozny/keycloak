@@ -43,7 +43,7 @@ public class StartCommandDistTest extends StartCommandTest {
     @Test
     @Launch({ "start", "--http-enabled=true" })
     void failNoHostnameNotSet(LaunchResult result) {
-        assertTrue(result.getErrorOutput().contains("ERROR: Strict hostname resolution configured but no hostname setting provided"),
+        assertTrue(result.getErrorOutput().contains("ERROR: Strict hostname resolution configured but no hostname was set"),
                 () -> "The Output:\n" + result.getOutput() + "doesn't contains the expected string.");
     }
 
