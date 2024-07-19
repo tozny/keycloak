@@ -22,10 +22,7 @@ import static org.keycloak.urls.UrlType.BACKEND;
 import static org.keycloak.urls.UrlType.FRONTEND;
 import static org.keycloak.utils.StringUtil.isNotBlank;
 
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import javax.ws.rs.core.UriInfo;
@@ -33,7 +30,6 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.keycloak.Config;
 import org.keycloak.common.util.Resteasy;
-import org.keycloak.config.HostnameOptions;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.quarkus.runtime.configuration.Configuration;
@@ -47,7 +43,7 @@ public final class DefaultHostnameProvider implements HostnameProvider, Hostname
 
     private static final String REALM_URI_SESSION_ATTRIBUTE = DefaultHostnameProvider.class.getName() + ".realmUrl";
 
-    private String frontEndHostName;
+    private String frontChannelHostName;
     private String defaultPath;
     private String defaultHttpScheme;
     private int defaultTlsPort;
@@ -55,63 +51,52 @@ public final class DefaultHostnameProvider implements HostnameProvider, Hostname
     private String adminHostName;
     private Boolean strictBackChannel;
     private boolean hostnameEnabled;
-    private boolean strictHttps;
-    private int hostnamePort;
-    private URI frontEndBaseUri;
-    private URI adminBaseUri;
 
     @Override
     public String getScheme(UriInfo originalUriInfo, UrlType urlType) {
-        if (ADMIN.equals(urlType)) {
-            return fromBaseUriOrDefault(URI::getScheme, adminBaseUri, getScheme(originalUriInfo));
-        }
-
         String scheme = forNonStrictBackChannel(originalUriInfo, urlType, this::getScheme, this::getScheme);
 
         if (scheme != null) {
             return scheme;
         }
 
-        return fromFrontEndUrl(originalUriInfo, URI::getScheme, this::getScheme, defaultHttpScheme);
+        return fromFrontChannel(originalUriInfo, URI::getScheme, this::getScheme, defaultHttpScheme);
     }
 
     @Override
     public String getHostname(UriInfo originalUriInfo, UrlType urlType) {
-        if (ADMIN.equals(urlType)) {
-            return fromBaseUriOrDefault(URI::getHost, adminBaseUri,
-                    adminHostName == null ? getHostname(originalUriInfo) : adminHostName);
-        }
-
         String hostname = forNonStrictBackChannel(originalUriInfo, urlType, this::getHostname, this::getHostname);
 
         if (hostname != null) {
             return hostname;
         }
 
-        return fromFrontEndUrl(originalUriInfo, URI::getHost, this::getHostname, frontEndHostName);
+        // admin hostname has precedence over frontchannel
+        if (ADMIN.equals(urlType) && adminHostName != null) {
+            return adminHostName;
+        }
+
+        return fromFrontChannel(originalUriInfo, URI::getHost, this::getHostname, frontChannelHostName);
     }
 
     @Override
     public String getContextPath(UriInfo originalUriInfo, UrlType urlType) {
-        if (ADMIN.equals(urlType)) {
-            return fromBaseUriOrDefault(URI::getPath, adminBaseUri, getContextPath(originalUriInfo));
-        }
-
         String path = forNonStrictBackChannel(originalUriInfo, urlType, this::getContextPath, this::getContextPath);
 
         if (path != null) {
             return path;
         }
 
-        return fromFrontEndUrl(originalUriInfo, URI::getPath, this::getContextPath, defaultPath);
+        if (ADMIN.equals(urlType)) {
+            // for admin we always resolve to the request path
+            return getContextPath(originalUriInfo);
+        }
+
+        return fromFrontChannel(originalUriInfo, URI::getPath, this::getContextPath, defaultPath);
     }
 
     @Override
     public int getPort(UriInfo originalUriInfo, UrlType urlType) {
-        if (ADMIN.equals(urlType)) {
-            return fromBaseUriOrDefault(URI::getPort, adminBaseUri, getRequestPort());
-        }
-
         Integer port = forNonStrictBackChannel(originalUriInfo, urlType, this::getPort, this::getPort);
 
         if (port != null) {
@@ -119,11 +104,11 @@ public final class DefaultHostnameProvider implements HostnameProvider, Hostname
         }
 
         if (hostnameEnabled && !noProxy) {
-            return fromBaseUriOrDefault(URI::getPort, frontEndBaseUri, hostnamePort);
+            // if proxy is enabled and hostname is set, assume the server is exposed using default ports
+            return -1;
         }
 
-        return fromFrontEndUrl(originalUriInfo, URI::getPort, this::getPort,
-                hostnamePort == -1 ? getPort(originalUriInfo) : hostnamePort);
+        return fromFrontChannel(originalUriInfo, URI::getPort, this::getPort, null);
     }
 
     @Override
@@ -146,8 +131,7 @@ public final class DefaultHostnameProvider implements HostnameProvider, Hostname
         return null;
     }
 
-    private <T> T fromFrontEndUrl(UriInfo originalUriInfo, Function<URI, T> frontEndTypeResolver,
-            Function<UriInfo, T> defaultResolver,
+    private <T> T fromFrontChannel(UriInfo originalUriInfo, Function<URI, T> frontEndTypeResolver, Function<UriInfo, T> defaultResolver,
             T defaultValue) {
         URI frontEndUrl = getRealmFrontEndUrl();
 
@@ -155,18 +139,15 @@ public final class DefaultHostnameProvider implements HostnameProvider, Hostname
             return frontEndTypeResolver.apply(frontEndUrl);
         }
 
-        if (frontEndBaseUri != null) {
-            return frontEndTypeResolver.apply(frontEndBaseUri);
-        }
-
         return defaultValue == null ? defaultResolver.apply(originalUriInfo) : defaultValue;
+
     }
 
     private boolean isHostFromFrontEndUrl(UriInfo originalUriInfo) {
         String requestHost = getHostname(originalUriInfo);
-        String frontendUrlHost = getHostname(originalUriInfo, FRONTEND);
+        String frontendUrl = getHostname(originalUriInfo, FRONTEND);
 
-        if (requestHost.equals(frontendUrlHost)) {
+        if (requestHost.equals(frontendUrl)) {
             return true;
         }
 
@@ -213,100 +194,31 @@ public final class DefaultHostnameProvider implements HostnameProvider, Hostname
 
     @Override
     public void init(Config.Scope config) {
-        frontEndHostName = config.get("hostname");
+        frontChannelHostName = config.get("hostname");
 
-        try {
-            String url = config.get("hostname-url");
-
-            if (url != null) {
-                frontEndBaseUri = new URL(url).toURI();
-            }
-        } catch (MalformedURLException | URISyntaxException cause) {
-            throw new RuntimeException("Invalid base URL for FrontEnd URLs: " + config.get("hostname-url"), cause);
+        if (config.getBoolean("strict", false) && frontChannelHostName == null) {
+            throw new RuntimeException("Strict hostname resolution configured but no hostname was set");
         }
 
-        if (frontEndHostName != null && frontEndBaseUri != null) {
-            throw new RuntimeException("You can not set both '" + HostnameOptions.HOSTNAME.getKey() + "' and '"
-                    + HostnameOptions.HOSTNAME_URL.getKey() + "' options");
-        }
+        hostnameEnabled = frontChannelHostName != null;
 
-        if (config.getBoolean("strict", false) && (frontEndHostName == null && frontEndBaseUri == null)) {
-            throw new RuntimeException("Strict hostname resolution configured but no hostname setting provided");
-        }
-
-        hostnameEnabled = (frontEndHostName != null || frontEndBaseUri != null);
-
-        if (frontEndBaseUri == null) {
-            strictHttps = config.getBoolean("strict-https", false);
-        } else {
-            frontEndHostName = frontEndBaseUri.getHost();
-            strictHttps = "https".equals(frontEndBaseUri.getScheme());
-        }
+        Boolean strictHttps = config.getBoolean("strict-https", false);
 
         if (strictHttps) {
             defaultHttpScheme = "https";
         }
 
-        defaultPath = config.get("path", frontEndBaseUri == null ? null : frontEndBaseUri.getPath());
-        noProxy = Configuration.getConfigValue("kc.proxy").getValue().equals("false");
-        defaultTlsPort = Integer.parseInt(Configuration.getConfigValue("kc.https-port").getValue());
-
-        if (defaultTlsPort == DEFAULT_HTTPS_PORT_VALUE) {
-            defaultTlsPort = RESTEASY_DEFAULT_PORT_VALUE;
-        }
-
-        if (frontEndBaseUri == null) {
-            hostnamePort = Integer.parseInt(Configuration.getConfigValue("kc.hostname-port").getValue());
-        } else {
-            hostnamePort = frontEndBaseUri.getPort();
-        }
-
+        defaultPath = config.get("path");
+        noProxy = Configuration.getConfigValue("kc.proxy").getValue().equals("none");
+        defaultTlsPort = Integer.parseInt(Configuration.getConfigValue("kc.https.port").getValue());
         adminHostName = config.get("admin");
-
-        try {
-            String url = config.get("admin-url");
-
-            if (url != null) {
-                adminBaseUri = new URL(url).toURI();
-            }
-        } catch (MalformedURLException | URISyntaxException cause) {
-            throw new RuntimeException("Invalid base URL for Admin URLs: " + config.get("admin-url"), cause);
-        }
-
-        if (adminHostName != null && adminBaseUri != null) {
-            throw new RuntimeException("You can not set both '" + HostnameOptions.HOSTNAME_ADMIN.getKey() + "' and '"
-                    + HostnameOptions.HOSTNAME_ADMIN_URL.getKey() + "' options");
-        }
-
-        if (adminBaseUri != null) {
-            adminHostName = adminBaseUri.getHost();
-        }
-
         strictBackChannel = config.getBoolean("strict-backchannel", false);
 
-        LOGGER.infov(
-                "Hostname settings: Base URL: {0}, Hostname: {1}, Strict HTTPS: {2}, Path: {3}, Strict BackChannel: {4}, Admin URL: {5}, Admin: {6}, Port: {7}, Proxied: {8}",
-                frontEndBaseUri == null ? "<unset>" : frontEndBaseUri,
-                frontEndHostName == null ? frontEndBaseUri == null ? "<request>" : frontEndBaseUri : frontEndHostName,
+        LOGGER.infov("Hostname settings: FrontEnd: {0}, Strict HTTPS: {1}, Path: {2}, Strict BackChannel: {3}, Admin: {4}",
+                frontChannelHostName == null ? "<request>" : frontChannelHostName,
                 strictHttps,
-                defaultPath == null ? "<request>" : "".equals(defaultPath) ? "/" : defaultPath,
+                defaultPath == null ? "<request>" : defaultPath,
                 strictBackChannel,
-                adminBaseUri == null ? "<unset>" : adminBaseUri,
-                adminHostName == null ? adminBaseUri == null ? "<request>" : adminBaseUri : adminHostName,
-                String.valueOf(hostnamePort),
-                !noProxy);
-    }
-
-    private int getRequestPort() {
-        KeycloakSession session = Resteasy.getContextData(KeycloakSession.class);
-        return session.getContext().getContextObject(HttpRequest.class).getUri().getBaseUri().getPort();
-    }
-
-    private <T> T fromBaseUriOrDefault(Function<URI, T> resolver, URI baseUri, T defaultValue) {
-        if (baseUri != null) {
-            return resolver.apply(baseUri);
-        }
-
-        return defaultValue;
+                adminHostName == null ? "<request>" : adminHostName);
     }
 }
