@@ -109,7 +109,8 @@ public class AdminConsole {
         public WhoAmI() {
         }
 
-        public WhoAmI(String userId, String realm, String displayName, boolean createRealm, Map<String, Set<String>> realmAccess, Locale locale) {
+        public WhoAmI(String userId, String realm, String displayName, boolean createRealm,
+                Map<String, Set<String>> realmAccess, Locale locale) {
             this.userId = userId;
             this.realm = realm;
             this.displayName = displayName;
@@ -186,7 +187,9 @@ public class AdminConsole {
         if (consoleApp == null) {
             throw new NotFoundException("Could not find admin console client");
         }
-        return new ClientManager(new RealmManager(session)).toInstallationRepresentation(realm, consoleApp, session.getContext().getUri().getBaseUri());    }
+        return new ClientManager(new RealmManager(session)).toInstallationRepresentation(realm, consoleApp,
+                session.getContext().getUri().getBaseUri());
+    }
 
     @Path("whoami")
     @OPTIONS
@@ -215,9 +218,10 @@ public class AdminConsole {
         if (authResult == null) {
             return Response.status(401).build();
         }
-        UserModel user= authResult.getUser();
+        UserModel user = authResult.getUser();
         String displayName;
-        if ((user.getFirstName() != null && !user.getFirstName().trim().equals("")) || (user.getLastName() != null && !user.getLastName().trim().equals(""))) {
+        if ((user.getFirstName() != null && !user.getFirstName().trim().equals(""))
+                || (user.getLastName() != null && !user.getLastName().trim().equals(""))) {
             displayName = user.getFirstName();
             if (user.getLastName() != null) {
                 displayName = displayName != null ? displayName + " " + user.getLastName() : user.getLastName();
@@ -245,7 +249,8 @@ public class AdminConsole {
         Cors.add(request).allowedOrigins(authResult.getToken()).allowedMethods("GET").auth()
                 .build(response);
 
-        return Response.ok(new WhoAmI(user.getId(), realm.getName(), displayName, createRealm, realmAccess, locale)).build();
+        return Response.ok(new WhoAmI(user.getId(), realm.getName(), displayName, createRealm, realmAccess, locale))
+                .build();
     }
 
     private void addRealmAccess(RealmModel realm, UserModel user, Map<String, Set<String>> realmAdminAccess) {
@@ -267,7 +272,7 @@ public class AdminConsole {
         }
         HashSet<T> res;
         if (set1 instanceof HashSet) {
-            res = (HashSet <T>) set1;
+            res = (HashSet<T>) set1;
         } else {
             res = set1 == null ? new HashSet<>() : new HashSet<>(set1);
         }
@@ -277,11 +282,12 @@ public class AdminConsole {
         return res;
     }
 
-    private void getRealmAdminAccess(RealmModel realm, ClientModel client, UserModel user, Map<String, Set<String>> realmAdminAccess) {
+    private void getRealmAdminAccess(RealmModel realm, ClientModel client, UserModel user,
+            Map<String, Set<String>> realmAdminAccess) {
         Set<String> realmRoles = client.getRolesStream()
-          .filter(user::hasRole)
-          .map(RoleModel::getName)
-          .collect(Collectors.toSet());
+                .filter(user::hasRole)
+                .map(RoleModel::getName)
+                .collect(Collectors.toSet());
 
         realmAdminAccess.merge(realm.getName(), realmRoles, AdminConsole::union);
     }
@@ -298,8 +304,9 @@ public class AdminConsole {
         URI redirect = AdminRoot.adminConsoleUrl(session.getContext().getUri(UrlType.ADMIN)).build(realm.getName());
 
         return Response.status(302).location(
-                OIDCLoginProtocolService.logoutUrl(session.getContext().getUri(UrlType.ADMIN)).queryParam("redirect_uri", redirect.toString()).build(realm.getName())
-        ).build();
+                OIDCLoginProtocolService.logoutUrl(session.getContext().getUri(UrlType.ADMIN))
+                        .queryParam("redirect_uri", redirect.toString()).build(realm.getName()))
+                .build();
     }
 
     protected RealmModel getAdminstrationRealm(RealmManager realmManager) {
@@ -315,8 +322,11 @@ public class AdminConsole {
     @GET
     @NoCache
     public Response getMainPage() throws IOException, FreeMarkerException {
+        logger.infof("ADMIN REQ URI: %s", session.getContext().getUri(UrlType.ADMIN).getRequestUri().getPath());
         if (!session.getContext().getUri(UrlType.ADMIN).getRequestUri().getPath().endsWith("/")) {
-            return Response.status(302).location(session.getContext().getUri(UrlType.ADMIN).getRequestUriBuilder().path("/").build()).build();
+            return Response.status(302)
+                    .location(session.getContext().getUri(UrlType.ADMIN).getRequestUriBuilder().path("/").build())
+                    .build();
         } else {
             Theme theme = AdminRoot.getTheme(session, realm);
 
@@ -346,11 +356,13 @@ public class AdminConsole {
 
             FreeMarkerUtil freeMarkerUtil = new FreeMarkerUtil();
             String result = freeMarkerUtil.processTemplate(map, "index.ftl", theme);
-            Response.ResponseBuilder builder = Response.status(Response.Status.OK).type(MediaType.TEXT_HTML_UTF_8).language(Locale.ENGLISH).entity(result);
+            Response.ResponseBuilder builder = Response.status(Response.Status.OK).type(MediaType.TEXT_HTML_UTF_8)
+                    .language(Locale.ENGLISH).entity(result);
 
             // Replace CSP if admin is hosted on different URL
             if (!adminBaseUri.equals(authServerBaseUri)) {
-                session.getProvider(SecurityHeadersProvider.class).options().allowFrameSrc(UriUtils.getOrigin(authServerBaseUri));
+                session.getProvider(SecurityHeadersProvider.class).options()
+                        .allowFrameSrc(UriUtils.getOrigin(authServerBaseUri));
             }
 
             return builder.build();
@@ -358,9 +370,12 @@ public class AdminConsole {
     }
 
     @GET
-    @Path("{indexhtml: index.html}") // this expression is a hack to get around jaxdoclet generation bug.  Doesn't like index.html
+    @Path("{indexhtml: index.html}") // this expression is a hack to get around jaxdoclet generation bug. Doesn't
+                                     // like index.html
     public Response getIndexHtmlRedirect() {
-        return Response.status(302).location(session.getContext().getUri(UrlType.ADMIN).getRequestUriBuilder().path("../").build()).build();
+        return Response.status(302)
+                .location(session.getContext().getUri(UrlType.ADMIN).getRequestUriBuilder().path("../").build())
+                .build();
     }
 
     @GET
