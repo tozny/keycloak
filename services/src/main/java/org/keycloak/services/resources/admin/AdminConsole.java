@@ -322,8 +322,9 @@ public class AdminConsole {
     @GET
     @NoCache
     public Response getMainPage() throws IOException, FreeMarkerException {
-        logger.infof("ADMIN REQ URI: %s", session.getContext().getUri(UrlType.ADMIN).getRequestUri().getPath());
-        if (!session.getContext().getUri(UrlType.ADMIN).getRequestUri().getPath().endsWith("/")) {
+        String adminPath = session.getContext().getUri(UrlType.ADMIN).getRequestUri().getPath();
+        logger.debugf("ADMIN REQ URI: %s", adminPath);
+        if (!adminPath.endsWith("/")) {
             return Response.status(302)
                     .location(session.getContext().getUri(UrlType.ADMIN).getRequestUriBuilder().path("/").build())
                     .build();
