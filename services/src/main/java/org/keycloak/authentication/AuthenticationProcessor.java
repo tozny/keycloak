@@ -566,9 +566,9 @@ public class AuthenticationProcessor {
                     .queryParam(Constants.EXECUTION, getExecution().getId())
                     .queryParam(Constants.CLIENT_ID, getAuthenticationSession().getClient().getClientId())
                     .queryParam(Constants.TAB_ID, getAuthenticationSession().getTabId());
-            if (getUriInfo().getQueryParameters().containsKey(LoginActionsService.AUTH_SESSION_ID)) {
+            // if (getUriInfo().getQueryParameters().containsKey(LoginActionsService.AUTH_SESSION_ID)) {
                 uriBuilder.queryParam(LoginActionsService.AUTH_SESSION_ID, getAuthenticationSession().getParentSession().getId());
-            }
+            // }
             return uriBuilder
                     .build(getRealm().getName());
         }
