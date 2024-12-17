@@ -54,14 +54,16 @@ public class MapRootAuthenticationSessionProvider implements AuthenticationSessi
     private final KeycloakSession session;
     protected final MapKeycloakTransaction<MapRootAuthenticationSessionEntity, RootAuthenticationSessionModel> tx;
 
-    public MapRootAuthenticationSessionProvider(KeycloakSession session, MapStorage<MapRootAuthenticationSessionEntity, RootAuthenticationSessionModel> sessionStore) {
+    public MapRootAuthenticationSessionProvider(KeycloakSession session,
+            MapStorage<MapRootAuthenticationSessionEntity, RootAuthenticationSessionModel> sessionStore) {
         this.session = session;
         this.tx = sessionStore.createTransaction(session);
 
         session.getTransactionManager().enlistAfterCompletion(tx);
     }
 
-    private Function<MapRootAuthenticationSessionEntity, RootAuthenticationSessionModel> entityToAdapterFunc(RealmModel realm) {
+    private Function<MapRootAuthenticationSessionEntity, RootAuthenticationSessionModel> entityToAdapterFunc(
+            RealmModel realm) {
         return origEntity -> {
             if (isExpired(origEntity, true)) {
                 tx.delete(origEntity.getId());
@@ -111,13 +113,15 @@ public class MapRootAuthenticationSessionProvider implements AuthenticationSessi
     }
 
     @Override
-    public RootAuthenticationSessionModel getRootAuthenticationSession(RealmModel realm, String authenticationSessionId) {
+    public RootAuthenticationSessionModel getRootAuthenticationSession(RealmModel realm,
+            String authenticationSessionId) {
         Objects.requireNonNull(realm, "The provided realm can't be null!");
         if (authenticationSessionId == null) {
             return null;
         }
-
-        LOG.tracef("getRootAuthenticationSession(%s, %s)%s", realm.getName(), authenticationSessionId, getShortStackTrace());
+        LOG.info("IN MAPROOT");
+        LOG.tracef("getRootAuthenticationSession(%s, %s)%s", realm.getName(), authenticationSessionId,
+                getShortStackTrace());
 
         MapRootAuthenticationSessionEntity entity = tx.read(authenticationSessionId);
         return (entity == null || !entityRealmFilter(realm.getId()).test(entity))
@@ -126,7 +130,8 @@ public class MapRootAuthenticationSessionProvider implements AuthenticationSessi
     }
 
     @Override
-    public void removeRootAuthenticationSession(RealmModel realm, RootAuthenticationSessionModel authenticationSession) {
+    public void removeRootAuthenticationSession(RealmModel realm,
+            RootAuthenticationSessionModel authenticationSession) {
         Objects.requireNonNull(authenticationSession, "The provided root authentication session can't be null!");
         tx.delete(authenticationSession.getId());
     }
@@ -134,13 +139,15 @@ public class MapRootAuthenticationSessionProvider implements AuthenticationSessi
     @Override
     public void removeAllExpired() {
         LOG.tracef("removeAllExpired()%s", getShortStackTrace());
-        LOG.warnf("Clearing expired entities should not be triggered manually. It is responsibility of the store to clear these.");
+        LOG.warnf(
+                "Clearing expired entities should not be triggered manually. It is responsibility of the store to clear these.");
     }
 
     @Override
     public void removeExpired(RealmModel realm) {
         LOG.tracef("removeExpired(%s)%s", realm, getShortStackTrace());
-        LOG.warnf("Clearing expired entities should not be triggered manually. It is responsibility of the store to clear these.");
+        LOG.warnf(
+                "Clearing expired entities should not be triggered manually. It is responsibility of the store to clear these.");
     }
 
     @Override
@@ -158,7 +165,8 @@ public class MapRootAuthenticationSessionProvider implements AuthenticationSessi
     }
 
     @Override
-    public void updateNonlocalSessionAuthNotes(AuthenticationSessionCompoundId compoundId, Map<String, String> authNotesFragment) {
+    public void updateNonlocalSessionAuthNotes(AuthenticationSessionCompoundId compoundId,
+            Map<String, String> authNotesFragment) {
         if (compoundId == null) {
             return;
         }
