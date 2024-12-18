@@ -51,20 +51,25 @@ public class AuthenticationSessionManager {
 
     private final KeycloakSession session;
 
+    protected static final Logger logger = Logger.getLogger(AuthenticationSessionManager.class);
+
     public AuthenticationSessionManager(KeycloakSession session) {
         this.session = session;
     }
 
-
     /**
-     * Creates a fresh authentication session for the given realm . Optionally sets the browser
-     * authentication session cookie {@link #AUTH_SESSION_ID} with the ID of the new session.
+     * Creates a fresh authentication session for the given realm . Optionally sets
+     * the browser
+     * authentication session cookie {@link #AUTH_SESSION_ID} with the ID of the new
+     * session.
+     * 
      * @param realm
      * @param browserCookie Set the cookie in the browser for the
      * @return
      */
     public RootAuthenticationSessionModel createAuthenticationSession(RealmModel realm, boolean browserCookie) {
-        RootAuthenticationSessionModel rootAuthSession = session.authenticationSessions().createRootAuthenticationSession(realm);
+        RootAuthenticationSessionModel rootAuthSession = session.authenticationSessions()
+                .createRootAuthenticationSession(realm);
 
         if (browserCookie) {
             setAuthSessionCookie(rootAuthSession.getId(), realm);
@@ -73,15 +78,16 @@ public class AuthenticationSessionManager {
         return rootAuthSession;
     }
 
-
     public RootAuthenticationSessionModel getCurrentRootAuthenticationSession(RealmModel realm) {
+        logger.info("IN CURRENT ROOT AUTHENTICATION");
         List<String> authSessionCookies = getAuthSessionCookies(realm);
-
+        logger.infof("COOKES FOUND: %d", authSessionCookies.size());
         return authSessionCookies.stream().map(oldEncodedId -> {
             AuthSessionId authSessionId = decodeAuthSessionId(oldEncodedId);
             String sessionId = authSessionId.getDecodedId();
 
-            RootAuthenticationSessionModel rootAuthSession = session.authenticationSessions().getRootAuthenticationSession(realm, sessionId);
+            RootAuthenticationSessionModel rootAuthSession = session.authenticationSessions()
+                    .getRootAuthenticationSession(realm, sessionId);
 
             if (rootAuthSession != null) {
                 reencodeAuthSessionCookie(oldEncodedId, authSessionId, realm);
@@ -92,7 +98,6 @@ public class AuthenticationSessionManager {
         }).filter(authSession -> Objects.nonNull(authSession)).findFirst().orElse(null);
     }
 
-
     public UserSessionModel getUserSessionFromAuthCookie(RealmModel realm) {
         List<String> authSessionCookies = getAuthSessionCookies(realm);
 
@@ -100,7 +105,8 @@ public class AuthenticationSessionManager {
             AuthSessionId authSessionId = decodeAuthSessionId(oldEncodedId);
             String sessionId = authSessionId.getDecodedId();
 
-            UserSessionModel userSession = lockUserSessionsForModification(session, () -> session.sessions().getUserSession(realm, sessionId));
+            UserSessionModel userSession = lockUserSessionsForModification(session,
+                    () -> session.sessions().getUserSession(realm, sessionId));
 
             if (userSession != null) {
                 reencodeAuthSessionCookie(oldEncodedId, authSessionId, realm);
@@ -111,20 +117,23 @@ public class AuthenticationSessionManager {
         }).filter(authSession -> Objects.nonNull(authSession)).findFirst().orElse(null);
     }
 
-
     /**
-     * Returns current authentication session if it exists, otherwise returns {@code null}.
+     * Returns current authentication session if it exists, otherwise returns
+     * {@code null}.
+     * 
      * @param realm
      * @return
      */
-    public AuthenticationSessionModel getCurrentAuthenticationSession(RealmModel realm, ClientModel client, String tabId) {
+    public AuthenticationSessionModel getCurrentAuthenticationSession(RealmModel realm, ClientModel client,
+            String tabId) {
         List<String> authSessionCookies = getAuthSessionCookies(realm);
 
         return authSessionCookies.stream().map(oldEncodedId -> {
             AuthSessionId authSessionId = decodeAuthSessionId(oldEncodedId);
             String sessionId = authSessionId.getDecodedId();
 
-            AuthenticationSessionModel authSession = getAuthenticationSessionByIdAndClient(realm, sessionId, client, tabId);
+            AuthenticationSessionModel authSession = getAuthenticationSessionByIdAndClient(realm, sessionId, client,
+                    tabId);
 
             if (authSession != null) {
                 reencodeAuthSessionCookie(oldEncodedId, authSessionId, realm);
@@ -134,7 +143,6 @@ public class AuthenticationSessionManager {
             return null;
         }).filter(authSession -> Objects.nonNull(authSession)).findFirst().orElse(null);
     }
-
 
     /**
      * @param authSessionId decoded authSessionId (without route info attached)
@@ -149,15 +157,17 @@ public class AuthenticationSessionManager {
         StickySessionEncoderProvider encoder = session.getProvider(StickySessionEncoderProvider.class);
         String encodedAuthSessionId = encoder.encodeSessionId(authSessionId);
 
-        CookieHelper.addCookie(AUTH_SESSION_ID, encodedAuthSessionId, cookiePath, null, null, -1, sslRequired, true, SameSiteAttributeValue.NONE);
+        CookieHelper.addCookie(AUTH_SESSION_ID, encodedAuthSessionId, cookiePath, null, null, -1, sslRequired, true,
+                SameSiteAttributeValue.NONE);
 
         log.debugf("Set AUTH_SESSION_ID cookie with value %s", encodedAuthSessionId);
     }
 
-
     /**
      *
-     * @param encodedAuthSessionId encoded ID with attached route in cluster environment (EG. "5e161e00-d426-4ea6-98e9-52eb9844e2d7.node1" )
+     * @param encodedAuthSessionId encoded ID with attached route in cluster
+     *                             environment (EG.
+     *                             "5e161e00-d426-4ea6-98e9-52eb9844e2d7.node1" )
      * @return object with decoded and actually encoded authSessionId
      */
     AuthSessionId decodeAuthSessionId(String encodedAuthSessionId) {
@@ -169,25 +179,27 @@ public class AuthenticationSessionManager {
         return new AuthSessionId(decodedAuthSessionId, reencoded);
     }
 
-
     void reencodeAuthSessionCookie(String oldEncodedAuthSessionId, AuthSessionId newAuthSessionId, RealmModel realm) {
         if (!oldEncodedAuthSessionId.equals(newAuthSessionId.getEncodedId())) {
-            log.debugf("Route changed. Will update authentication session cookie. Old: '%s', New: '%s'", oldEncodedAuthSessionId,
+            log.debugf("Route changed. Will update authentication session cookie. Old: '%s', New: '%s'",
+                    oldEncodedAuthSessionId,
                     newAuthSessionId.getEncodedId());
             setAuthSessionCookie(newAuthSessionId.getDecodedId(), realm);
         }
     }
 
-
     /**
      * @param realm
-     * @return list of the values of AUTH_SESSION_ID cookies. It is assumed that values could be encoded with route added (EG. "5e161e00-d426-4ea6-98e9-52eb9844e2d7.node1" )
+     * @return list of the values of AUTH_SESSION_ID cookies. It is assumed that
+     *         values could be encoded with route added (EG.
+     *         "5e161e00-d426-4ea6-98e9-52eb9844e2d7.node1" )
      */
     List<String> getAuthSessionCookies(RealmModel realm) {
         Set<String> cookiesVal = CookieHelper.getCookieValue(AUTH_SESSION_ID);
 
         if (cookiesVal.size() > 1) {
-            AuthenticationManager.expireOldAuthSessionCookie(realm, session.getContext().getUri(), session.getContext().getConnection());
+            AuthenticationManager.expireOldAuthSessionCookie(realm, session.getContext().getUri(),
+                    session.getContext().getConnection());
         }
 
         List<String> authSessionIds = cookiesVal.stream().limit(AUTH_SESSION_COOKIE_LIMIT).collect(Collectors.toList());
@@ -199,11 +211,12 @@ public class AuthenticationSessionManager {
         return authSessionIds;
     }
 
-
-    public void removeAuthenticationSession(RealmModel realm, AuthenticationSessionModel authSession, boolean expireRestartCookie) {
+    public void removeAuthenticationSession(RealmModel realm, AuthenticationSessionModel authSession,
+            boolean expireRestartCookie) {
         RootAuthenticationSessionModel rootAuthSession = authSession.getParentSession();
 
-        log.debugf("Removing authSession '%s'. Expire restart cookie: %b", rootAuthSession.getId(), expireRestartCookie);
+        log.debugf("Removing authSession '%s'. Expire restart cookie: %b", rootAuthSession.getId(),
+                expireRestartCookie);
         session.authenticationSessions().removeRootAuthenticationSession(realm, rootAuthSession);
 
         // expire restart cookie
@@ -214,16 +227,18 @@ public class AuthenticationSessionManager {
         }
     }
 
-
     // Check to see if we already have authenticationSession with same ID
     public UserSessionModel getUserSession(AuthenticationSessionModel authSession) {
-        return lockUserSessionsForModification(session, () -> session.sessions().getUserSession(authSession.getRealm(), authSession.getParentSession().getId()));
+        return lockUserSessionsForModification(session, () -> session.sessions().getUserSession(authSession.getRealm(),
+                authSession.getParentSession().getId()));
     }
 
-
-    // Don't look at cookie. Just lookup authentication session based on the ID and client. Return null if not found
-    public AuthenticationSessionModel getAuthenticationSessionByIdAndClient(RealmModel realm, String authSessionId, ClientModel client, String tabId) {
-        RootAuthenticationSessionModel rootAuthSession = session.authenticationSessions().getRootAuthenticationSession(realm, authSessionId);
-        return rootAuthSession==null ? null : rootAuthSession.getAuthenticationSession(client, tabId);
+    // Don't look at cookie. Just lookup authentication session based on the ID and
+    // client. Return null if not found
+    public AuthenticationSessionModel getAuthenticationSessionByIdAndClient(RealmModel realm, String authSessionId,
+            ClientModel client, String tabId) {
+        RootAuthenticationSessionModel rootAuthSession = session.authenticationSessions()
+                .getRootAuthenticationSession(realm, authSessionId);
+        return rootAuthSession == null ? null : rootAuthSession.getAuthenticationSession(client, tabId);
     }
 }
