@@ -24,13 +24,13 @@
     <parent>
         <groupId>org.keycloak.testsuite</groupId>
         <artifactId>integration-arquillian-tests-adapters-was</artifactId>
-        <version>19.0.2</version>
+        <version>20.0.0</version>
     </parent>
 
     <artifactId>integration-arquillian-tests-adapters-was8</artifactId>
 
     <name>Adapter Tests - WAS8</name>
-    
+
     <properties>
         <common.resources>${project.parent.basedir}/common</common.resources>
         <app.server>was</app.server>
@@ -46,5 +46,5 @@
             <version>1.0.0.Final</version>
         </dependency>
     </dependencies>
-    
+
 </project>

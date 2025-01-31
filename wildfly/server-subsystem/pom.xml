@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.keycloak</groupId>
         <artifactId>keycloak-wildfly-parent</artifactId>
-        <version>19.0.2</version>
+        <version>20.0.0</version>
     </parent>
 
     <artifactId>keycloak-wildfly-server-subsystem</artifactId>
@@ -47,7 +47,7 @@
                         <include>**/*TestCase.java</include>
                     </includes>
                 </configuration>
-            </plugin>        
+            </plugin>
         </plugins>
         <filters>
             <filter>src/main/config/default-server-subsys-config.properties</filter>

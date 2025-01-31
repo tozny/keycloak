@@ -5,7 +5,7 @@
     <parent>
         <artifactId>integration-arquillian-servers-auth-server</artifactId>
         <groupId>org.keycloak.testsuite</groupId>
-        <version>19.0.2</version>
+        <version>20.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -22,7 +22,7 @@
         <!-- Path to testsuite/test resources : Themes-->
         <keycloak.base.test.resource>${project.parent.basedir}/../../tests/base/src/test/resources</keycloak.base.test.resource>
     </properties>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.keycloak</groupId>
@@ -254,7 +254,7 @@
             </plugin>
         </plugins>
     </build>
-    
+
     <profiles>
         <profile>
             <id>auth-server-cluster-quarkus</id>

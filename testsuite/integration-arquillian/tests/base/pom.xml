@@ -21,14 +21,14 @@
     <parent>
         <groupId>org.keycloak.testsuite</groupId>
         <artifactId>integration-arquillian-tests</artifactId>
-        <version>19.0.2</version>
+        <version>20.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>integration-arquillian-tests-base</artifactId>
 
     <name>Base TestSuite</name>
-    
+
     <description></description>
 
     <properties>
@@ -45,7 +45,7 @@
         <systemrules.version>1.19.0</systemrules.version>
         <common.resources>${basedir}/../../servers/auth-server/jboss/common</common.resources>
     </properties>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.keycloak</groupId>
@@ -158,7 +158,7 @@
             <version>${infinispan.version}</version>
         </dependency>
     </dependencies>
-    
+
     <build>
         <testResources>
             <testResource>
@@ -204,7 +204,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>                        
+            </plugin>
 
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>

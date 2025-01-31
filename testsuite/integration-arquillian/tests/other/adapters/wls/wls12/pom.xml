@@ -24,13 +24,13 @@
     <parent>
         <groupId>org.keycloak.testsuite</groupId>
         <artifactId>integration-arquillian-tests-adapters-wls</artifactId>
-        <version>19.0.2</version>
+        <version>20.0.0</version>
     </parent>
 
     <artifactId>integration-arquillian-tests-adapters-wls12</artifactId>
 
     <name>Adapter Tests - WLS12</name>
-    
+
     <properties>
         <common.resources>${project.parent.basedir}/common</common.resources>
         <app.server>wls</app.server>
@@ -45,5 +45,5 @@
             <version>1.0.2.Final-SNAPSHOT</version>
         </dependency>
     </dependencies>
-    
+
 </project>

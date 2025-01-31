@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.keycloak.testsuite</groupId>
         <artifactId>integration-arquillian-servers-app-server</artifactId>
-        <version>19.0.2</version>
+        <version>20.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -48,10 +48,10 @@
                 <file>
                     <exists>src/tomcat-submodule</exists>
                 </file>
-            </activation>    
+            </activation>
             <build>
                 <plugins>
-                    
+
                     <plugin>
                         <artifactId>maven-enforcer-plugin</artifactId>
                         <executions>
@@ -73,8 +73,8 @@
                                 </configuration>
                             </execution>
                         </executions>
-                    </plugin>                    
-                    
+                    </plugin>
+
                     <plugin>
                         <artifactId>maven-dependency-plugin</artifactId>
                         <executions>
@@ -202,11 +202,11 @@
                                 </configuration>
                             </execution>
                         </executions>
-                    </plugin>                    
+                    </plugin>
                 </plugins>
             </build>
         </profile>
-        
+
         <profile>
             <id>app-server-saml-supported</id>
             <activation>
@@ -373,6 +373,6 @@
                 </plugins>
             </build>
         </profile>
-        
+
     </profiles>
 </project>

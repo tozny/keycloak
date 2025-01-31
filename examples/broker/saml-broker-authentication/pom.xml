@@ -23,7 +23,7 @@
     <parent>
         <artifactId>keycloak-examples-broker-parent</artifactId>
         <groupId>org.keycloak</groupId>
-        <version>19.0.2</version>
+        <version>20.0.0</version>
     </parent>
 
     <name>Keycloak Broker Examples - SAML Identity Provider Brokering</name>

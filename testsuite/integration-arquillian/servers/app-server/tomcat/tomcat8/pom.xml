@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.keycloak.testsuite</groupId>
         <artifactId>integration-arquillian-servers-app-server-tomcat</artifactId>
-        <version>19.0.2</version>
+        <version>20.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -30,12 +30,12 @@
 
     <properties>
         <app.server.tomcat>tomcat8</app.server.tomcat>
-        
+
         <app.server.tomcat.groupId>org.apache.tomcat</app.server.tomcat.groupId>
         <app.server.tomcat.artifactId>tomcat</app.server.tomcat.artifactId>
         <app.server.tomcat.version>${tomcat8.version}</app.server.tomcat.version>
         <app.server.tomcat.unpacked.folder.name>apache-tomcat-${tomcat8.version}</app.server.tomcat.unpacked.folder.name>
-        
+
         <app.server.oidc.adapter.artifactId>keycloak-tomcat-adapter-dist</app.server.oidc.adapter.artifactId>
         <app.server.saml.adapter.artifactId>keycloak-saml-tomcat-adapter-dist</app.server.saml.adapter.artifactId>
         <skip.dependencies.for.tomcat8>false</skip.dependencies.for.tomcat8>

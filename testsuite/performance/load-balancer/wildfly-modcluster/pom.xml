@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.keycloak.testsuite</groupId>
         <artifactId>performance</artifactId>
-        <version>19.0.2</version>
+        <version>20.0.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -29,25 +29,25 @@
     <artifactId>performance-keycloak-wildfly-modcluster</artifactId>
     <name>Keycloak Performance TestSuite - Wildfly ModCluster Load Balancer</name>
     <packaging>pom</packaging>
-    
+
     <properties>
         <server.groupId>org.wildfly</server.groupId>
         <server.artifactId>wildfly-server-dist</server.artifactId>
         <server.unpacked.home>${project.build.directory}/wildfly-${wildfly.version}</server.unpacked.home>
-        
+
         <script.extension>sh</script.extension>
         <jboss.cli.script>jboss-cli.${script.extension}</jboss.cli.script>
         <add.user.script>add-user.${script.extension}</add.user.script>
-        
+
         <scripts.dir>${project.build.scriptSourceDirectory}</scripts.dir>
         <resources.dir>${project.basedir}/src/main/resources</resources.dir>
-        
+
         <skip.add.management.user>true</skip.add.management.user>
         <skip.docker.config>false</skip.docker.config>
     </properties>
 
     <build>
-        
+
         <plugins>
             <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -119,10 +119,10 @@
             </plugin>
         </plugins>
     </build>
-    
+
     <profiles>
-        
-        <profile>        
+
+        <profile>
             <id>add-management-user</id>
             <activation>
                 <property>
@@ -149,7 +149,7 @@
                 <script.extension>ps1</script.extension>
             </properties>
         </profile>
-        
+
     </profiles>
-    
+
 </project>

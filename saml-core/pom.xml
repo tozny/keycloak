@@ -21,7 +21,7 @@
     <parent>
         <artifactId>keycloak-parent</artifactId>
         <groupId>org.keycloak</groupId>
-        <version>19.0.2</version>
+        <version>20.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -116,7 +116,7 @@
                             <argLine>-Djava.security.debug=access -Dmaven.basedir=${basedir} -Djava.security.manager -Djava.security.policy=${basedir}/src/test/resources/named-permissions.policy</argLine>
                             <test>SecurityActionsTest</test>
                             <skip>${skip.security-manager.tests}</skip>
-                        </configuration>                        
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

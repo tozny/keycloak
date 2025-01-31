@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.keycloak.testsuite</groupId>
         <artifactId>performance</artifactId>
-        <version>19.0.2</version>
+        <version>20.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -29,27 +29,27 @@
     <artifactId>performance-keycloak-infinispan-server</artifactId>
     <name>Keycloak Performance TestSuite - Infinispan Server</name>
     <packaging>pom</packaging>
-    
+
     <properties>
         <infinispan.groupId>org.infinispan.server</infinispan.groupId>
         <infinispan.artifactId>infinispan-server-build</infinispan.artifactId>
-        <!--infinispan.version is located in the root pom.xml--> 
+        <!--infinispan.version is located in the root pom.xml-->
         <infinispan.unpacked.folder.name>infinispan-server-${infinispan.version}</infinispan.unpacked.folder.name>
         <infinispan.unpacked.home>${project.build.directory}/${infinispan.unpacked.folder.name}</infinispan.unpacked.home>
-        
+
         <script.extension>sh</script.extension>
         <jboss.cli.script>ispn-cli.${script.extension}</jboss.cli.script>
         <add.user.script>add-user.${script.extension}</add.user.script>
-        
+
         <scripts.dir>${project.build.scriptSourceDirectory}</scripts.dir>
         <resources.dir>${project.basedir}/src/main/resources</resources.dir>
-        
+
         <skip.add.management.user>true</skip.add.management.user>
         <skip.docker.config>false</skip.docker.config>
     </properties>
 
     <build>
-        
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -109,10 +109,10 @@
             </plugin>
         </plugins>
     </build>
-    
+
     <profiles>
-        
-        <profile>        
+
+        <profile>
             <id>add-management-user</id>
             <activation>
                 <property>
@@ -139,7 +139,7 @@
                 <script.extension>ps1</script.extension>
             </properties>
         </profile>
-        
+
     </profiles>
-    
+
 </project>

@@ -20,7 +20,7 @@
     <parent>
         <artifactId>keycloak-parent</artifactId>
         <groupId>org.keycloak</groupId>
-        <version>19.0.2</version>
+        <version>20.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <name>Keycloak Quarkus Parent</name>
@@ -80,7 +80,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            
+
             <!-- Override the dependencies below to use the versions used by Keycloak -->
             <dependency>
                 <groupId>org.infinispan</groupId>
@@ -157,7 +157,7 @@
             </plugins>
         </pluginManagement>
     </build>
-    
+
     <modules>
         <module>config-api</module>
         <module>runtime</module>
@@ -185,5 +185,5 @@
             </snapshots>
         </repository>
     </repositories>
-    
+
 </project>

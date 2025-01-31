@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.keycloak.testsuite</groupId>
         <artifactId>integration-arquillian-tests-other</artifactId>
-        <version>19.0.2</version>
+        <version>20.0.0</version>
     </parent>
 
     <artifactId>integration-arquillian-tests-adapters</artifactId>
@@ -58,7 +58,7 @@
         <app.server.debug.port>5006</app.server.debug.port>
         <app.server.debug.suspend>n</app.server.debug.suspend>
         <app.server.jboss.jvm.debug.args>-agentlib:jdwp=transport=dt_socket,server=y,suspend=${app.server.debug.suspend},address=${app.server.host}:${app.server.debug.port}</app.server.jboss.jvm.debug.args>
-        
+
         <app.server.ssl.required>false</app.server.ssl.required>
 
         <app.server.reverse-proxy.port.offset>500</app.server.reverse-proxy.port.offset>

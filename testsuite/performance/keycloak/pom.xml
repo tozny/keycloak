@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.keycloak.testsuite</groupId>
         <artifactId>performance</artifactId>
-        <version>19.0.2</version>
+        <version>20.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -29,18 +29,18 @@
     <artifactId>performance-keycloak-server</artifactId>
     <name>Keycloak Performance TestSuite - Keycloak Server</name>
     <packaging>pom</packaging>
-    
+
     <description>
         Uses maven-dependency-plugin to unpack keycloak-server-dist artifact into `target/keycloak` which is then added to Docker image.
     </description>
-    
+
     <properties>
         <server.groupId>org.keycloak</server.groupId>
         <server.artifactId>keycloak-server-dist</server.artifactId>
         <!-- `server.version` is defined one level up -->
         <server.unpacked.folder.name>keycloak-${server.version}</server.unpacked.folder.name>
         <server.unpacked.home>${project.build.directory}/${server.unpacked.folder.name}</server.unpacked.home>
-        
+
         <jdbc.driver.groupId>org.mariadb.jdbc</jdbc.driver.groupId>
         <jdbc.driver.artifactId>mariadb-java-client</jdbc.driver.artifactId>
         <jdbc.driver.version>2.2.4</jdbc.driver.version>
@@ -49,19 +49,19 @@
         <script.extension>sh</script.extension>
         <jboss.cli.script>jboss-cli.${script.extension}</jboss.cli.script>
         <add.user.script>add-user.${script.extension}</add.user.script>
-        
+
         <skip.crossdc.configuration>true</skip.crossdc.configuration>
-        
+
         <skip.configuration>false</skip.configuration>
         <skip.add.management.user>true</skip.add.management.user>
         <skip.keycloak.docker>false</skip.keycloak.docker>
-        
+
         <scripts.dir>${project.build.scriptSourceDirectory}</scripts.dir>
         <resources.dir>${project.basedir}/src/main/resources</resources.dir>
     </properties>
 
     <build>
-        
+
         <plugins>
             <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -165,10 +165,10 @@
             </plugin>
         </plugins>
     </build>
-    
+
     <profiles>
-        
-        <profile>        
+
+        <profile>
             <id>windows</id>
             <activation>
                 <os>
@@ -179,8 +179,8 @@
                 <script.extension>ps1</script.extension>
             </properties>
         </profile>
-        
-        <profile>        
+
+        <profile>
             <id>add-management-user</id>
             <activation>
                 <property>
@@ -195,14 +195,14 @@
                 <management.user.password>${management.user.password}</management.user.password>
             </properties>
         </profile>
-        
+
         <profile>
             <id>crossdc</id>
             <properties>
                 <skip.crossdc.configuration>false</skip.crossdc.configuration>
             </properties>
         </profile>
-        
+
         <profile>
             <id>integration-testsuite-server</id>
             <properties>
@@ -213,5 +213,5 @@
         </profile>
 
     </profiles>
-    
+
 </project>

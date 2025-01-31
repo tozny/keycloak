@@ -21,7 +21,7 @@
     <parent>
         <artifactId>keycloak-testsuite-pom</artifactId>
         <groupId>org.keycloak</groupId>
-        <version>19.0.2</version>
+        <version>20.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -30,7 +30,7 @@
     <artifactId>performance</artifactId>
     <name>Keycloak Performance TestSuite</name>
     <packaging>pom</packaging>
-    
+
     <properties>
         <server.version>${product.version}</server.version>
         <management.user/>
@@ -55,5 +55,5 @@
             </modules>
         </profile>
     </profiles>
-    
+
 </project>

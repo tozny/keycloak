@@ -7,10 +7,10 @@
     <parent>
         <artifactId>keycloak-parent</artifactId>
         <groupId>org.keycloak</groupId>
-        <version>19.0.2</version>
+        <version>20.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    
+
     <name>Keycloak Operator</name>
     <artifactId>keycloak-operator</artifactId>
 
@@ -39,7 +39,7 @@
         <quarkus.container-image.group>keycloak</quarkus.container-image.group>
         <quarkus.jib.base-jvm-image>registry.access.redhat.com/ubi8/openjdk-11-runtime</quarkus.jib.base-jvm-image>
     </properties>
-    
+
     <dependencyManagement>
         <dependencies>
         <dependency>
@@ -274,8 +274,8 @@
             </plugin>
         </plugins>
     </build>
-    
-    
+
+
     <profiles>
         <profile>
             <id>native</id>

@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.keycloak.testsuite</groupId>
         <artifactId>integration-arquillian-servers-auth-server</artifactId>
-        <version>19.0.2</version>
+        <version>20.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -70,7 +70,7 @@
 
         <!-- Path to testsuite/test resources : Themes-->
         <keycloak.base.test.resource>${project.parent.basedir}/../../../tests/base/src/test/resources</keycloak.base.test.resource>
-        
+
         <crossdc.cache.auth>false</crossdc.cache.auth>
     </properties>
 
@@ -716,7 +716,7 @@
                 <jdbc.mvn.version>2.0.3</jdbc.mvn.version>
                 <keycloak.connectionsJpa.user>keycloak</keycloak.connectionsJpa.user>
                 <keycloak.connectionsJpa.password>keycloak</keycloak.connectionsJpa.password>
-                
+
                 <mariadb.ha.mode>replication</mariadb.ha.mode>
                 <mariadb.hosts>localhost:3316,localhost:3326</mariadb.hosts>
                 <mariadb.database>keycloak</mariadb.database>
@@ -724,7 +724,7 @@
                 <keycloak.connectionsJpa.url>jdbc:mariadb:${mariadb.ha.mode}://${mariadb.hosts}/${mariadb.database}${mariadb.options}</keycloak.connectionsJpa.url>
             </properties>
         </profile>
-        
+
         <profile>
             <id>cache-auth</id>
             <properties>

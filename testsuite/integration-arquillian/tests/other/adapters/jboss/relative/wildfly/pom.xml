@@ -24,17 +24,17 @@
     <parent>
         <groupId>org.keycloak.testsuite</groupId>
         <artifactId>integration-arquillian-tests-adapters-jboss-relative</artifactId>
-        <version>19.0.2</version>
+        <version>20.0.0</version>
     </parent>
 
     <artifactId>integration-arquillian-tests-adapters-relative-wildfly</artifactId>
 
     <name>Adapter Tests - JBoss - Relative Wildfly</name>
-    
+
     <properties>
         <app.server>relative-wildfly</app.server>
     </properties>
-    
+
     <build>
         <plugins>
             <plugin>
@@ -56,11 +56,11 @@
             </plugin>
         </plugins>
     </build>
-    
+
     <profiles>
         <profile>
             <id>auth-server-wildfly</id>
         </profile>
     </profiles>
-    
+
 </project>

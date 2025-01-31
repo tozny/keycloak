@@ -24,10 +24,10 @@
     <parent>
         <artifactId>keycloak-quarkus-parent</artifactId>
         <groupId>org.keycloak</groupId>
-        <version>19.0.2</version>
+        <version>20.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    
+
     <name>Keycloak Quarkus Test Parent</name>
     <artifactId>keycloak-quarkus-test-parent</artifactId>
     <packaging>pom</packaging>

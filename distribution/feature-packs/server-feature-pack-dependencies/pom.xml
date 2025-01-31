@@ -19,11 +19,11 @@
     <parent>
         <groupId>org.keycloak</groupId>
         <artifactId>feature-packs-parent</artifactId>
-        <version>19.0.2</version>
+        <version>20.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    
+
     <artifactId>keycloak-server-feature-pack-dependencies</artifactId>
 
     <name>Keycloak Feature Pack: Server Dependencies</name>
@@ -474,4 +474,3 @@
     </dependencies>
 
 </project>
-

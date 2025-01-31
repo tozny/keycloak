@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.keycloak.testsuite</groupId>
         <artifactId>integration-arquillian</artifactId>
-        <version>19.0.2</version>
+        <version>20.0.0</version>
     </parent>
 
     <packaging>pom</packaging>
@@ -1313,15 +1313,15 @@
                                             <copy todir="${cache.server.home}-dc2">
                                                 <fileset dir="${cache.server.home}-dc1"/>
                                             </copy>
-                                            
+
                                             <chmod dir="${cache.server.home}-dc1/bin" perm="ugo+rx" includes="**/*.sh"/>
                                             <chmod dir="${cache.server.home}-dc2/bin" perm="ugo+rx" includes="**/*.sh"/>
-                                            
-                                            <move file="${cache.server.home}-dc1/server/conf/infinispan-xsite-1.xml" 
+
+                                            <move file="${cache.server.home}-dc1/server/conf/infinispan-xsite-1.xml"
                                                   tofile="${cache.server.home}-dc1/server/conf/infinispan-xsite.xml" />
                                             <delete file="${cache.server.home}-dc1/server/conf/infinispan-xsite-2.xml"/>
-                                            
-                                            <move file="${cache.server.home}-dc2/server/conf/infinispan-xsite-2.xml" 
+
+                                            <move file="${cache.server.home}-dc2/server/conf/infinispan-xsite-2.xml"
                                                   tofile="${cache.server.home}-dc2/server/conf/infinispan-xsite.xml" />
                                             <delete file="${cache.server.home}-dc1/server/conf/infinispan-xsite-1.xml"/>
                                         </target>
@@ -1410,15 +1410,15 @@
                                             <copy todir="${cache.server.home}-dc2">
                                                 <fileset dir="${cache.server.home}-dc1"/>
                                             </copy>
-                                            
+
                                             <chmod dir="${cache.server.home}-dc1/bin" perm="ugo+rx" includes="**/*.sh"/>
                                             <chmod dir="${cache.server.home}-dc2/bin" perm="ugo+rx" includes="**/*.sh"/>
-                                            
-                                            <move file="${cache.server.home}-dc1/server/conf/infinispan-xsite-1.xml" 
+
+                                            <move file="${cache.server.home}-dc1/server/conf/infinispan-xsite-1.xml"
                                                   tofile="${cache.server.home}-dc1/server/conf/infinispan-xsite.xml" />
                                             <delete file="${cache.server.home}-dc1/server/conf/infinispan-xsite-2.xml"/>
-                                            
-                                            <move file="${cache.server.home}-dc2/server/conf/infinispan-xsite-2.xml" 
+
+                                            <move file="${cache.server.home}-dc2/server/conf/infinispan-xsite-2.xml"
                                                   tofile="${cache.server.home}-dc2/server/conf/infinispan-xsite.xml" />
                                             <delete file="${cache.server.home}-dc1/server/conf/infinispan-xsite-1.xml"/>
                                         </target>
@@ -2430,14 +2430,14 @@
                 <tomcat.javax.net.ssl.properties>-Djavax.net.ssl.trustStore=${app.server.home}/lib/keycloak.truststore -Djavax.net.ssl.trustStorePassword=secret</tomcat.javax.net.ssl.properties>
             </properties>
         </profile>
-        
+
         <profile>
             <id>cache-auth</id>
             <properties>
                 <cache.server.auth>true</cache.server.auth>
             </properties>
         </profile>
-        
+
     </profiles>
 
 </project>

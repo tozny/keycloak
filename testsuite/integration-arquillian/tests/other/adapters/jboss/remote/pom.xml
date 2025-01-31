@@ -24,13 +24,13 @@
     <parent>
         <groupId>org.keycloak.testsuite</groupId>
         <artifactId>integration-arquillian-tests-adapters-jboss</artifactId>
-        <version>19.0.2</version>
+        <version>20.0.0</version>
     </parent>
 
     <artifactId>integration-arquillian-tests-adapters-remote</artifactId>
 
     <name>Adapter Tests - JBoss - Remote</name>
-    
+
     <properties>
         <app.server>remote</app.server>
         <app.server.type>remote</app.server.type>
@@ -39,16 +39,16 @@
         <common.resources>${basedir}/../../../../../servers/auth-server/jboss/common</common.resources>
         <exclude.htmlunit>**/performance/htmlunit/**/*Test.java</exclude.htmlunit>
         <exclude.httpclient>**/performance/httpclient/**/*Test.java</exclude.httpclient>
-        
+
         <logging.loginlogout>INFO</logging.loginlogout>
     </properties>
-    
+
     <dependencies>
-        <dependency> 
+        <dependency>
             <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId> 
-            <version>2.4</version> 
-        </dependency> 
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
@@ -60,7 +60,7 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
-    
+
     <build>
         <plugins>
             <plugin>
@@ -76,7 +76,7 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.keycloak.testsuite</groupId>
-                                    <artifactId>keycloak-test-app-profile-jee</artifactId>        
+                                    <artifactId>keycloak-test-app-profile-jee</artifactId>
                                     <version>${project.version}</version>
                                     <type>war</type>
                                 </artifactItem>
@@ -84,9 +84,9 @@
                             <outputDirectory>${examples.home}</outputDirectory>
                             <overWriteIfNewer>true</overWriteIfNewer>
                         </configuration>
-                    </execution>                            
+                    </execution>
                 </executions>
-            </plugin>            
+            </plugin>
             <plugin>
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <executions>
@@ -99,12 +99,12 @@
                                 <requireActiveProfile>
                                     <profiles>auth-server-remote</profiles>
                                     <!--
-                                        NOTE: Running adapter test against remote app-server 
+                                        NOTE: Running adapter test against remote app-server
                                         also requires remote mode for the auth-server.
-                                        
-                                        There are problems when `wildfly-arquillian-container-remote` is on classpath 
+
+                                        There are problems when `wildfly-arquillian-container-remote` is on classpath
                                         together with `wildfly-arquillian-container-managed`.
-                                    --> 
+                                    -->
                                 </requireActiveProfile>
                             </rules>
                         </configuration>
@@ -125,7 +125,7 @@
             </plugin>
         </plugins>
     </build>
-    
+
     <profiles>
         <profile>
             <id>auth-server-remote</id>
@@ -218,5 +218,5 @@
             </build>
         </profile>
     </profiles>
-    
+
 </project>
