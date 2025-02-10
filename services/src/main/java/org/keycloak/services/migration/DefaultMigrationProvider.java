@@ -17,6 +17,7 @@
 
 package org.keycloak.services.migration;
 
+import org.jboss.logging.Logger;
 import org.keycloak.migration.MigrationProvider;
 import org.keycloak.models.ClaimMask;
 import org.keycloak.models.ClientScopeModel;
@@ -27,6 +28,7 @@ import org.keycloak.protocol.LoginProtocol;
 import org.keycloak.protocol.LoginProtocolFactory;
 import org.keycloak.protocol.oidc.OIDCLoginProtocol;
 import org.keycloak.protocol.oidc.OIDCLoginProtocolFactory;
+import org.keycloak.provider.ProviderManager;
 import org.keycloak.representations.idm.ProtocolMapperRepresentation;
 import org.keycloak.services.managers.RealmManager;
 
@@ -42,6 +44,7 @@ import java.util.Map;
  */
 public class DefaultMigrationProvider implements MigrationProvider {
 
+    private static final Logger logger = Logger.getLogger(DefaultMigrationProvider.class);
     private final KeycloakSession session;
 
     public DefaultMigrationProvider(KeycloakSession session) {
@@ -74,6 +77,7 @@ public class DefaultMigrationProvider implements MigrationProvider {
     @Override
     public Map<String, ProtocolMapperModel> getBuiltinMappers(String protocol) {
         LoginProtocolFactory providerFactory = (LoginProtocolFactory) session.getKeycloakSessionFactory().getProviderFactory(LoginProtocol.class, protocol);
+        logger.infof("ORIGINAL CLASS: %s", providerFactory.getClass().getName());
         return providerFactory.getBuiltinMappers();
     }
 

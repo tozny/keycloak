@@ -17,6 +17,7 @@
 
 package org.keycloak.protocol.saml;
 
+import org.jboss.logging.Logger;
 import org.keycloak.Config;
 import org.keycloak.events.EventBuilder;
 import org.keycloak.models.ClientModel;
@@ -27,6 +28,7 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.utils.KeycloakModelUtils;
 import org.keycloak.protocol.AbstractLoginProtocolFactory;
 import org.keycloak.protocol.LoginProtocol;
+import org.keycloak.protocol.oidc.OIDCLoginProtocolFactory;
 import org.keycloak.protocol.saml.mappers.AttributeStatementHelper;
 import org.keycloak.protocol.saml.mappers.RoleListMapper;
 import org.keycloak.protocol.saml.mappers.UserPropertyAttributeStatementMapper;
@@ -49,6 +51,7 @@ import java.util.Map;
  */
 public class SamlProtocolFactory extends AbstractLoginProtocolFactory {
 
+    private static final Logger logger = Logger.getLogger(SamlProtocolFactory.class);
     public static final String SCOPE_ROLE_LIST = "role_list";
     private static final String ROLE_LIST_CONSENT_TEXT = "${samlRoleListScopeConsentText}";
 
@@ -103,6 +106,7 @@ public class SamlProtocolFactory extends AbstractLoginProtocolFactory {
 
     @Override
     public Map<String, ProtocolMapperModel> getBuiltinMappers() {
+        logger.info("IN SAML LOGIN");
         return builtins;
     }
 

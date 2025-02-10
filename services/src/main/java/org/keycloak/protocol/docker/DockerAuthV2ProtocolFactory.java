@@ -1,5 +1,6 @@
 package org.keycloak.protocol.docker;
 
+import org.jboss.logging.Logger;
 import org.keycloak.common.Profile;
 import org.keycloak.events.EventBuilder;
 import org.keycloak.models.ClientModel;
@@ -9,6 +10,7 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.protocol.AbstractLoginProtocolFactory;
 import org.keycloak.protocol.LoginProtocol;
 import org.keycloak.protocol.docker.mapper.AllowAllDockerProtocolMapper;
+import org.keycloak.protocol.oidc.OIDCLoginProtocolFactory;
 import org.keycloak.provider.EnvironmentDependentProviderFactory;
 import org.keycloak.representations.idm.ClientRepresentation;
 
@@ -20,6 +22,7 @@ import java.util.Map;
 
 public class DockerAuthV2ProtocolFactory extends AbstractLoginProtocolFactory implements EnvironmentDependentProviderFactory {
 
+    private static final Logger logger = Logger.getLogger(DockerAuthV2ProtocolFactory.class);
     static Map<String, ProtocolMapperModel> builtins = new HashMap<>();
     static List<ProtocolMapperModel> defaultBuiltins = new ArrayList<>();
 
@@ -40,11 +43,13 @@ public class DockerAuthV2ProtocolFactory extends AbstractLoginProtocolFactory im
 
     @Override
     protected void addDefaults(final ClientModel client) {
+
         defaultBuiltins.forEach(builtinMapper -> client.addProtocolMapper(builtinMapper));
     }
 
     @Override
     public Map<String, ProtocolMapperModel> getBuiltinMappers() {
+        logger.info("IN DOCKERAUTHV2 LOGIN");
         return builtins;
     }
 

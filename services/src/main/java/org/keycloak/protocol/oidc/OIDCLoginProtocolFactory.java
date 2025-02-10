@@ -127,6 +127,7 @@ public class OIDCLoginProtocolFactory extends AbstractLoginProtocolFactory {
 
     @Override
     public Map<String, ProtocolMapperModel> getBuiltinMappers() {
+        logger.info("IN OIDC LOGIN");
         return builtins;
     }
 
