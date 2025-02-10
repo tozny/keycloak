@@ -16,6 +16,7 @@
  */
 package org.keycloak.migration.migrators;
 
+import org.jboss.logging.Logger;
 import org.keycloak.Config;
 import org.keycloak.migration.MigrationProvider;
 import org.keycloak.migration.ModelVersion;
@@ -34,6 +35,7 @@ import org.keycloak.representations.idm.RealmRepresentation;
  */
 public class MigrateTo1_6_0 implements Migration {
 
+    private static final Logger logger = Logger.getLogger(MigrateTo1_6_0.class);
     public static final ModelVersion VERSION = new ModelVersion("1.6.0");
 
     public ModelVersion getVersion() {
@@ -41,8 +43,9 @@ public class MigrateTo1_6_0 implements Migration {
     }
 
     public void migrate(KeycloakSession session) {
+        logger.info("IN THE PROBLEM CHILD");
         MigrationProvider provider = session.getProvider(MigrationProvider.class);
-
+        logger.infof("MIGRATIONPROVIDER CLASS: %s", provider.getClass().getName());
         ProtocolMapperModel localeMapper = provider.getBuiltinMappers("openid-connect").get("locale");
 
         if (localeMapper == null) {
