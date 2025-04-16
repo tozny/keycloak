@@ -1017,7 +1017,7 @@ public class AuthenticationManager {
         uriBuilder.queryParam(Constants.CLIENT_DATA, AuthenticationProcessor.getClientData(session, authSession));
 
         if (uriInfo.getQueryParameters().containsKey(LoginActionsService.AUTH_SESSION_ID)) {
-            uriBuilder.queryParam(LoginActionsService.AUTH_SESSION_ID, authSession.getParentSession().getId());
+            uriBuilder.queryParam(LoginActionsService.AUTH_SESSION_ID, authSession.getAuthNote("ENCODED_AUTH_SESSION_ID"));
 
         }
 
