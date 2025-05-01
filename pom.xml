@@ -1056,6 +1056,7 @@
                 <groupId>org.keycloak</groupId>
                 <artifactId>keycloak-core</artifactId>
                 <version>${project.version}</version>
+                <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.keycloak</groupId>
@@ -1603,6 +1604,7 @@
                 <groupId>org.keycloak</groupId>
                 <artifactId>keycloak-client-registration-cli</artifactId>
                 <version>${project.version}</version>
+                <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.keycloak</groupId>
@@ -1618,6 +1620,7 @@
                 <groupId>org.keycloak</groupId>
                 <artifactId>keycloak-admin-cli</artifactId>
                 <version>${project.version}</version>
+                <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.keycloak</groupId>
