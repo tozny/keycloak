@@ -10,7 +10,7 @@
         <version>19.0.2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    
+
     <name>Keycloak Operator</name>
     <artifactId>keycloak-operator</artifactId>
 
@@ -23,8 +23,8 @@
         -->
         <resteasy.version>4.7.5.Final</resteasy.version>
         <wildfly.common.version>1.5.4.Final-format-001</wildfly.common.version>
-        <jackson.version>2.13.3</jackson.version>
-        <jackson.databind.version>2.13.3</jackson.databind.version>
+        <jackson.version>2.13.4</jackson.version>
+        <jackson.databind.version>2.13.4.2</jackson.databind.version>
         <kubernetes-client.version>5.12.2</kubernetes-client.version>
 
         <compiler-plugin.version>3.8.1</compiler-plugin.version>
@@ -39,7 +39,7 @@
         <quarkus.container-image.group>keycloak</quarkus.container-image.group>
         <quarkus.jib.base-jvm-image>registry.access.redhat.com/ubi8/openjdk-11-runtime</quarkus.jib.base-jvm-image>
     </properties>
-    
+
     <dependencyManagement>
         <dependencies>
         <dependency>
@@ -274,8 +274,8 @@
             </plugin>
         </plugins>
     </build>
-    
-    
+
+
     <profiles>
         <profile>
             <id>native</id>
