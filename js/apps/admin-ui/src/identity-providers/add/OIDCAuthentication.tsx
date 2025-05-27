@@ -6,6 +6,7 @@ import { sortProviders } from "../../util";
 import { ClientIdSecret } from "../component/ClientIdSecret";
 import { SwitchField } from "../component/SwitchField";
 import { TextField } from "../component/TextField";
+import {TestOIDCConnection} from "../component/TestOIDCConnection"
 
 const clientAuthentications = [
   "client_secret_post",
@@ -68,6 +69,7 @@ export const OIDCAuthentication = ({ create = true }: { create?: boolean }) => {
           label="jwtX509HeadersEnabled"
         />
       )}
+      <TestOIDCConnection/>
     </>
   );
 };
