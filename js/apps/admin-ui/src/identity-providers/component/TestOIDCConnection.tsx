@@ -14,7 +14,7 @@ type IdentityProviderConfig = {
 export const TestOIDCConnection  = () => {
 
   const { getValues } = useFormContext<{ config: IdentityProviderConfig }>();
-  const { addAlert, addError } = useAlerts();
+  const { addError } = useAlerts();
   const { realm } = useRealm();
   const { environment } = useEnvironment();
   const { t } = useTranslation();
@@ -28,12 +28,12 @@ export const TestOIDCConnection  = () => {
     let scope = config.defaultScope || "openid";
     //TODO: Update error message to use localization
     if (!config.authorizationUrl) {
-      addError("missingTestConnectionParameter", {message: "Please set the Authorization Url"});
+      addError("missingTestConnectionParameter", new Error("Please set the Authorization Url"));
       return;
     }
 
     if (!config.clientId) {
-      addError("missingTestConnectionParameter", {message: "Please set a Client ID"});
+      addError("missingTestConnectionParameter", new Error("Please set a Client ID"));
       return;
     }
 
@@ -48,7 +48,7 @@ export const TestOIDCConnection  = () => {
 
       window.open(url.toString(), "_blank");
     } catch (e) {
-      addError("invalidTestConnectionParameter", {message: "Invalid Authorization URL"});
+      addError("invalidTestConnectionParameter", new Error("Invalid Authorization URL"));
     }
   };
 
