@@ -171,6 +171,9 @@ importers:
       '@patternfly/react-table':
         specifier: ^5.4.13
         version: 5.4.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@toznysecure/sdk':
+        specifier: 1.5.16-alpha.18
+        version: 1.5.16-alpha.18
       '@uiw/react-textarea-code-editor':
         specifier: ^3.1.0
         version: 3.1.0(@babel/runtime@7.26.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1208,6 +1211,7 @@ packages:
   '@faker-js/faker@9.3.0':
     resolution: {integrity: sha512-r0tJ3ZOkMd9xsu3VRfqlFR6cz0V/jFYRswAIpC+m/DIfAUXq7g8N7wTAlhSANySXYGKzGryfDXwtwsY8TxEIDw==}
     engines: {node: '>=18.0.0', npm: '>=9.0.0'}
+    deprecated: Please update to a newer version
 
   '@fastify/busboy@2.1.1':
     resolution: {integrity: sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==}
@@ -1809,6 +1813,10 @@ packages:
         optional: true
       '@types/react-dom':
         optional: true
+
+  '@toznysecure/sdk@1.5.16-alpha.18':
+    resolution: {integrity: sha512-7/qa0ljT0xQPbzMDrYzszzP20QwkXAMmeuXdwSiEM6Ot0pMkKOjslFKQhW4OFnJVQVKDTWBQ/XCxcpCQBGvnog==}
+    engines: {node: '>= 10'}
 
   '@tsconfig/node10@1.0.11':
     resolution: {integrity: sha512-DcRjDCujK/kCk/cUe8Xz8ZSpm8mS3mNNpta+jGCA6USEDfktlNvm1+IuZ9eTcDbNk41BHwpHHeW+N1lKCz4zOw==}
@@ -2612,6 +2620,9 @@ packages:
 
   create-require@1.1.1:
     resolution: {integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==}
+
+  cross-fetch@3.2.0:
+    resolution: {integrity: sha512-Q+xVJLoGOeIMXZmbUK4HYk+69cQH6LudR0Vu/pRm2YlU/hDV9CiS0gKUMaWY5f2NeUH9C1nV3bsTlCo0FsTV1Q==}
 
   cross-fetch@4.0.0:
     resolution: {integrity: sha512-e4a5N8lVvuLgAWgnCrLr2PP0YyDOTHa9H/Rj54dirp61qXnNq46m82bRhNqIA5VccJtWBvPTFRV3TtvHUKPB1g==}
@@ -3781,6 +3792,7 @@ packages:
 
   jquery@3.4.1:
     resolution: {integrity: sha512-36+AdBzCL+y6qjw5Tx7HgzeGCzC81MDDgaUP8ld2zhx58HdqXGoBd+tHdrBMiyjGQs0Hxs/MLZTu/eHNJJuWPw==}
+    deprecated: This version is deprecated. Please upgrade to the latest version or find support at https://www.herodevs.com/support/jquery-nes.
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -3880,6 +3892,12 @@ packages:
   levn@0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
     engines: {node: '>= 0.8.0'}
+
+  libsodium-wrappers@0.7.15:
+    resolution: {integrity: sha512-E4anqJQwcfiC6+Yrl01C1m8p99wEhLmJSs0VQqST66SbQXXBoaJY0pF4BNjRYa/sOQAxx6lXAaAFIlx+15tXJQ==}
+
+  libsodium@0.7.15:
+    resolution: {integrity: sha512-sZwRknt/tUpE2AwzHq3jEyUU5uvIZHtSssktXq7owd++3CSgn8RGrv6UZJJBpP7+iBghBqe7Z06/2M31rI2NKw==}
 
   lie@3.3.0:
     resolution: {integrity: sha512-UaiMJzeWRlEujzAuw5LokY1L5ecNQYZKfmyZ9L7wDHb/p5etKaxXhohBcrw0EYby+G/NA52vRSN4N39dxHAIwQ==}
@@ -4794,6 +4812,9 @@ packages:
 
   space-separated-tokens@2.0.2:
     resolution: {integrity: sha512-PEGlAwrG8yXGXRjW32fGbg66JAlOAwbObuqVoJpv/mRgoWDQfgH1wDPvtzWyUSNAXBGSk8h755YDbbcEy3SH2Q==}
+
+  spark-md5@3.0.2:
+    resolution: {integrity: sha512-wcFzz9cDfbuqe0FZzfi2or1sgyIrsDwmPwfZC4hiNidPdPINjeUwNfv5kldczoEAcjl9Y1L3SM7Uz2PUEQzxQw==}
 
   spec-change@1.11.11:
     resolution: {integrity: sha512-wSxi1XKeNr8JxBlYj13Lw8TTMpojYU2zRlkmyXl0kHp+xGkwYUpXaVXcofiEmEqrq1HoGg7pwKEzvMjYcQubtw==}
@@ -6780,6 +6801,16 @@ snapshots:
       '@types/react': 18.3.13
       '@types/react-dom': 18.3.1
 
+  '@toznysecure/sdk@1.5.16-alpha.18':
+    dependencies:
+      cross-fetch: 3.2.0
+      libsodium-wrappers: 0.7.15
+      rfc4648: 1.5.4
+      spark-md5: 3.0.2
+      uuid: 8.3.2
+    transitivePeerDependencies:
+      - encoding
+
   '@tsconfig/node10@1.0.11': {}
 
   '@tsconfig/node12@1.0.11': {}
@@ -7645,6 +7676,12 @@ snapshots:
   core-util-is@1.0.3: {}
 
   create-require@1.1.1: {}
+
+  cross-fetch@3.2.0:
+    dependencies:
+      node-fetch: 2.7.0
+    transitivePeerDependencies:
+      - encoding
 
   cross-fetch@4.0.0:
     dependencies:
@@ -9225,6 +9262,12 @@ snapshots:
       prelude-ls: 1.2.1
       type-check: 0.4.0
 
+  libsodium-wrappers@0.7.15:
+    dependencies:
+      libsodium: 0.7.15
+
+  libsodium@0.7.15: {}
+
   lie@3.3.0:
     dependencies:
       immediate: 3.0.6
@@ -10232,6 +10275,8 @@ snapshots:
   source-map@0.6.1: {}
 
   space-separated-tokens@2.0.2: {}
+
+  spark-md5@3.0.2: {}
 
   spec-change@1.11.11:
     dependencies:

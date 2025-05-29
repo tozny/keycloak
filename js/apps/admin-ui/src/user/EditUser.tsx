@@ -80,6 +80,12 @@ export default function EditUser() {
   const form = useForm<UserFormFields>({
     mode: "onChange",
     resolver: clearAllErrorsBeforeSubmit,
+    defaultValues: {
+      authentication: {
+        emailRecoveryExpirationMinutes: 15,
+        adminRecoveryExpirationMinutes: 60,
+      },
+    },
   });
   const [user, setUser] = useState<UIUserRepresentation>();
   const [bruteForced, setBruteForced] = useState<BruteForced>();

@@ -12,6 +12,10 @@ export type UserFormFields = Omit<
 > & {
   attributes?: KeyValueType[] | Record<string, string | string[]>;
   unmanagedAttributes?: KeyValueType[] | Record<string, string | string[]>;
+  authentication?: {
+    emailRecoveryExpirationMinutes?: number;
+    adminRecoveryExpirationMinutes?: number;
+  };
 };
 
 export interface UIUserRepresentation extends UserRepresentation {
