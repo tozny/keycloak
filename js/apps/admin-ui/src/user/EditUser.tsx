@@ -81,6 +81,7 @@ export default function EditUser() {
     mode: "onChange",
     resolver: clearAllErrorsBeforeSubmit,
     defaultValues: {
+      brokerUrl: realm?.attributes?.["recoverUri"],
       authentication: {
         emailRecoveryExpirationMinutes: 15,
         adminRecoveryExpirationMinutes: 60,

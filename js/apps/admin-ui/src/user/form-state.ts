@@ -12,6 +12,7 @@ export type UserFormFields = Omit<
 > & {
   attributes?: KeyValueType[] | Record<string, string | string[]>;
   unmanagedAttributes?: KeyValueType[] | Record<string, string | string[]>;
+  brokerUrl?: string
   authentication?: {
     emailRecoveryExpirationMinutes?: number;
     adminRecoveryExpirationMinutes?: number;

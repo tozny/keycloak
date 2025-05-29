@@ -40,6 +40,7 @@ import { FixedButtonsGroup } from "../components/form/FixedButtonGroup";
 import { RequiredActionMultiSelect } from "./user-credentials/RequiredActionMultiSelect";
 import { useNavigate } from "react-router-dom";
 import { CopyToClipboardButton } from "../components/copy-to-clipboard-button/CopyToClipboardButton";
+import { ToznyUserFields } from "./ToznyUserFields";
 
 export type BruteForced = {
   isBruteForceProtected?: boolean;
@@ -252,22 +253,7 @@ export const UserForm = ({
                   t(key as string, params as any)) as TFunction
               }
             />
-            <TextControl
-                name="authentication.emailRecoveryExpirationMinutes"
-                label={t("emailRecoveryExpirationMinutes")}
-                type="number"
-                rules={{
-                  min: { value: 0, message: t("mustBePositive") },
-                }}
-            />
-            <TextControl
-              name="authentication.adminRecoveryExpirationMinutes"
-              label={t("adminRecoveryExpirationMinutes")}
-              type="number"
-              rules={{
-                min: { value: 0, message: t("mustBePositive") },
-              }}
-            />
+            <ToznyUserFields/>
           </>
         ) : (
           <>
@@ -304,25 +290,9 @@ export const UserForm = ({
               labelOff={t("no")}
             />
 
-            <TextControl
-                name="authentication.emailRecoveryExpirationMinutes"
-                label={t("emailRecoveryExpirationMinutes")}
-                type="number"
-                rules={{
-                  min: { value: 0, message: t("mustBePositive") },
-                }}
-            />
-            <TextControl
-              name="authentication.adminRecoveryExpirationMinutes"
-              label={t("adminRecoveryExpirationMinutes")}
-              type="number"
-              rules={{
-                min: { value: 0, message: t("mustBePositive") },
-              }}
-            />
+            <ToznyUserFields/>
             <TextControl name="firstName" label={t("firstName")} />
             <TextControl name="lastName" label={t("lastName")} />
-            <TextControl name="firstName" label="TEST" />
           </>
         )}
         {isBruteForceProtected && (
