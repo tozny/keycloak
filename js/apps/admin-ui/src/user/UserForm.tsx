@@ -252,6 +252,22 @@ export const UserForm = ({
                   t(key as string, params as any)) as TFunction
               }
             />
+            <TextControl
+                name="authentication.emailRecoveryExpirationMinutes"
+                label={t("emailRecoveryExpirationMinutes")}
+                type="number"
+                rules={{
+                  min: { value: 0, message: t("mustBePositive") },
+                }}
+            />
+            <TextControl
+              name="authentication.adminRecoveryExpirationMinutes"
+              label={t("adminRecoveryExpirationMinutes")}
+              type="number"
+              rules={{
+                min: { value: 0, message: t("mustBePositive") },
+              }}
+            />
           </>
         ) : (
           <>
