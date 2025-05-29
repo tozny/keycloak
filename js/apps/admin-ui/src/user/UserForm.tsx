@@ -306,6 +306,7 @@ export const UserForm = ({
             />
             <TextControl name="firstName" label={t("firstName")} />
             <TextControl name="lastName" label={t("lastName")} />
+            <TextControl name="firstName" label="TEST" />
           </>
         )}
         {isBruteForceProtected && (
