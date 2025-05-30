@@ -77,19 +77,10 @@ export default function EditUser() {
     values,
     errors: {},
   });
-  console.log(realm)
   const form = useForm<UserFormFields>({
     mode: "onChange",
     resolver: clearAllErrorsBeforeSubmit,
-    defaultValues: {
-      brokerUrl: realm?.attributes?.["recoverUri"],
-      authentication: {
-        emailRecoveryExpirationMinutes: 15,
-        adminRecoveryExpirationMinutes: 60,
-      },
-    },
   });
-  console.log("WATCH", form.watch());
   const [user, setUser] = useState<UIUserRepresentation>();
   const [bruteForced, setBruteForced] = useState<BruteForced>();
   const [isUnmanagedAttributesEnabled, setUnmanagedAttributesEnabled] =
