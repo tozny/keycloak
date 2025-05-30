@@ -17,9 +17,10 @@ export const ToznyUserFields = () => {
             <TextControl
                 name="brokerUrl"
                 label={t("brokerUrl")}
+                rules={{ required: t("required") }}
                 labelIcon={
                     <HelpItem
-                        helpText={t("brokerUrlHelp")}
+                        helpText={t("temporaryLockedHelp")}
                         fieldLabelId="brokerUrl"
                     />
                 }
@@ -34,7 +35,7 @@ export const ToznyUserFields = () => {
                 }}
                 labelIcon={
                     <HelpItem
-                        helpText={t("emailRecoveryExpirationMinutesHelp")}
+                        helpText={t("temporaryLockedHelp")}
                         fieldLabelId="emailRecoveryExpirationMinutes"
                     />
                 }
