@@ -1,4 +1,4 @@
-import { HelpItem, TextControl } from "@keycloak/keycloak-ui-shared";
+import { HelpItem, NumberControl, TextControl } from "@keycloak/keycloak-ui-shared";
 import { useTranslation } from "react-i18next";
 import { FormGroup } from "@patternfly/react-core";
 
@@ -26,34 +26,17 @@ export const ToznyUserFields = () => {
                 }
             />
 
-            <TextControl
+            <NumberControl
                 name="authentication.emailRecoveryExpirationMinutes"
                 label={t("emailRecoveryExpirationMinutes")}
-                type="number"
-                rules={{
-                    min: { value: 0, message: t("mustBePositive") },
-                }}
-                labelIcon={
-                    <HelpItem
-                        helpText={t("temporaryLockedHelp")}
-                        fieldLabelId="emailRecoveryExpirationMinutes"
-                    />
-                }
+                controller={{ defaultValue: 15, rules: { min: 0 } }}
             />
 
-            <TextControl
+            <NumberControl
                 name="authentication.adminRecoveryExpirationMinutes"
                 label={t("adminRecoveryExpirationMinutes")}
                 type="number"
-                rules={{
-                    min: { value: 0, message: t("mustBePositive") },
-                }}
-                labelIcon={
-                    <HelpItem
-                        helpText={t("adminRecoveryExpirationMinutesHelp")}
-                        fieldLabelId="adminRecoveryExpirationMinutes"
-                    />
-                }
+                controller={{ defaultValue: 60, rules: { min: 0 } }}
             />
         </>
     );

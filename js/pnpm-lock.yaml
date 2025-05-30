@@ -6232,6 +6232,7 @@ snapshots:
       '@patternfly/react-icons': 5.4.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@patternfly/react-styles': 5.4.1
       '@patternfly/react-table': 5.4.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@toznysecure/sdk': 1.5.16-alpha.18
       '@uiw/react-textarea-code-editor': 3.1.0(@babel/runtime@7.26.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       dagre: 0.8.5
       file-saver: 2.0.5
