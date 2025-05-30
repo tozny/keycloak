@@ -253,7 +253,7 @@ export const UserForm = ({
                   t(key as string, params as any)) as TFunction
               }
             />
-            <ToznyUserFields/>
+            <ToznyUserFields realm={realm}/>
           </>
         ) : (
           <>
@@ -290,7 +290,7 @@ export const UserForm = ({
               labelOff={t("no")}
             />
 
-            <ToznyUserFields/>
+            <ToznyUserFields realm={realm}/>
             <TextControl name="firstName" label={t("firstName")} />
             <TextControl name="lastName" label={t("lastName")} />
           </>

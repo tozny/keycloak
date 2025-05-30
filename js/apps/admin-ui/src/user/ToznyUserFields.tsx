@@ -1,6 +1,7 @@
 import { HelpItem, NumberControl, TextControl } from "@keycloak/keycloak-ui-shared";
 import { useTranslation } from "react-i18next";
 import { FormGroup } from "@patternfly/react-core";
+import RealmRepresentation from "libs/keycloak-admin-client/lib/defs/realmRepresentation";
 
 /**
  * Broker and email form fields for TozID user.
@@ -8,7 +9,12 @@ import { FormGroup } from "@patternfly/react-core";
  * - authentication.emailRecoveryExpirationMinutes
  * - authentication.adminRecoveryExpirationMinutes
  */
-export const ToznyUserFields = () => {
+
+type ToznyUserFieldsProps = {
+    realm: RealmRepresentation;
+  };
+
+export const ToznyUserFields = ({ realm }: ToznyUserFieldsProps) => {
     const { t } = useTranslation();
 
 
@@ -18,24 +24,21 @@ export const ToznyUserFields = () => {
                 name="brokerUrl"
                 label={t("brokerUrl")}
                 rules={{ required: t("required") }}
-                labelIcon={
-                    <HelpItem
-                        helpText={t("temporaryLockedHelp")}
-                        fieldLabelId="brokerUrl"
-                    />
-                }
+                labelIcon={t("brokerUrlHelp")}
+                defaultValue={realm.attributes?.["recoverUri"]}
             />
 
             <NumberControl
                 name="authentication.emailRecoveryExpirationMinutes"
                 label={t("emailRecoveryExpirationMinutes")}
+                labelIcon={t("emailRecoveryExpirationMinutesHelp")}
                 controller={{ defaultValue: 15, rules: { min: 0 } }}
             />
 
             <NumberControl
                 name="authentication.adminRecoveryExpirationMinutes"
                 label={t("adminRecoveryExpirationMinutes")}
-                type="number"
+                labelIcon={t("adminRecoveryExpirationMinutesHelp")}
                 controller={{ defaultValue: 60, rules: { min: 0 } }}
             />
         </>
