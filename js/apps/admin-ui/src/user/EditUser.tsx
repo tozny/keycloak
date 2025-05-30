@@ -77,6 +77,7 @@ export default function EditUser() {
     values,
     errors: {},
   });
+  console.log(realm)
   const form = useForm<UserFormFields>({
     mode: "onChange",
     resolver: clearAllErrorsBeforeSubmit,
@@ -88,6 +89,7 @@ export default function EditUser() {
       },
     },
   });
+  console.log("WATCH", form.watch());
   const [user, setUser] = useState<UIUserRepresentation>();
   const [bruteForced, setBruteForced] = useState<BruteForced>();
   const [isUnmanagedAttributesEnabled, setUnmanagedAttributesEnabled] =
