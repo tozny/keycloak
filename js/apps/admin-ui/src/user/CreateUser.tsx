@@ -24,7 +24,7 @@ import { environment } from "../environment";
 
 
 import "./user-section.css";
-import { fetchWithError } from "libs/keycloak-admin-client/lib";
+import { fetchWithError } from "@keycloak/keycloak-admin-client";
 
 export default function CreateUser() {
   const { adminClient } = useAdminClient();
