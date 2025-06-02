@@ -98,6 +98,7 @@ export default function CreateUser() {
         .then(data => {
           //TODO: NEED TO SET THIS TO SEOMTHING IN THE FRONT END
             const resetLink = `${realm?.attributes?.["recoverUri"]}?note_id=${data.note_id}&tozny_otp=${data.otp.password}`;
+            console.log("RESET LINK: %s", resetLink)
             return "Admin recovery link generated successfully."
         })
         .catch((err) => {
