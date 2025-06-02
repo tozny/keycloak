@@ -175,7 +175,6 @@ export default function CreateUser() {
   //End Custom TozID Functions
   const save = async (data: UserFormFields) => {
     //Custom TozID Code
-    //Custom TozID
     const regToken = realm?.attributes?.["registrationToken"]
     const username = data.username!.toLowerCase().trim();
     const email = data.email
@@ -209,31 +208,27 @@ export default function CreateUser() {
       // }
 
     });
-    // const createdUser = await adminClient.users.create({
-    //   ...toUserRepresentation(data),
-    //   groups: addedGroups.map((group) => group.path!),
-    //   enabled: true,
-    // });
+    //End Custom TozID Code
 
-    try {
-      const createdUser = await adminClient.users.create({
-        ...toUserRepresentation(data),
-        groups: addedGroups.map((group) => group.path!),
-        enabled: true,
-      });
+    // try {
+    //   const createdUser = await adminClient.users.create({
+    //     ...toUserRepresentation(data),
+    //     groups: addedGroups.map((group) => group.path!),
+    //     enabled: true,
+    //   });
 
-      addAlert(t("userCreated"), AlertVariant.success);
-      navigate(
-        toUser({ id: createdUser.id, realm: realmName, tab: "settings" }),
-      );
-    } catch (error) {
-      if (isUserProfileError(error)) {
-        setUserProfileServerError(error, form.setError, ((key, param) =>
-          t(key as string, param as any)) as TFunction);
-      } else {
-        addError("userCreateError", error);
-      }
-    }
+    //   addAlert(t("userCreated"), AlertVariant.success);
+    //   navigate(
+    //     toUser({ id: createdUser.id, realm: realmName, tab: "settings" }),
+    //   );
+    // } catch (error) {
+    //   if (isUserProfileError(error)) {
+    //     setUserProfileServerError(error, form.setError, ((key, param) =>
+    //       t(key as string, param as any)) as TFunction);
+    //   } else {
+    //     addError("userCreateError", error);
+    //   }
+    // }
   };
 
   if (!realm || !userProfileMetadata) {
