@@ -19,6 +19,11 @@ export type Environment = BaseEnvironment & {
   masterRealm: string;
   /** The version hash of the auth server. */
   resourceVersion: string;
+
+  //TozID Custom Code
+  authUrl: string;
+  authServerUrl: string;
+
 };
 
 export const environment = getInjectedEnvironment<Environment>();
