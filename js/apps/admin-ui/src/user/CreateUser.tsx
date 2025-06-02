@@ -19,7 +19,6 @@ import { useRealm } from "../context/realm-context/RealmContext";
 import { UserForm } from "./UserForm";
 import { UserFormFields, toUserRepresentation } from "./form-state";
 import { toUser } from "./routes/User";
-import { Tozny } from '@toznysecure/sdk'
 import { environment } from "../environment";
 
 

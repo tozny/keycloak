@@ -1,1 +1,9 @@
-declare module '@toznysecure/sdk';
+declare global {
+    interface Window {
+      Tozny: any;
+    }
+
+    var Tozny: any;
+  }
+
+  export {};
