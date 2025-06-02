@@ -46,6 +46,9 @@ export default defineConfig(({ mode }) => {
       },
     },
     plugins,
+    optimizeDeps: {
+      include: ["@toznysecure/sdk"],
+    },
     test: {
       watch: false,
       environment: "jsdom",
