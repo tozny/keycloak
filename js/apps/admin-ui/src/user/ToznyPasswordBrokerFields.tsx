@@ -10,11 +10,19 @@ import RealmRepresentation from "libs/keycloak-admin-client/lib/defs/realmRepres
  * - authentication.adminRecoveryExpirationMinutes
  */
 
-type ToznyUserFieldsProps = {
+type ToznyPassowrdBrokerFieldsProps = {
     realm: RealmRepresentation;
-  };
+};
 
-export const ToznyUserFields = ({ realm }: ToznyUserFieldsProps) => {
+export type ToznyPasswordBrokerFieldsForm = {
+    brokerUrl?: string
+    authentication?: {
+        emailRecoveryExpirationMinutes?: number;
+        adminRecoveryExpirationMinutes?: number;
+    };
+};
+
+export const ToznyUserFields = ({ realm }: ToznyPassowrdBrokerFieldsProps) => {
     const { t } = useTranslation();
 
 

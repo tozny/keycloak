@@ -40,7 +40,7 @@ import { FixedButtonsGroup } from "../components/form/FixedButtonGroup";
 import { RequiredActionMultiSelect } from "./user-credentials/RequiredActionMultiSelect";
 import { useNavigate } from "react-router-dom";
 import { CopyToClipboardButton } from "../components/copy-to-clipboard-button/CopyToClipboardButton";
-import { ToznyUserFields } from "./ToznyUserFields";
+import { ToznyUserFields } from "./ToznyPasswordBrokerFields";
 
 export type BruteForced = {
   isBruteForceProtected?: boolean;
