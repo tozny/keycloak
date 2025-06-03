@@ -35,6 +35,7 @@ export default function CreateUser() {
   const [addedGroups, setAddedGroups] = useState<GroupRepresentation[]>([]);
   const [userProfileMetadata, setUserProfileMetadata] =
     useState<UserProfileMetadata>();
+  const [resetLink, setResetLink] = useState("");
   const tozUser = new TozUser(realm!)
 
   useFetch(
@@ -56,7 +57,7 @@ export default function CreateUser() {
     const username = data.username!.toLowerCase().trim();
 
     // instantiate tozID client
-    tozUser.CreateUser(username, data.email!, data.firstName!, data.lastName!, data.authentication?.emailRecoveryExpirationMinutes,data.authentication?.adminRecoveryExpirationMinutes)
+    tozUser.CreateUser(username, data.email!, data.firstName!, data.lastName!, data.authentication?.emailRecoveryExpirationMinutes,data.authentication?.adminRecoveryExpirationMinutes, setResetLink)
     .then(message => {
       addAlert(t("userCreated"), AlertVariant.success);
     })

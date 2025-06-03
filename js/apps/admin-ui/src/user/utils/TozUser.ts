@@ -28,7 +28,7 @@ export class TozUser {
   }
 
 
-  private async retrievePasswordLink(username: string, adminRecoveryExpirationMinutes: number | undefined, realm: RealmRepresentation | undefined) {
+  private async retrievePasswordLink(username: string, adminRecoveryExpirationMinutes: number | undefined, realm: RealmRepresentation | undefined, setResetLink: (resetLink: string) => void) {
     // if realm name is empty, do not perform this action
     if (!adminRecoveryExpirationMinutes || !realm?.realm) {
         return;
@@ -49,6 +49,7 @@ export class TozUser {
         .then(data => {
           //TODO: NEED TO SET THIS TO SEOMTHING IN THE FRONT END
             const resetLink = `${realm?.attributes?.["recoverUri"]}?note_id=${data.note_id}&tozny_otp=${data.otp.password}`;
+            setResetLink(resetLink)
             console.log("RESET LINK: %s", resetLink)
             return "Admin recovery link generated successfully."
         })
@@ -87,13 +88,13 @@ export class TozUser {
         })
   }
 
-   private sendPasswordRecovery(username: string, action: string, template = "password_reset", emailRecoveryExpirationMinutes: number | undefined, adminRecoveryExpirationMinutes: number | undefined) {
+   private sendPasswordRecovery(username: string, action: string, template = "password_reset", emailRecoveryExpirationMinutes: number | undefined, adminRecoveryExpirationMinutes: number | undefined, setResetLink: (resetLink: string) => void) {
     return Promise.resolve()
       //.then(() => clearRecoveryScope())
       .then(() => this.recoveryActive(action, emailRecoveryExpirationMinutes, adminRecoveryExpirationMinutes))
       .then(() => {
         return Promise.all([
-          this.retrievePasswordLink(username, adminRecoveryExpirationMinutes, this.realm),
+          this.retrievePasswordLink(username, adminRecoveryExpirationMinutes, this.realm, setResetLink),
           this.sendResetEmail(username, template, emailRecoveryExpirationMinutes),
         ])
           .then(result => {
@@ -124,7 +125,7 @@ export class TozUser {
       })
   }
 
-  CreateUser(username: string, email: string, firstName: string, lastName: string, emailRecoveryExpirationMinutes: number | undefined, adminRecoveryExpirationMinutes: number | undefined){
+  CreateUser(username: string, email: string, firstName: string, lastName: string, emailRecoveryExpirationMinutes: number | undefined, adminRecoveryExpirationMinutes: number | undefined, setResetLink: (resetLink: string) => void){
     //Custom TozID Code
     const regToken = this.realm.attributes?.["registrationToken"]
     // instantiate tozID client
@@ -146,12 +147,12 @@ export class TozUser {
           throw error
         })
     })
-    .then(() => this.sendPasswordRecovery(username, "provisioning an identity", "claim_account", emailRecoveryExpirationMinutes, adminRecoveryExpirationMinutes))
+    .then(() => this.sendPasswordRecovery(username, "provisioning an identity", "claim_account", emailRecoveryExpirationMinutes, adminRecoveryExpirationMinutes, setResetLink))
   }
 
-  ResetPassword(username: string, emailRecoveryExpirationMinutes: number | undefined, adminRecoveryExpirationMinutes: number | undefined){
+  ResetPassword(username: string, emailRecoveryExpirationMinutes: number | undefined, adminRecoveryExpirationMinutes: number | undefined, setResetLink: (resetLink: string) => void){
 
-    this.sendPasswordRecovery(username, "resetting a password", "password_reset", emailRecoveryExpirationMinutes, adminRecoveryExpirationMinutes)
+    this.sendPasswordRecovery(username, "resetting a password", "password_reset", emailRecoveryExpirationMinutes, adminRecoveryExpirationMinutes, setResetLink)
         .then(message => {
             const successMessage = "Password reset complete for " + username + ": " + message;
             //Send Success
