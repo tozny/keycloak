@@ -22,7 +22,7 @@ export type ToznyPasswordBrokerFieldsForm = {
     };
 };
 
-export const ToznyUserFields = ({ realm }: ToznyPassowrdBrokerFieldsProps) => {
+export const ToznyPasswordBrokerFields = ({ realm }: ToznyPassowrdBrokerFieldsProps) => {
     const { t } = useTranslation();
 
 
