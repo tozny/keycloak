@@ -148,6 +148,7 @@ export class TozUser {
         })
     })
     .then((registerReturn) => {
+      console.log(registerReturn)
       setToznyUser(registerReturn)
       this.sendPasswordRecovery(username, "provisioning an identity", "claim_account", emailRecoveryExpirationMinutes, adminRecoveryExpirationMinutes, setResetLink)
     })
