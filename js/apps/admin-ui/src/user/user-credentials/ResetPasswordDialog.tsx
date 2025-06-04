@@ -84,7 +84,6 @@ export const ResetPasswordDialog = ({
     authentication
   }: ToznyPasswordBrokerFieldsForm) => {
     try {
-      console.log("HEREEE")
       tozUser.ResetPassword(user.username!, authentication?.emailRecoveryExpirationMinutes, authentication?.adminRecoveryExpirationMinutes, setResetLink)
       addAlert(
         isResetPassword
@@ -92,7 +91,7 @@ export const ResetPasswordDialog = ({
           : t("savePasswordSuccess"),
         AlertVariant.success,
       );
-      refresh();
+      //refresh();
     } catch (error) {
       addError(
         isResetPassword ? "resetPasswordError" : "savePasswordError",
