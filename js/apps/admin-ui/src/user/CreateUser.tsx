@@ -61,6 +61,7 @@ export default function CreateUser() {
     await tozUser.CreateUser(username, data.email!, data.firstName!, data.lastName!, data.authentication?.emailRecoveryExpirationMinutes,data.authentication?.adminRecoveryExpirationMinutes, setResetLink, setToznyUser)
     .then(message => {
       addAlert(t("userCreated"), AlertVariant.success);
+      console.log(toznyUser)
       navigate(
         toUser({ id: toznyUser.config.userId, realm: realmName, tab: "settings" }),
       );
