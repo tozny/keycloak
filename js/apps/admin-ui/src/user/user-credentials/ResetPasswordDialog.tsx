@@ -120,6 +120,7 @@ export const ResetPasswordDialog = ({
                 id="reset-submit"
                 data-testid="submit"
                 key="submit"
+                type="submit"
                 isDisabled={!isValid}
                 variant={ButtonVariant.primary}
               >
