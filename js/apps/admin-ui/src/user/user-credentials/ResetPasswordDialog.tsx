@@ -84,6 +84,7 @@ export const ResetPasswordDialog = ({
     authentication
   }: ToznyPasswordBrokerFieldsForm) => {
     try {
+      console.log("HEREEE")
       tozUser.ResetPassword(user.username!, authentication?.emailRecoveryExpirationMinutes, authentication?.adminRecoveryExpirationMinutes, setResetLink)
       addAlert(
         isResetPassword
@@ -104,54 +105,54 @@ export const ResetPasswordDialog = ({
 
   return (
     <>
-      <Modal
-        title={t("resetPasswordFor", { username: user.username })}
-        isOpen={confirm}
-        onClose={onClose}
-        variant={ModalVariant.small}
-        actions={[
-          <Button
-            id="modal-confirm"
-            data-testid="confirm"
-            key="confirm"
-            isDisabled={!isValid}
-            variant={ButtonVariant.primary}
-            onClick={() => {
-              form.handleSubmit((data) => {saveUserPassword(data)})
-            }}
-          >
-            {t("save")}
-          </Button>,
-          <Button
-            id="modal-cancel"
-            data-testid="cancel"
-            key="cancel"
-            variant={ButtonVariant.link}
-            onClick={() => {
-              if (onClose) onClose();
-              toggle();
-            }}
-          >
-            {t("cancel")}
-          </Button>
+      <FormProvider {...form}>
+        <Modal
+          title={t("resetPasswordFor", { username: user.username })}
+          isOpen={confirm}
+          onClose={onClose}
+          variant={ModalVariant.small}
+          actions={[
+            <Button
+              id="modal-confirm"
+              data-testid="confirm"
+              key="confirm"
+              isDisabled={!isValid}
+              variant={ButtonVariant.primary}
+              onClick={form.handleSubmit((data) => { saveUserPassword(data) })}
+            >
+              {t("save")}
+            </Button>,
+            <Button
+              id="modal-cancel"
+              data-testid="cancel"
+              key="cancel"
+              variant={ButtonVariant.link}
+              onClick={() => {
+                if (onClose) onClose();
+                toggle();
+              }}
+            >
+              {t("cancel")}
+            </Button>
 
-        ]}
-      >
-        <Form>
-          <ToznyPasswordBrokerFields realm={realm!} />
-          <FormGroup
-            label={t("testConnectionRedirectURI")}
-            labelIcon={
-              <HelpItem helpText={t("testConnectionRedirectURIHelp")} fieldLabelId="testConnectionRedirectURI" />
-            }
-            fieldId="kc-reset-password-uri"
-          >
-            <ClipboardCopy
-              isReadOnly
-            >{resetLink}</ClipboardCopy>
-          </FormGroup>
-        </Form>
-      </Modal>
+          ]}
+        >
+          <Form>
+            <ToznyPasswordBrokerFields realm={realm!} />
+            <FormGroup
+              label={t("testConnectionRedirectURI")}
+              labelIcon={
+                <HelpItem helpText={t("testConnectionRedirectURIHelp")} fieldLabelId="testConnectionRedirectURI" />
+              }
+              fieldId="kc-reset-password-uri"
+            >
+              <ClipboardCopy
+                isReadOnly
+              >{resetLink}</ClipboardCopy>
+            </FormGroup>
+          </Form>
+        </Modal>
+      </FormProvider>
       {/* <ConfirmSaveModal />
       <ConfirmDialogModal
         titleKey={
