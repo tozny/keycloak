@@ -57,7 +57,7 @@ export default function CreateUser() {
     const username = data.username!.toLowerCase().trim();
 
     // instantiate tozID client
-    tozUser.CreateUser(username, data.email!, data.firstName!, data.lastName!, data.authentication?.emailRecoveryExpirationMinutes,data.authentication?.adminRecoveryExpirationMinutes, setResetLink)
+    await tozUser.CreateUser(username, data.email!, data.firstName!, data.lastName!, data.authentication?.emailRecoveryExpirationMinutes,data.authentication?.adminRecoveryExpirationMinutes, setResetLink)
     .then(message => {
       addAlert(t("userCreated"), AlertVariant.success);
     })

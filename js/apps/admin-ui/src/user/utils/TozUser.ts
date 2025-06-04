@@ -147,7 +147,10 @@ export class TozUser {
           throw error
         })
     })
-    .then(() => this.sendPasswordRecovery(username, "provisioning an identity", "claim_account", emailRecoveryExpirationMinutes, adminRecoveryExpirationMinutes, setResetLink))
+    .then((registerReturn) => {
+      console.log(registerReturn)
+      this.sendPasswordRecovery(username, "provisioning an identity", "claim_account", emailRecoveryExpirationMinutes, adminRecoveryExpirationMinutes, setResetLink)
+    })
   }
 
   ResetPassword(username: string, emailRecoveryExpirationMinutes: number | undefined, adminRecoveryExpirationMinutes: number | undefined, setResetLink: (resetLink: string) => void){
