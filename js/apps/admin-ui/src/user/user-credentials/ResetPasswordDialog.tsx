@@ -81,8 +81,7 @@ export const ResetPasswordDialog = ({
   });
 
   const saveUserPassword = async ({
-    authentication,
-    brokerUrl
+    authentication
   }: ToznyPasswordBrokerFieldsForm) => {
     try {
       tozUser.ResetPassword(user.username!, authentication?.emailRecoveryExpirationMinutes, authentication?.adminRecoveryExpirationMinutes, setResetLink)
@@ -118,8 +117,7 @@ export const ResetPasswordDialog = ({
             isDisabled={!isValid}
             variant={ButtonVariant.primary}
             onClick={() => {
-              toggleConfirmSaveModal();
-              toggle();
+              form.handleSubmit((data) => {saveUserPassword(data)})
             }}
           >
             {t("save")}

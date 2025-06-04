@@ -378,7 +378,6 @@ export const UserCredentials = ({ user, setUser }: UserCredentialsProps) => {
         <ResetPasswordDialog
           user={user}
           isResetPassword={isResetPassword}
-          onAddRequiredActions={onAddRequiredActions}
           refresh={refresh}
           onClose={() => setIsOpen(false)}
         />
