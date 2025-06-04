@@ -36,6 +36,7 @@ export default function CreateUser() {
   const [userProfileMetadata, setUserProfileMetadata] =
     useState<UserProfileMetadata>();
   const [resetLink, setResetLink] = useState("");
+  const [toznyUser, setToznyUser] = useState<any>();
   const tozUser = new TozUser(realm!)
 
   useFetch(
@@ -57,9 +58,12 @@ export default function CreateUser() {
     const username = data.username!.toLowerCase().trim();
 
     // instantiate tozID client
-    await tozUser.CreateUser(username, data.email!, data.firstName!, data.lastName!, data.authentication?.emailRecoveryExpirationMinutes,data.authentication?.adminRecoveryExpirationMinutes, setResetLink)
+    await tozUser.CreateUser(username, data.email!, data.firstName!, data.lastName!, data.authentication?.emailRecoveryExpirationMinutes,data.authentication?.adminRecoveryExpirationMinutes, setResetLink, setToznyUser)
     .then(message => {
       addAlert(t("userCreated"), AlertVariant.success);
+      navigate(
+        toUser({ id: toznyUser.config.userId, realm: realmName, tab: "settings" }),
+      );
     })
     .catch((err) => {
       addError("userCreateError", err);

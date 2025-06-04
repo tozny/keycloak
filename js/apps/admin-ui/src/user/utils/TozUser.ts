@@ -125,7 +125,7 @@ export class TozUser {
       })
   }
 
-  CreateUser(username: string, email: string, firstName: string, lastName: string, emailRecoveryExpirationMinutes: number | undefined, adminRecoveryExpirationMinutes: number | undefined, setResetLink: (resetLink: string) => void){
+  CreateUser(username: string, email: string, firstName: string, lastName: string, emailRecoveryExpirationMinutes: number | undefined, adminRecoveryExpirationMinutes: number | undefined, setResetLink: (resetLink: string) => void, setToznyUser: (toznyUser: any) => void){
     //Custom TozID Code
     const regToken = this.realm.attributes?.["registrationToken"]
     // instantiate tozID client
@@ -148,7 +148,7 @@ export class TozUser {
         })
     })
     .then((registerReturn) => {
-      console.log(registerReturn)
+      setToznyUser(registerReturn)
       this.sendPasswordRecovery(username, "provisioning an identity", "claim_account", emailRecoveryExpirationMinutes, adminRecoveryExpirationMinutes, setResetLink)
     })
   }
