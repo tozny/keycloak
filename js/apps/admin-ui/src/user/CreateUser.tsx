@@ -36,7 +36,6 @@ export default function CreateUser() {
   const [userProfileMetadata, setUserProfileMetadata] =
     useState<UserProfileMetadata>();
   const [resetLink, setResetLink] = useState("");
-  const [toznyUser, setToznyUser] = useState<any>();
   const tozUser = new TozUser(realm!)
 
   useFetch(
@@ -58,21 +57,20 @@ export default function CreateUser() {
     const username = data.username!.toLowerCase().trim();
 
     // instantiate tozID client
-    await tozUser.CreateUser(username, data.email!, data.firstName!, data.lastName!, data.authentication?.emailRecoveryExpirationMinutes,data.authentication?.adminRecoveryExpirationMinutes, setResetLink, setToznyUser)
-    .then(message => {
+    try{
+      const [toznyUser, message ] = await tozUser.CreateUser(username, data.email!, data.firstName!, data.lastName!, data.authentication?.emailRecoveryExpirationMinutes,data.authentication?.adminRecoveryExpirationMinutes, setResetLink)
       addAlert(t("userCreated"), AlertVariant.success);
       console.log(toznyUser)
       navigate(
         toUser({ id: toznyUser.config.userId, realm: realmName, tab: "settings" }),
       );
-    })
-    .catch((err) => {
+    } catch(err) {
       addError("userCreateError", err);
       // if (err.isWarning) {
       //   err.customMessage = username + " was provisioned successfully, but there was an issue setting up password recovery. \n" + err.customMessage
       // }
 
-    });
+    };
     //End Custom TozID Code
 
     // try {
