@@ -99,7 +99,7 @@ export const ResetPasswordDialog = ({
       );
     }
 
-    onClose();
+    //onClose();
   };
 
   return (
