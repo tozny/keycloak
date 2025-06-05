@@ -99,6 +99,7 @@ export class TozUser {
           this.sendResetEmail(username, template, emailRecoveryExpirationMinutes),
         ])
           .then(result => {
+            console.log(result)
             console.log(result[0])
             // If the reset link was set, display it.
             // if ($scope.resetLink) {
