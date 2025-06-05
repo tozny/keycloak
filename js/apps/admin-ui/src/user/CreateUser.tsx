@@ -60,38 +60,14 @@ export default function CreateUser() {
     try{
       const [toznyUser, message ] = await tozUser.CreateUser(username, data.email!, data.firstName!, data.lastName!, data.authentication?.emailRecoveryExpirationMinutes,data.authentication?.adminRecoveryExpirationMinutes, setResetLink)
       addAlert(t("userCreated"), AlertVariant.success);
-      console.log(toznyUser)
       navigate(
         toUser({ id: toznyUser.config.keycloakUserId, realm: realmName, tab: "credentials" }, `reset_link=${resetLink}`),
       );
     } catch(err) {
       addError("userCreateError", err);
-      // if (err.isWarning) {
-      //   err.customMessage = username + " was provisioned successfully, but there was an issue setting up password recovery. \n" + err.customMessage
-      // }
 
     };
     //End Custom TozID Code
-
-    // try {
-    //   const createdUser = await adminClient.users.create({
-    //     ...toUserRepresentation(data),
-    //     groups: addedGroups.map((group) => group.path!),
-    //     enabled: true,
-    //   });
-
-    //   addAlert(t("userCreated"), AlertVariant.success);
-    //   navigate(
-    //     toUser({ id: createdUser.id, realm: realmName, tab: "settings" }),
-    //   );
-    // } catch (error) {
-    //   if (isUserProfileError(error)) {
-    //     setUserProfileServerError(error, form.setError, ((key, param) =>
-    //       t(key as string, param as any)) as TFunction);
-    //   } else {
-    //     addError("userCreateError", error);
-    //   }
-    // }
   };
 
   if (!realm || !userProfileMetadata) {

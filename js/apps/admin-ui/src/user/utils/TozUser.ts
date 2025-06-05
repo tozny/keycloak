@@ -89,6 +89,7 @@ export class TozUser {
   }
 
    private sendPasswordRecovery(username: string, action: string, template = "password_reset", emailRecoveryExpirationMinutes: number | undefined, adminRecoveryExpirationMinutes: number | undefined, setResetLink: (resetLink: string) => void) {
+
     return Promise.resolve()
       //.then(() => clearRecoveryScope())
       .then(() => this.recoveryActive(action, emailRecoveryExpirationMinutes, adminRecoveryExpirationMinutes))
@@ -98,6 +99,7 @@ export class TozUser {
           this.sendResetEmail(username, template, emailRecoveryExpirationMinutes),
         ])
           .then(result => {
+            console.log(result[0])
             // If the reset link was set, display it.
             // if ($scope.resetLink) {
             //   $scope.resetLinkBlockActive = true;
