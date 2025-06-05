@@ -61,6 +61,8 @@ export default function CreateUser() {
       const [toznyUser, message ] = await tozUser.CreateUser(username, data.email!, data.firstName!, data.lastName!, data.authentication?.emailRecoveryExpirationMinutes,data.authentication?.adminRecoveryExpirationMinutes, setResetLink)
       addAlert(t("userCreated"), AlertVariant.success);
       console.log(toznyUser)
+      console.log(toznyUser.config)
+      console.log(toznyUser.config.keycloakUserId)
       navigate(
         toUser({ id: toznyUser.config.keycloakUserId, realm: realmName, tab: "settings" }),
       );
