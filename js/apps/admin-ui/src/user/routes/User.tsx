@@ -32,14 +32,7 @@ export const UserRoute: AppRouteObject = {
   },
 };
 
-export const toUser = (
-  params: UserParams,
-  queryParameters: string | undefined = undefined,
-): Partial<Path> => {
-  const encodedPath = queryParameters
-    ? generateEncodedPath(UserRoute.path + "?" + queryParameters, params)
-    : generateEncodedPath(UserRoute.path, params);
-  return {
-    pathname: encodedPath,
-  };
-};
+export const toUser = (params: UserParams, queryParams?: string): Partial<Path> => ({
+  pathname: generateEncodedPath(UserRoute.path, params),
+  search: queryParams ? `?${queryParams}` : undefined
+});
