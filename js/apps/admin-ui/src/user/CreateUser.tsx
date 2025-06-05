@@ -62,7 +62,7 @@ export default function CreateUser() {
       addAlert(t("userCreated"), AlertVariant.success);
       console.log(toznyUser)
       navigate(
-        toUser({ id: toznyUser.config.keycloak_user_id, realm: realmName, tab: "settings" }),
+        toUser({ id: toznyUser.config.keycloakUserId, realm: realmName, tab: "settings" }),
       );
     } catch(err) {
       addError("userCreateError", err);
