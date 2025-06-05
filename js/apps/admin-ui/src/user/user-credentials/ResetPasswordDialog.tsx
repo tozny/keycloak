@@ -31,6 +31,7 @@ type ResetPasswordDialogProps = {
   onAddRequiredActions?: (requiredActions: string[]) => void;
   refresh: () => void;
   onClose: () => void;
+  passedInResetLink?: string
 };
 
 export const ResetPasswordDialog = ({
@@ -38,13 +39,14 @@ export const ResetPasswordDialog = ({
   isResetPassword,
   refresh,
   onClose,
+  passedInResetLink = "",
 }: ResetPasswordDialogProps) => {
   const { adminClient } = useAdminClient();
 
   const { t } = useTranslation();
   const { realmRepresentation: realm } = useRealm();
   const tozUser = new TozUser(realm!)
-  const [resetLink, setResetLink] = useState("");
+  const [resetLink, setResetLink] = useState(passedInResetLink);
   const form = useForm<ToznyPasswordBrokerFieldsForm>({
     defaultValues: {
       authentication: {
