@@ -110,7 +110,7 @@
       </#list>
     </#if>
 
-    <script src="https://unpkg.com/@toznysecure/sdk@1.5.16-alpha.66/dist/tozny-sodium.min.js" type="text/javascript"></script>
+    <script src="https://unpkg.com/@toznysecure/sdk@1.5.17-alpha.15/dist/tozny-sodium.min.js" type="text/javascript"></script>
 
     <#if entryScript?has_content>
       <script type="module" src="${resourceUrl}/${entryScript}"></script>
