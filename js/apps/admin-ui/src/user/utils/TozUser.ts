@@ -2,17 +2,6 @@ import { fetchWithError } from "@keycloak/keycloak-admin-client";
 import { environment } from "../../environment";
 import RealmRepresentation from "libs/keycloak-admin-client/lib/defs/realmRepresentation";
 
-export type RetrievePasswordLinkResponse = {
-  note_id: string;
-  otp: {
-    password: string;
-  }
-};
-
-export type TozUserRegisterResponse = {
-  response: { status: any; } | undefined;
-  customMessage: string;
-};
 export class TozUser {
 
   private realm: RealmRepresentation
@@ -53,7 +42,7 @@ export class TozUser {
                 expires_minutes: adminRecoveryExpirationMinutes ?? 10,
               })
             })
-        const responseJson : RetrievePasswordLinkResponse = await response.json()
+        const responseJson = await response.json()
         const resetLink = `${realm?.attributes?.["recoverUri"]}?note_id=${responseJson.note_id}&tozny_otp=${responseJson.otp.password}`;
         console.log("RESET LINK: %s", resetLink)
         return [resetLink]
@@ -124,17 +113,25 @@ export class TozUser {
     }
   }
 
-  async ResetPassword(username: string, emailRecoveryExpirationMinutes: number | undefined, adminRecoveryExpirationMinutes: number | undefined, setResetLink: (resetLink: string) => void){
+  async ResetPassword(username: string, emailRecoveryExpirationMinutes: number | undefined, adminRecoveryExpirationMinutes: number | undefined){
+    try{
+      const [resetLink, message, sendPasswordRecoverySuccess] = await this.sendPasswordRecovery(username, "resetting a password", "password_reset", emailRecoveryExpirationMinutes, adminRecoveryExpirationMinutes)
+      if (sendPasswordRecoverySuccess){
+        return [resetLink,  `Password reset complete for ${username}: ${message}`]
+      }
+    } catch (error){
+      throw error
+    }
+    return ["", "Uh Oh!"]
 
-    this.sendPasswordRecovery(username, "resetting a password", "password_reset", emailRecoveryExpirationMinutes, adminRecoveryExpirationMinutes)
-        .then(message => {
-            const successMessage = "Password reset complete for " + username + ": " + message;
-            //Send Success
-        })
-        .catch((err) => {
-            //displayBrokerError(err);
-            // Force re-render... this does not like displaying messages in this context
-        });
+        // .then(message => {
+        //     const successMessage = "Password reset complete for " + username + ": " + message;
+        //     //Send Success
+        // })
+        // .catch((err) => {
+        //     //displayBrokerError(err);
+        //     // Force re-render... this does not like displaying messages in this context
+        // });
 }
 
 }
