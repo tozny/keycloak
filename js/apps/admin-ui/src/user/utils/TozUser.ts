@@ -88,7 +88,7 @@ export class TozUser {
       return [resetLink, messages.filter(String).join("\n") , wasSuccessful]
   }
 
-  async CreateUser(username: string, email: string, firstName: string, lastName: string, emailRecoveryExpirationMinutes: number | undefined, adminRecoveryExpirationMinutes: number | undefined){
+  async CreateUser(username: string, email: string, firstName: string, lastName: string, emailRecoveryExpirationMinutes: number | undefined, adminRecoveryExpirationMinutes: number | undefined) : Promise<[any, string, string, boolean]>{
     //Custom TozID Code
     const regToken = this.realm.attributes?.["registrationToken"]
     // instantiate tozID client
@@ -98,6 +98,7 @@ export class TozUser {
     try{
       const toznyUser = await this.tozIDRealm.register(username, password, regToken, email, firstName, lastName)
       const [resetLink, message, sendPasswordRecoverySuccess] = await this.sendPasswordRecovery(username, "provisioning an identity", "claim_account", emailRecoveryExpirationMinutes, adminRecoveryExpirationMinutes)
+      console.log(resetLink)
       return [toznyUser, resetLink, message, sendPasswordRecoverySuccess]
     }
     catch( error: any) {

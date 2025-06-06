@@ -58,6 +58,7 @@ export default function CreateUser() {
     // instantiate tozID client
     try{
       const [toznyUser, resetLink, message, success] = await tozUser.CreateUser(username, data.email!, data.firstName!, data.lastName!, data.authentication?.emailRecoveryExpirationMinutes,data.authentication?.adminRecoveryExpirationMinutes)
+      console.log(resetLink)
       if (success){
         addAlert(t("userCreated"), AlertVariant.success);
       } else {
