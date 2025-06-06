@@ -58,13 +58,14 @@ export default function CreateUser() {
     // instantiate tozID client
     try{
       const [toznyUser, resetLink, message, success] = await tozUser.CreateUser(username, data.email!, data.firstName!, data.lastName!, data.authentication?.emailRecoveryExpirationMinutes,data.authentication?.adminRecoveryExpirationMinutes)
+      const encodedLink = encodeURIComponent(resetLink)
       if (success){
         addAlert(t("userCreated"), AlertVariant.success);
       } else {
         addAlert(t("userCreatedWarning", {message}), AlertVariant.warning)
       }
       navigate(
-        toUser({ id: toznyUser.config.keycloakUserId, realm: realmName, tab: "credentials" }, `reset_link=${resetLink}`),
+        toUser({ id: toznyUser.config.keycloakUserId, realm: realmName, tab: "credentials" }, `reset_link=${encodedLink}`),
       );
     } catch(err) {
       addError("userCreateError", err);
