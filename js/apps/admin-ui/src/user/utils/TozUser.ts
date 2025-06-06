@@ -45,8 +45,13 @@ export class TozUser {
             expires_minutes: adminRecoveryExpirationMinutes ?? 10,
           })
         })
-        .then((response) => response.json())
-        .then(data => {
+        .then((response) => {
+          console.log("RESET RESPONSE")
+          console.log(response)
+          return response.json()})
+        .then((data) => {
+            console.log("REST RESPONSE JSON")
+            console.log(data)
           //TODO: NEED TO SET THIS TO SEOMTHING IN THE FRONT END
             const resetLink = `${realm?.attributes?.["recoverUri"]}?note_id=${data.note_id}&tozny_otp=${data.otp.password}`;
             setResetLink(resetLink)
@@ -72,7 +77,10 @@ export class TozUser {
             expiry_minutes: emailRecoveryExpirationMinutes ?? 10,
         },
     )
-        .then(() => "Password reset email requested for " + username + ".")
+        .then((x: any) => {
+          console.log("INITIATE RECOVERY")
+          console.log(x)
+          "Password reset email requested for " + username + "."})
         .catch((err: any) => {
             console.log(err)
             if (err.response !== undefined) {
