@@ -34,5 +34,5 @@ export const UserRoute: AppRouteObject = {
 
 export const toUser = (params: UserParams, queryParams?: string): Partial<Path> => ({
   pathname: generateEncodedPath(UserRoute.path, params),
-  search: queryParams ? `?${queryParams}` : undefined
+  search: queryParams ? `?${encodeURIComponent(queryParams)}` : undefined
 });

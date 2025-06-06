@@ -46,7 +46,7 @@ export const ResetPasswordDialog = ({
   const { t } = useTranslation();
   const { realmRepresentation: realm } = useRealm();
   const tozUser = new TozUser(realm!)
-  const [resetLink, setResetLink] = useState<string >("");
+  const [resetLink, setResetLink] = useState<string >(passedInResetLink);
   const form = useForm<ToznyPasswordBrokerFieldsForm>({
     defaultValues: {
       authentication: {
