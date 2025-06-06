@@ -1,7 +1,6 @@
 import { fetchWithError } from "@keycloak/keycloak-admin-client";
 import { environment } from "../../environment";
 import RealmRepresentation from "libs/keycloak-admin-client/lib/defs/realmRepresentation";
-import { reset } from "cbor/types/lib/tagged";
 
 export type RetrievePasswordLinkResponse = {
   note_id: string;
