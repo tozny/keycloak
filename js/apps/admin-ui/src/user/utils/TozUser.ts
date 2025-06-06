@@ -1,7 +1,19 @@
 import { fetchWithError } from "@keycloak/keycloak-admin-client";
 import { environment } from "../../environment";
 import RealmRepresentation from "libs/keycloak-admin-client/lib/defs/realmRepresentation";
+import { reset } from "cbor/types/lib/tagged";
 
+export type RetrievePasswordLinkResponse = {
+  note_id: string;
+  otp: {
+    password: string;
+  }
+};
+
+export type TozUserRegisterResponse = {
+  response: { status: any; } | undefined;
+  customMessage: string;
+};
 export class TozUser {
 
   private realm: RealmRepresentation
@@ -28,145 +40,94 @@ export class TozUser {
   }
 
 
-  private async retrievePasswordLink(username: string, adminRecoveryExpirationMinutes: number | undefined, realm: RealmRepresentation | undefined, setResetLink: (resetLink: string) => void) {
-    // if realm name is empty, do not perform this action
-    if (!adminRecoveryExpirationMinutes || !realm?.realm) {
-        return;
-    }
+  private async retrievePasswordLink(username: string, adminRecoveryExpirationMinutes: number | undefined, realm: RealmRepresentation | undefined) : Promise<[string, string?]> {
     const reqURL = environment.authUrl + "/realms/" + realm?.realm + "/password/reset?user=" + encodeURIComponent(username)
-    await fetchWithError(
-        reqURL,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            expires_minutes: adminRecoveryExpirationMinutes ?? 10,
-          })
-        })
-        .then((response) => {
-          console.log("RESET RESPONSE")
-          console.log(response)
-          return response.json()})
-        .then((data) => {
-            console.log("REST RESPONSE JSON")
-            console.log(data)
-          //TODO: NEED TO SET THIS TO SEOMTHING IN THE FRONT END
-            const resetLink = `${realm?.attributes?.["recoverUri"]}?note_id=${data.note_id}&tozny_otp=${data.otp.password}`;
-            setResetLink(resetLink)
-            console.log("RESET LINK: %s", resetLink)
-            return "Admin recovery link generated successfully."
-        })
-        .catch((err) => {
-            err.customMessage = "Unable to generate admin reset link: " + err.message
-            return err
-        });
+    try {
+        const response = await fetchWithError(
+            reqURL,
+            {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                expires_minutes: adminRecoveryExpirationMinutes ?? 10,
+              })
+            })
+        const responseJson : RetrievePasswordLinkResponse = await response.json()
+        const resetLink = `${realm?.attributes?.["recoverUri"]}?note_id=${responseJson.note_id}&tozny_otp=${responseJson.otp.password}`;
+        console.log("RESET LINK: %s", resetLink)
+        return [resetLink]
+      } catch(err : any){
+        return ["", `Unable to generate admin reset link: ${err.message}`]
+      }
   }
 
-   private sendResetEmail(username: string, template : string, emailRecoveryExpirationMinutes : number | undefined) {
+   private async sendResetEmail(username: string, template : string, emailRecoveryExpirationMinutes : number | undefined) : Promise<[string, boolean]>{
     // if recovery minutes is empty, do not perform this action
     if (!emailRecoveryExpirationMinutes) {
-        return;
+        return ["", false];
     }
     // Return the promise from initiateRecovery
-    return this.tozIDRealm.initiateRecovery(
+    try{
+      await this.tozIDRealm.initiateRecovery(
         username,
         {
             template_name: template,
             expiry_minutes: emailRecoveryExpirationMinutes ?? 10,
-        },
-    )
-        .then((x: any) => {
-          console.log("INITIATE RECOVERY")
-          console.log(x)
-          "Password reset email requested for " + username + "."})
-        .catch((err: any) => {
-            console.log(err)
-            if (err.response !== undefined) {
-                let statusCode = err.response.status
-                if (statusCode == 500 || statusCode == 502) {
-                    err.isWarning = true
-                    err.customMessage = "The password reset email was unable to be sent. It may require you to enable the 'Email Recovery' toggle in the tozny dashboard."
-                    err.showHelpBlock = true
-                }
-            }
-            // Return the error to accumulate as needed later
-            return err
         })
+
+    } catch(err: any){
+      if (err.response !== undefined) {
+        let statusCode = err.response.status
+        if (statusCode == 500 || statusCode == 502) {
+            return ["The password reset email was unable to be sent. It may require you to enable the 'Email Recovery' toggle in the tozny dashboard.", false]
+        }
+        return [err.message, false]
+      }
+    }
+    return ["Password reset email requested for " + username + ".", true]
   }
 
-   private sendPasswordRecovery(username: string, action: string, template = "password_reset", emailRecoveryExpirationMinutes: number | undefined, adminRecoveryExpirationMinutes: number | undefined, setResetLink: (resetLink: string) => void) {
+   private async sendPasswordRecovery(username: string, action: string, template = "password_reset", emailRecoveryExpirationMinutes: number | undefined, adminRecoveryExpirationMinutes: number | undefined) : Promise<[string, string, boolean]> {
 
-    return Promise.resolve()
-      //.then(() => clearRecoveryScope())
-      .then(() => this.recoveryActive(action, emailRecoveryExpirationMinutes, adminRecoveryExpirationMinutes))
-      .then(() => {
-        return Promise.all([
-          this.retrievePasswordLink(username, adminRecoveryExpirationMinutes, this.realm, setResetLink),
-          this.sendResetEmail(username, template, emailRecoveryExpirationMinutes),
-        ])
-          .then(result => {
-            console.log(result)
-            console.log(result[0])
-            // If the reset link was set, display it.
-            // if ($scope.resetLink) {
-            //   $scope.resetLinkBlockActive = true;
-            // }
-            const allErrors = result.filter(r => r instanceof Error);
-            const nonErrors = result.filter(r => !(r instanceof Error));
-            const resultMessage = nonErrors.filter(r => r).join("\n");
-            // If there were no error, return the success messages
-            if (allErrors.length === 0) {
-              return resultMessage
-            }
-            // At least one error was reported - accumulate errors into a final error
-            const finalError = new Error()
-            finalError.message = resultMessage + " However Some recovery requests did not complete successfully: \n";
-            //finalError.isWarning = true;
-            // consolidate reported errors
-            finalError.message += allErrors
-              .filter(err => err.message)
-              .map(err => err.message)
-              .join("\n");
-            //finalError.showHelpBlock = allErrors.some(err => err.showHelpBlock);
-            // Throw to reject with the final accumulated error
-            throw finalError;
-          })
-      })
+      this.recoveryActive(action, emailRecoveryExpirationMinutes, adminRecoveryExpirationMinutes)
+      const [resetLink, retrievePasswordLinkError] = await this.retrievePasswordLink(username, adminRecoveryExpirationMinutes, this.realm)
+      const [sendResetEmailMessage, sendRestEmailSuccess ] = await this.sendResetEmail(username, template, emailRecoveryExpirationMinutes)
+
+      const wasSuccessful = !retrievePasswordLinkError && sendRestEmailSuccess
+      const messages =  [retrievePasswordLinkError, sendResetEmailMessage]
+      return [resetLink, messages.filter(String).join("\n") , wasSuccessful]
   }
 
-  CreateUser(username: string, email: string, firstName: string, lastName: string, emailRecoveryExpirationMinutes: number | undefined, adminRecoveryExpirationMinutes: number | undefined, setResetLink: (resetLink: string) => void){
+  async CreateUser(username: string, email: string, firstName: string, lastName: string, emailRecoveryExpirationMinutes: number | undefined, adminRecoveryExpirationMinutes: number | undefined){
     //Custom TozID Code
     const regToken = this.realm.attributes?.["registrationToken"]
     // instantiate tozID client
-    return Promise.resolve()
-    .then(() => this.recoveryActive("creating an identity", emailRecoveryExpirationMinutes, adminRecoveryExpirationMinutes))
-    .then(() => Tozny.crypto.randomKey())
-    .then((password) => {
-      //TODO: Add Attributes and Groups
-      return this.tozIDRealm.register(username, password, regToken, email, firstName, lastName)
-        .catch((error: { response: { status: any; } | undefined; customMessage: string; }) => {
-          if (error.response !== undefined) {
-            let statusCode = error.response.status
-            if (statusCode == 409) {
-              error.customMessage = "Sorry, the user " + email + " already exists."
-            } else if (statusCode == 401) {
-              error.customMessage = "Please provide a valid registration token"
-            }
-          }
-          throw error
-        })
-    })
-    .then((toznyUser) => {
-      const message = this.sendPasswordRecovery(username, "provisioning an identity", "claim_account", emailRecoveryExpirationMinutes, adminRecoveryExpirationMinutes, setResetLink)
-      return [toznyUser, message]
-    })
+    this.recoveryActive("creating an identity", emailRecoveryExpirationMinutes, adminRecoveryExpirationMinutes)
+    const password = await Tozny.crypto.randomKey()
+    //TODO: Add Attributes and Groups
+    try{
+      const toznyUser = await this.tozIDRealm.register(username, password, regToken, email, firstName, lastName)
+      const [resetLink, message, sendPasswordRecoverySuccess] = await this.sendPasswordRecovery(username, "provisioning an identity", "claim_account", emailRecoveryExpirationMinutes, adminRecoveryExpirationMinutes)
+      return [toznyUser, resetLink, message, sendPasswordRecoverySuccess]
+    }
+    catch( error: any) {
+      if (error.response !== undefined) {
+        let statusCode = error.response.status
+        if (statusCode == 409) {
+          error.customMessage = "Sorry, the user " + email + " already exists."
+        } else if (statusCode == 401) {
+          error.customMessage = "Please provide a valid registration token"
+        }
+      }
+      throw error
+    }
   }
 
-  ResetPassword(username: string, emailRecoveryExpirationMinutes: number | undefined, adminRecoveryExpirationMinutes: number | undefined, setResetLink: (resetLink: string) => void){
+  async ResetPassword(username: string, emailRecoveryExpirationMinutes: number | undefined, adminRecoveryExpirationMinutes: number | undefined, setResetLink: (resetLink: string) => void){
 
-    this.sendPasswordRecovery(username, "resetting a password", "password_reset", emailRecoveryExpirationMinutes, adminRecoveryExpirationMinutes, setResetLink)
+    this.sendPasswordRecovery(username, "resetting a password", "password_reset", emailRecoveryExpirationMinutes, adminRecoveryExpirationMinutes)
         .then(message => {
             const successMessage = "Password reset complete for " + username + ": " + message;
             //Send Success

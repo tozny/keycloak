@@ -6,7 +6,7 @@ import {
   useAlerts,
   useFetch,
 } from "@keycloak/keycloak-ui-shared";
-import { AlertVariant, PageSection } from "@patternfly/react-core";
+import { Alert, AlertVariant, PageSection } from "@patternfly/react-core";
 import { TFunction } from "i18next";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -35,7 +35,6 @@ export default function CreateUser() {
   const [addedGroups, setAddedGroups] = useState<GroupRepresentation[]>([]);
   const [userProfileMetadata, setUserProfileMetadata] =
     useState<UserProfileMetadata>();
-  const [resetLink, setResetLink] = useState("");
   const tozUser = new TozUser(realm!)
 
   useFetch(
@@ -58,8 +57,12 @@ export default function CreateUser() {
 
     // instantiate tozID client
     try{
-      const [toznyUser, message ] = await tozUser.CreateUser(username, data.email!, data.firstName!, data.lastName!, data.authentication?.emailRecoveryExpirationMinutes,data.authentication?.adminRecoveryExpirationMinutes, setResetLink)
-      addAlert(t("userCreated"), AlertVariant.success);
+      const [toznyUser, resetLink, message, success] = await tozUser.CreateUser(username, data.email!, data.firstName!, data.lastName!, data.authentication?.emailRecoveryExpirationMinutes,data.authentication?.adminRecoveryExpirationMinutes)
+      if (success){
+        addAlert(t("userCreated"), AlertVariant.success);
+      } else {
+        addAlert(t("userCreatedWarning", {message}), AlertVariant.warning)
+      }
       navigate(
         toUser({ id: toznyUser.config.keycloakUserId, realm: realmName, tab: "credentials" }, `reset_link=${resetLink}`),
       );
