@@ -253,7 +253,7 @@ export const UserForm = ({
                   t(key as string, params as any)) as TFunction
               }
             />
-            <ToznyPasswordBrokerFields realm={realm}/>
+            {!user?.id && (<ToznyPasswordBrokerFields realm={realm}/>)}
           </>
         ) : (
           <>

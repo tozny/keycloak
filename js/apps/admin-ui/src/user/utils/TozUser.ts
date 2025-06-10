@@ -98,7 +98,6 @@ export class TozUser {
     try{
       const toznyUser = await this.tozIDRealm.register(username, password, regToken, email, firstName, lastName)
       const [resetLink, message, sendPasswordRecoverySuccess] = await this.sendPasswordRecovery(username, "provisioning an identity", "claim_account", emailRecoveryExpirationMinutes, adminRecoveryExpirationMinutes)
-      console.log(resetLink)
       return [toznyUser, resetLink, message, sendPasswordRecoverySuccess]
     }
     catch( error: any) {
