@@ -40,6 +40,7 @@ import { FixedButtonsGroup } from "../components/form/FixedButtonGroup";
 import { RequiredActionMultiSelect } from "./user-credentials/RequiredActionMultiSelect";
 import { useNavigate } from "react-router-dom";
 import { CopyToClipboardButton } from "../components/copy-to-clipboard-button/CopyToClipboardButton";
+import { ToznyPasswordBrokerFields } from "./ToznyPasswordBrokerFields";
 
 export type BruteForced = {
   isBruteForceProtected?: boolean;
@@ -252,6 +253,7 @@ export const UserForm = ({
                   t(key as string, params as any)) as TFunction
               }
             />
+            {!user?.id && (<ToznyPasswordBrokerFields realm={realm}/>)}
           </>
         ) : (
           <>
@@ -287,6 +289,8 @@ export const UserForm = ({
               labelOn={t("yes")}
               labelOff={t("no")}
             />
+
+            <ToznyPasswordBrokerFields realm={realm}/>
             <TextControl name="firstName" label={t("firstName")} />
             <TextControl name="lastName" label={t("lastName")} />
           </>

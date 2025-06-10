@@ -6,7 +6,7 @@ import {
   useAlerts,
   useFetch,
 } from "@keycloak/keycloak-ui-shared";
-import { AlertVariant, PageSection } from "@patternfly/react-core";
+import { Alert, AlertVariant, PageSection } from "@patternfly/react-core";
 import { TFunction } from "i18next";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -20,7 +20,9 @@ import { UserForm } from "./UserForm";
 import { UserFormFields, toUserRepresentation } from "./form-state";
 import { toUser } from "./routes/User";
 
+
 import "./user-section.css";
+import { TozUser } from "./utils/TozUser";
 
 export default function CreateUser() {
   const { adminClient } = useAdminClient();
@@ -33,6 +35,8 @@ export default function CreateUser() {
   const [addedGroups, setAddedGroups] = useState<GroupRepresentation[]>([]);
   const [userProfileMetadata, setUserProfileMetadata] =
     useState<UserProfileMetadata>();
+  const [loading, setLoading] = useState(false);
+  const tozUser = new TozUser(realm!)
 
   useFetch(
     () => adminClient.users.getProfileMetadata({ realm: realmName }),
@@ -48,28 +52,32 @@ export default function CreateUser() {
   );
 
   const save = async (data: UserFormFields) => {
-    try {
-      const createdUser = await adminClient.users.create({
-        ...toUserRepresentation(data),
-        groups: addedGroups.map((group) => group.path!),
-        enabled: true,
-      });
+    setLoading(true)
+    //Custom TozID Code
+    const username = data.username!.toLowerCase().trim();
 
-      addAlert(t("userCreated"), AlertVariant.success);
-      navigate(
-        toUser({ id: createdUser.id, realm: realmName, tab: "settings" }),
-      );
-    } catch (error) {
-      if (isUserProfileError(error)) {
-        setUserProfileServerError(error, form.setError, ((key, param) =>
-          t(key as string, param as any)) as TFunction);
+    // instantiate tozID client
+    try{
+      const [toznyUser, resetLink, message, success] = await tozUser.CreateUser(username, data.email!, data.firstName!, data.lastName!, data.authentication?.emailRecoveryExpirationMinutes,data.authentication?.adminRecoveryExpirationMinutes)
+      const encodedLink = encodeURIComponent(resetLink)
+      if (success){
+        addAlert(t("userCreated"), AlertVariant.success);
       } else {
-        addError("userCreateError", error);
+        addAlert(t("userCreatedWarning", {message}), AlertVariant.warning)
       }
-    }
+      setLoading(false)
+      navigate(
+        toUser({ id: toznyUser.config.keycloakUserId, realm: realmName, tab: "credentials" }, `reset_link=${encodedLink}`),
+      );
+    } catch(err) {
+      addError("userCreateError", err);
+
+    };
+    setLoading(false)
+    //End Custom TozID Code
   };
 
-  if (!realm || !userProfileMetadata) {
+  if (!realm || !userProfileMetadata || loading) {
     return <KeycloakSpinner />;
   }
 

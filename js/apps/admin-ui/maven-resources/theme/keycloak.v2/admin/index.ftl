@@ -109,6 +109,9 @@
         <link rel="stylesheet" href="${resourceUrl}/${style}">
       </#list>
     </#if>
+
+    <script src="https://unpkg.com/@toznysecure/sdk@1.5.17-alpha.18/dist/tozny-sodium.min.js" type="text/javascript"></script>
+
     <#if entryScript?has_content>
       <script type="module" src="${resourceUrl}/${entryScript}"></script>
     </#if>

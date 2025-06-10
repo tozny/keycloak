@@ -14,6 +14,7 @@ import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
 import {
   Fragment,
   DragEvent as ReactDragEvent,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -31,6 +32,7 @@ import { ResetCredentialDialog } from "./user-credentials/ResetCredentialDialog"
 import { ResetPasswordDialog } from "./user-credentials/ResetPasswordDialog";
 
 import "./user-credentials.css";
+import { useLocation } from "react-router-dom";
 
 type UserCredentialsProps = {
   user: UserRepresentation;
@@ -150,11 +152,22 @@ export const UserCredentials = ({ user, setUser }: UserCredentialsProps) => {
     (credential) => credential.type === "password",
   );
 
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const resetLink = queryParams.get("reset_link");
+
   const toggleModal = () => setIsOpen(!isOpen);
 
   const toggleCredentialsResetModal = () => {
     setOpenCredentialReset(!openCredentialReset);
   };
+
+  useEffect(() => {
+    if (resetLink) {
+      setIsResetPassword(true);
+      setIsOpen(true);
+    }
+  }, [resetLink]);
 
   const resetPassword = () => {
     setIsResetPassword(true);
@@ -378,9 +391,9 @@ export const UserCredentials = ({ user, setUser }: UserCredentialsProps) => {
         <ResetPasswordDialog
           user={user}
           isResetPassword={isResetPassword}
-          onAddRequiredActions={onAddRequiredActions}
           refresh={refresh}
           onClose={() => setIsOpen(false)}
+          passedInResetLink={resetLink ?? ""}
         />
       )}
       {openCredentialReset && (
