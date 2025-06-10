@@ -35,6 +35,7 @@ export default function CreateUser() {
   const [addedGroups, setAddedGroups] = useState<GroupRepresentation[]>([]);
   const [userProfileMetadata, setUserProfileMetadata] =
     useState<UserProfileMetadata>();
+  const [loading, setLoading] = useState(false);
   const tozUser = new TozUser(realm!)
 
   useFetch(
@@ -51,8 +52,8 @@ export default function CreateUser() {
   );
 
   const save = async (data: UserFormFields) => {
+    setLoading(true)
     //Custom TozID Code
-    const regToken = realm?.attributes?.["registrationToken"]
     const username = data.username!.toLowerCase().trim();
 
     // instantiate tozID client
@@ -64,6 +65,7 @@ export default function CreateUser() {
       } else {
         addAlert(t("userCreatedWarning", {message}), AlertVariant.warning)
       }
+      setLoading(false)
       navigate(
         toUser({ id: toznyUser.config.keycloakUserId, realm: realmName, tab: "credentials" }, `reset_link=${encodedLink}`),
       );
@@ -71,10 +73,11 @@ export default function CreateUser() {
       addError("userCreateError", err);
 
     };
+    setLoading(false)
     //End Custom TozID Code
   };
 
-  if (!realm || !userProfileMetadata) {
+  if (!realm || !userProfileMetadata || loading) {
     return <KeycloakSpinner />;
   }
 

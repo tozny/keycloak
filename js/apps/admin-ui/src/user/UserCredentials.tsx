@@ -392,7 +392,7 @@ export const UserCredentials = ({ user, setUser }: UserCredentialsProps) => {
           user={user}
           isResetPassword={isResetPassword}
           refresh={refresh}
-          onClose={() => { queryParams.delete("reset_link"); setIsOpen(false)}}
+          onClose={() => setIsOpen(false)}
           passedInResetLink={resetLink ?? ""}
         />
       )}
