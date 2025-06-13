@@ -426,7 +426,7 @@ export const UserCredentials = ({ user, setUser }: UserCredentialsProps) => {
         className="kc-resetCredentialBtn-header"
         variant="primary"
         data-testid="addMfaBtn"
-        onClick={() => setOpenCredentialReset(true)}
+        onClick={() => setOpenAddMfa(true)}
       >
         Add MFA
       </Button>
