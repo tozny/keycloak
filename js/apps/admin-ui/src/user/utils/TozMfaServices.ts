@@ -2,7 +2,7 @@
 
 import { fetchWithError } from "@keycloak/keycloak-admin-client";
 
-const BASE_URL = '/realms';
+const BASE_URL = '/auth/realms';
 
 interface Params {
   realm: string;
@@ -24,13 +24,13 @@ async function parseJson<T>(response: Response): Promise<T> {
 
 export const ToznyMFAServices = {
   initiateTotp: async ({ realm, userId }: Params) => {
-    const url = `${BASE_URL}/auth/${realm}/user/${userId}/totp/initiate`;
+    const url = `${BASE_URL}/${realm}/user/${userId}/totp/initiate`;
     const res = await fetchWithError(url);
     return parseJson<any>(res);
   },
 
   registerTotp: async ({ realm, userId }: Params, data: RegisterData) => {
-    const url = `${BASE_URL}/auth/${realm}/user/${userId}/totp/register`;
+    const url = `${BASE_URL}/${realm}/user/${userId}/totp/register`;
     const res = await fetchWithError(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -40,7 +40,7 @@ export const ToznyMFAServices = {
   },
 
   initiateWebauthn: async ({ realm, userId }: Params) => {
-    const url = `${BASE_URL}/auth/${realm}/user/${userId}/webauthn/initiate`;
+    const url = `${BASE_URL}/${realm}/user/${userId}/webauthn/initiate`;
     const res = await fetchWithError(url, {
       method: 'POST',
       headers: {
@@ -51,7 +51,7 @@ export const ToznyMFAServices = {
   },
 
   registerWebauthn: async ({ realm, userId }: Params, data: RegisterData) => {
-    const url = `${BASE_URL}/auth/${realm}/user/${userId}/webauthn/register`;
+    const url = `${BASE_URL}/${realm}/user/${userId}/webauthn/register`;
     const formBody = new URLSearchParams();
 
     Object.entries(data).forEach(([key, value]) =>
