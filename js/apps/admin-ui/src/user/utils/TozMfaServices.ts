@@ -1,6 +1,8 @@
 // adjust path as needed
 
 import { fetchWithError } from "@keycloak/keycloak-admin-client";
+import { getAuthorizationHeaders } from "../../utils/getAuthorizationHeaders";
+import { useAdminClient } from "../../admin-client";
 
 const BASE_URL = '/auth/realms';
 
@@ -22,10 +24,17 @@ async function parseJson<T>(response: Response): Promise<T> {
   }
 }
 
+const { adminClient } = useAdminClient();
+
 export const ToznyMFAServices = {
+
   initiateTotp: async ({ realm, userId }: Params) => {
     const url = `${BASE_URL}/${realm}/user/${userId}/totp/initiate`;
-    const res = await fetchWithError(url);
+    const res = await fetchWithError(url, {
+      headers: {
+        ...getAuthorizationHeaders(await adminClient.getAccessToken())
+      }
+    });
     return parseJson<any>(res);
   },
 
@@ -33,7 +42,10 @@ export const ToznyMFAServices = {
     const url = `${BASE_URL}/${realm}/user/${userId}/totp/register`;
     const res = await fetchWithError(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthorizationHeaders(await adminClient.getAccessToken())
+        },
       body: JSON.stringify(data),
     });
     return parseJson<any>(res);
@@ -45,6 +57,7 @@ export const ToznyMFAServices = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        ...getAuthorizationHeaders(await adminClient.getAccessToken())
       },
     });
     return parseJson<any>(res);
@@ -62,6 +75,7 @@ export const ToznyMFAServices = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        ...getAuthorizationHeaders(await adminClient.getAccessToken())
       },
       body: formBody.toString(),
     });
