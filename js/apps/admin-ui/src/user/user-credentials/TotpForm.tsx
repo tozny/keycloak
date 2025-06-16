@@ -39,45 +39,36 @@ type TotpFormData = {
     };
 
     return (
-      <ListItem>
-        <Form onSubmit={handleSubmit(onSubmit)}>
-          <TextControl
-            name="totp-device"
-            control={control}
-            label={t("totpDeviceName")}
-            rules={{ required: t("required") }}
-            defaultValue="totp"
-          />
+        <Form>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <TextControl
+              name="totp-device"
+              control={control}
+              label={t("totpDeviceName")}
+              rules={{ required: t("required") }}
+              defaultValue="totp"
+            />
 
-          <TextControl
-            name="totp-code"
-            control={control}
-            label={t("totpCode")}
-            rules={{ required: t("required") }}
-          />
+            <TextControl
+              name="totp-code"
+              control={control}
+              label={t("totpCode")}
+              rules={{ required: t("required") }}
+            />
 
-          <ActionGroup>
-            <Button
-              id="reset-submit"
-              data-testid="submit"
-              key="submit"
-              type="submit"
-              variant={ButtonVariant.primary}
-            >
-              {t("submit")}
-            </Button>
-            <Button
-              id="modal-cancel"
-              data-testid="cancel"
-              key="cancel"
-              variant={ButtonVariant.link}
-              onClick={() => console.log("Cancelled")} // update with modal close or cancel logic
-            >
-              {t("cancel")}
-            </Button>
-          </ActionGroup>
+            <ActionGroup>
+              <Button
+                id="reset-submit"
+                data-testid="submit"
+                key="submit"
+                type="submit"
+                variant={ButtonVariant.primary}
+              >
+                {t("submit")}
+              </Button>
+            </ActionGroup>
+          </form>
         </Form>
-      </ListItem>
     );
   };
 

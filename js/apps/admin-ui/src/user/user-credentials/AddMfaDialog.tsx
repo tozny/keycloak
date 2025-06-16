@@ -70,8 +70,9 @@ export const AddMfaDialog = ({
             variant={ModalVariant.large}>
             <PageSection>
                 <Title headingLevel="h2">
-                    <Text>OTP</Text>
+                    <Text>Authenticator App</Text>
                 </Title>
+                <Divider orientation={{ default: 'horizontal' }} />
                 <List component="ol" className="col-md-12 leading-spacious">
                     <ListItem>
                         <Text component={TextVariants.p}>Install one of the following applications on your mobile:</Text>
@@ -131,8 +132,9 @@ export const AddMfaDialog = ({
             </PageSection>
             <PageSection>
                 <Title headingLevel="h2">
-                    <Text>Authentication Token</Text>
+                    <Text>Security Key Authentication</Text>
                 </Title>
+                <Divider orientation={{ default: 'horizontal' }} />
             </PageSection>
         </Modal>
         </>
