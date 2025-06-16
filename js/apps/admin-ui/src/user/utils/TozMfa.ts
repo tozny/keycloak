@@ -6,12 +6,15 @@ export class TozMFA {
     private realm: RealmRepresentation
     private userId: string
 
+
     constructor(realm: RealmRepresentation, userId: string){
         this.realm = realm
         this.userId = userId
     }
 
-    async RegisterTotp(totp: any, totpCode: string, totpLabel: string){
+
+
+    async RegisterTotp(totp: any, totpCode: string, totpLabel: string, accessToken: string){
         if (totpCode) {
             //Notifications.error("One-time code is required.");
             return;
@@ -25,7 +28,8 @@ export class TozMFA {
           try {
             const registerResponse = await ToznyMFAServices.registerTotp({
               realm: this.realm.realm!,
-              userId: this.userId
+              userId: this.userId,
+              accessToken: accessToken
             }, {
               totp: totpCode,
               secret: totp.secret,
@@ -57,10 +61,11 @@ export class TozMFA {
           // );
     }
 
-    async InitiateTotp(){
+    async InitiateTotp(accessToken: string){
         return await ToznyMFAServices.initiateTotp({
             realm: this.realm.realm!,
-            userId: this.userId
+            userId: this.userId,
+            accessToken: accessToken
           },
         );
         // if ($scope.totp.qrCode) {
@@ -68,17 +73,18 @@ export class TozMFA {
         //   }
     }
 
-    async InitiateWebauthn(webauthnLabel: string){
+    async InitiateWebauthn(webauthnLabel: string, accessToken: string){
         const initiateResponse = ToznyMFAServices.initiateWebauthn({
             realm: this.realm.realm!,
-            userId: this.userId
+            userId: this.userId,
+            accessToken: accessToken
           }
         );
         console.log(initiateResponse)
-        this.registerWebauthnDevice(initiateResponse, webauthnLabel)
+        this.registerWebauthnDevice(initiateResponse, webauthnLabel, accessToken)
     }
 
-    private async registerWebauthnDevice(webauthnChallengeResponse: any, webauthnLabel: string) {
+    private async registerWebauthnDevice(webauthnChallengeResponse: any, webauthnLabel: string, accessToken: string) {
         if (webauthnChallengeResponse) {
             console.error('no challege data');
             //Notifications.error("No Challenge data found! Please try again.");
@@ -101,7 +107,8 @@ export class TozMFA {
 
           await ToznyMFAServices.registerWebauthn({
               realm: this.realm.realm!,
-              userId: this.userId
+              userId: this.userId,
+              accessToken: accessToken
             }, {
               tab_id: webauthnChallengeResponse.tab_id,
               ...this.convertPublicKeyCredentialToRegistrationData(

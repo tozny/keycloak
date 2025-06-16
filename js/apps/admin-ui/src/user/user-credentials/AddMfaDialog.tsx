@@ -10,7 +10,26 @@ import TotpForm from "./TotpForm";
 import useToggle from "../../utils/useToggle";
 import { useRealm } from "../../context/realm-context/RealmContext";
 import { useEffect, useState } from "react";
+import { useAdminClient } from "../../admin-client";
 
+
+type TotpPolicy = {
+    type : string;
+    algorithm : string;
+    initialCounter : number;
+    digits : number;
+    lookAheadWindow : number;
+    period : number;
+    algorithmKey : string;
+    supportedApplications : string[]
+}
+
+type Totp = {
+  type : string;
+  secret : string;
+  qrCode : string;
+  policy : TotpPolicy
+}
 
 type AddMfaDialogProps = {
   user: UserRepresentation;
@@ -25,13 +44,15 @@ export const AddMfaDialog = ({
   }: AddMfaDialogProps) => {
     const { t } = useTranslation();
     const { realmRepresentation: realm } = useRealm();
-    const [totp, setTotp] = useState<any | null>(null);
+    const [totp, setTotp] = useState<Totp | null>(null);
     const tozMfa = new TozMFA(realm!, user.id!);
     const [confirm, toggle] = useToggle(true);
+    const { adminClient } = useAdminClient();
 
     useEffect(() => {
         const loadTotp = async () => {
-            let totpResult = await tozMfa.InitiateTotp();
+            let accessToken = await adminClient.getAccessToken()
+            let totpResult = await tozMfa.InitiateTotp(accessToken!);
             setTotp(totpResult);
         }
         loadTotp()
