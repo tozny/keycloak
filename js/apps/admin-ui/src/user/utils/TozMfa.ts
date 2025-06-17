@@ -26,7 +26,7 @@ export class TozMFA {
             //Notifications.error("Secret Key is required.");
             return;
           }
-
+          console.log("THIS IS THE TOTP CODE: " + totpCode)
           totpLabel = totpLabel && totpLabel.trim() ? totpLabel.trim() : 'totp';
           try {
             console.log("getting response")
