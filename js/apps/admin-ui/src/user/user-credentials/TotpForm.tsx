@@ -12,8 +12,8 @@ import { TozMFA } from "../utils/TozMfa";
 import KeycloakAdminClient from "libs/keycloak-admin-client/lib";
 
 type TotpFormData = {
-    "totp-device": string;
-    "totp-code": string;
+    "totpDevice": string;
+    "totpCode": string;
   };
 
   type TotpFormProps = {
@@ -29,8 +29,8 @@ type TotpFormData = {
       formState: { errors },
     } = useForm<TotpFormData>({
       defaultValues: {
-        "totp-device": "totp",
-        "totp-code": "",
+        "totpDevice": "totp",
+        "totpCode": "",
       },
     });
 
@@ -38,16 +38,21 @@ type TotpFormData = {
     const { t } = useTranslation();
 
     const onSubmit = async (data: TotpFormData) => {
-      console.log("IN HERE")
-      let accessToken = await adminClient.getAccessToken();
-      console.log("Got Token")
-      await tozMfa.RegisterTotp(totp, data["totp-code"], data["totp-device"], accessToken!);
+      try{
+        console.log("IN HERE")
+        let accessToken = await adminClient.getAccessToken();
+        console.log("Got Token")
+        await tozMfa.RegisterTotp(totp, data["totpCode"], data["totpDevice"], accessToken!);
+      } catch (err){
+        console.error(err)
+      }
+
     };
 
     return (
         <Form onSubmit={handleSubmit(onSubmit)}>
             <TextControl
-              name="totp-device"
+              name="totpDevice"
               control={control}
               label={t("totpDeviceName")}
               rules={{ required: t("required") }}
@@ -55,7 +60,7 @@ type TotpFormData = {
             />
 
             <TextControl
-              name="totp-code"
+              name="totpCode"
               control={control}
               label={t("totpCode")}
               rules={{ required: t("required") }}
