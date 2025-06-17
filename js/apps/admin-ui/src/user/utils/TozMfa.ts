@@ -15,17 +15,21 @@ export class TozMFA {
 
 
     async RegisterTotp(totp: any, totpCode: string, totpLabel: string, accessToken: string){
+
         if (totpCode) {
+          console.log("totpCode")
             //Notifications.error("One-time code is required.");
             return;
           }
           if (!totp || !totp.secret) {
+            console.log("totp issue")
             //Notifications.error("Secret Key is required.");
             return;
           }
 
           totpLabel = totpLabel && totpLabel.trim() ? totpLabel.trim() : 'totp';
           try {
+            console.log("getting response")
             const registerResponse = await ToznyMFAServices.registerTotp({
               realm: this.realm.realm!,
               userId: this.userId,
@@ -35,6 +39,7 @@ export class TozMFA {
               secret: totp.secret,
               userLabel: totpLabel
             })
+            console.log(registerResponse)
           } catch (err){
             console.log(err)
           }

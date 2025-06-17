@@ -40,6 +40,7 @@ type TotpFormData = {
     const onSubmit = async (data: TotpFormData) => {
       console.log("IN HERE")
       let accessToken = await adminClient.getAccessToken();
+      console.log("Got Token")
       await tozMfa.RegisterTotp(totp, data["totp-code"], data["totp-device"], accessToken!);
     };
 
