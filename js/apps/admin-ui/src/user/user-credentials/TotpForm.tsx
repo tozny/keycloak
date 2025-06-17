@@ -38,13 +38,13 @@ type TotpFormData = {
     const { t } = useTranslation();
 
     const onSubmit = async (data: TotpFormData) => {
+      console.log("IN HERE")
       let accessToken = await adminClient.getAccessToken();
       await tozMfa.RegisterTotp(totp, data["totp-code"], data["totp-device"], accessToken!);
     };
 
     return (
-        <Form>
-          <form onSubmit={handleSubmit(onSubmit)}>
+        <Form onSubmit={handleSubmit(onSubmit)}>
             <TextControl
               name="totp-device"
               control={control}
@@ -71,7 +71,6 @@ type TotpFormData = {
                 {t("submit")}
               </Button>
             </ActionGroup>
-          </form>
         </Form>
     );
   };
