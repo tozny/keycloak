@@ -6,9 +6,10 @@ import {
   Button,
   ButtonVariant,
 } from "@patternfly/react-core";
-import { ListItem } from "@patternfly/react-core"; // or your own wrapper
 import { TextControl } from "@keycloak/keycloak-ui-shared";
 import { useTranslation } from "react-i18next";
+import { TozMFA } from "../utils/TozMfa";
+import KeycloakAdminClient from "libs/keycloak-admin-client/lib";
 
 type TotpFormData = {
     "totp-device": string;
@@ -17,10 +18,11 @@ type TotpFormData = {
 
   type TotpFormProps = {
     totp: any; // use a specific type if available
-    tozMfa: any
+    tozMfa: TozMFA
+    adminClient : KeycloakAdminClient
   };
 
-  const TotpForm: React.FC<TotpFormProps> = ({ totp, tozMfa }) => {
+  const TotpForm: React.FC<TotpFormProps> = ({ totp, tozMfa, adminClient }) => {
     const {
       control,
       handleSubmit,
@@ -32,10 +34,12 @@ type TotpFormData = {
       },
     });
 
+
     const { t } = useTranslation();
 
-    const onSubmit = (data: TotpFormData) => {
-      tozMfa.RegisterTotp(totp, data["totp-code"], data["totp-device"]);
+    const onSubmit = async (data: TotpFormData) => {
+      let accessToken = await adminClient.getAccessToken();
+      await tozMfa.RegisterTotp(totp, data["totp-code"], data["totp-device"], accessToken!);
     };
 
     return (

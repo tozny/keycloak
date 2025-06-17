@@ -126,7 +126,7 @@ export const AddMfaDialog = ({
                     </Flex>
                     </ListItem>
                     <ListItem>
-                        <TotpForm totp={totp} tozMfa={tozMfa}/>
+                        <TotpForm totp={totp} tozMfa={tozMfa} adminClient={adminClient}/>
                     </ListItem>
                 </List>
             </PageSection>
