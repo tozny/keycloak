@@ -24,7 +24,6 @@ type TotpFormData = {
 
   const TotpForm: React.FC<TotpFormProps> = ({ totp, tozMfa, adminClient }) => {
     const {
-      control,
       handleSubmit,
       formState: { errors },
     } = useForm<TotpFormData>({
@@ -53,7 +52,6 @@ type TotpFormData = {
         <Form onSubmit={handleSubmit(onSubmit)}>
             <TextControl
               name="totpDevice"
-              control={control}
               label={t("totpDeviceName")}
               rules={{ required: t("required") }}
               defaultValue="totp"
@@ -61,12 +59,10 @@ type TotpFormData = {
 
             <TextControl
               name="totpCode"
-              control={control}
               label={t("totpCode")}
               rules={{ required: t("required") }}
             />
 
-            <ActionGroup>
               <Button
                 id="reset-submit"
                 data-testid="submit"
@@ -76,7 +72,6 @@ type TotpFormData = {
               >
                 {t("submit")}
               </Button>
-            </ActionGroup>
         </Form>
     );
   };
