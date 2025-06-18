@@ -42,8 +42,9 @@ type TotpFormData = {
         console.log("IN HERE")
         let accessToken = await adminClient.getAccessToken();
         console.log("Got Token")
-        console.log("totp code from form: " + data["totpCode"])
-        await tozMfa.RegisterTotp(totp, data["totpCode"], data["totpDevice"], accessToken!);
+        let totpCode = data["totpCode"]
+        let totpDevice = data["totpDevice"]
+        await tozMfa.RegisterTotp(totp, totpCode, totpDevice, accessToken!);
       } catch (err){
         console.error(err)
       }

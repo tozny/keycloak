@@ -16,8 +16,8 @@ export class TozMFA {
 
     async RegisterTotp(totp: any, totpCode: string, totpLabel: string, accessToken: string){
 
-        if (totpCode) {
-          console.log("totpCode")
+        if (!totpCode) {
+          console.log("totpCode:")
             //Notifications.error("One-time code is required.");
             return;
           }
