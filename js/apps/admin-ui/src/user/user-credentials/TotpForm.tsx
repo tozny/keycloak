@@ -9,7 +9,8 @@ import {
 import { TextControl } from "@keycloak/keycloak-ui-shared";
 import { useTranslation } from "react-i18next";
 import { TozMFA } from "../utils/TozMfa";
-import KeycloakAdminClient, { NetworkError } from "libs/keycloak-admin-client/lib";
+import KeycloakAdminClient from "@keycloak/keycloak-admin-client";
+import { NetworkError } from "@keycloak/keycloak-admin-client";
 import { useAlerts } from "@keycloak/keycloak-ui-shared";
 
 type TotpFormData = {
