@@ -17,15 +17,6 @@ interface RegisterData {
   [key: string]: string | number | boolean;
 }
 
-async function parseJson<T>(response: Response): Promise<T> {
-  const data = await response.text();
-  try {
-    return JSON.parse(data) as T;
-  } catch {
-    throw new Error('Failed to parse JSON response');
-  }
-}
-
 export const ToznyMFAServices = {
 
   initiateTotp: async ({ realm, userId, accessToken }: Params) => {
@@ -35,7 +26,7 @@ export const ToznyMFAServices = {
         ...getAuthorizationHeaders(accessToken)
       }
     });
-    return parseJson<any>(res);
+    return res;
   },
 
   registerTotp: async ({ realm, userId, accessToken }: Params, data: RegisterData) => {
@@ -48,7 +39,7 @@ export const ToznyMFAServices = {
         },
       body: JSON.stringify(data),
     });
-    return parseJson<any>(res);
+    return res;
   },
 
   initiateWebauthn: async ({ realm, userId, accessToken }: Params) => {
@@ -60,7 +51,7 @@ export const ToznyMFAServices = {
         ...getAuthorizationHeaders(accessToken)
       },
     });
-    return parseJson<any>(res);
+    return res;
   },
 
   registerWebauthn: async ({ realm, userId, accessToken }: Params, data: RegisterData) => {
@@ -80,6 +71,6 @@ export const ToznyMFAServices = {
       body: formBody.toString(),
     });
 
-    return parseJson<any>(res);
+    return res;
   },
 };

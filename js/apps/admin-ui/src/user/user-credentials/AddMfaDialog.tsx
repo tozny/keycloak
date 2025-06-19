@@ -1,6 +1,6 @@
-import { ActionGroup, Button, ButtonVariant, Divider, Flex, FlexItem, Form, Label, List, ListItem, Modal, ModalVariant, PageSection, Text ,TextContent, TextVariants, Title } from "@patternfly/react-core"
+import { ActionGroup, AlertVariant, Button, ButtonVariant, Divider, Flex, FlexItem, Form, Label, List, ListItem, Modal, ModalVariant, PageSection, Text ,TextContent, TextVariants, Title } from "@patternfly/react-core"
 import { QRCodeSVG } from "qrcode.react"
-import { KeycloakSpinner, TextControl } from "@keycloak/keycloak-ui-shared";
+import { KeycloakSpinner, TextControl, useAlerts } from "@keycloak/keycloak-ui-shared";
 import { useTranslation } from "react-i18next";
 import Page from "../../page/Page";
 import { TozMFA } from "../utils/TozMfa";
@@ -11,6 +11,8 @@ import useToggle from "../../utils/useToggle";
 import { useRealm } from "../../context/realm-context/RealmContext";
 import { useEffect, useState } from "react";
 import { useAdminClient } from "../../admin-client";
+import { NetworkError } from "libs/keycloak-admin-client/lib";
+import { add } from "lodash-es";
 
 
 type TotpPolicy = {
@@ -47,17 +49,36 @@ export const AddMfaDialog = ({
     const [totp, setTotp] = useState<Totp | null>(null);
     const tozMfa = new TozMFA(realm!, user.id!);
     const [confirm, toggle] = useToggle(true);
+    const [addedMfa, setAddedMfa] = useState(false)
     const { adminClient } = useAdminClient();
+    const { addError } = useAlerts();
 
     useEffect(() => {
         const loadTotp = async () => {
-            let accessToken = await adminClient.getAccessToken()
-            let totpResult = await tozMfa.InitiateTotp(accessToken!);
-            setTotp(totpResult);
+            try{
+                const accessToken = await adminClient.getAccessToken()
+                const initiateResponse = await tozMfa.InitiateTotp(accessToken!);
+                const initiateResponseData = await initiateResponse.text();
+                const totpJson = JSON.parse(initiateResponseData)
+                setTotp(totpJson);
+            } catch (err){
+                if (err instanceof NetworkError){
+                    addError(`Unable to initialize TOTP: ${err.message}`, AlertVariant.danger)
+                }
+                if (err instanceof SyntaxError){
+                    addError(`Unable to parse initialize TOTP result: ${err.message}`, AlertVariant.danger)
+                }
+            }
         }
         loadTotp()
     }, [])
 
+    function checkAddedMfaBeforeClose(){
+        if(addedMfa){
+            refresh()
+        }
+        onClose()
+    }
 
 
     if (!totp) return <KeycloakSpinner />;
@@ -66,7 +87,7 @@ export const AddMfaDialog = ({
         <Modal
             title={"Add MFA"}
             isOpen={confirm}
-            onClose={onClose}
+            onClose={checkAddedMfaBeforeClose}
             variant={ModalVariant.large}>
             <PageSection>
                 <Title headingLevel="h2">
@@ -77,9 +98,11 @@ export const AddMfaDialog = ({
                     <ListItem>
                         <Text component={TextVariants.p}>Install one of the following applications on your mobile:</Text>
                         <List>
-                            {/* NEED TO USE  totp.policy && totp.policy.supportedApplications FOR THIS*/}
-                            <ListItem>FreeOTP</ListItem>
-                            <ListItem>Google Authenticator</ListItem>
+                            {totp.policy.supportedApplications.map((item) =>(
+                                <ListItem>
+                                    <Text component={TextVariants.p}>{item}</Text>
+                                </ListItem>
+                            ))}
                         </List>
                     </ListItem>
                     <ListItem>
@@ -126,7 +149,7 @@ export const AddMfaDialog = ({
                     </Flex>
                     </ListItem>
                     <ListItem>
-                        <TotpForm totp={totp} tozMfa={tozMfa} adminClient={adminClient}/>
+                        <TotpForm totp={totp} tozMfa={tozMfa} adminClient={adminClient} onSuccess={setAddedMfa}/>
                     </ListItem>
                 </List>
             </PageSection>

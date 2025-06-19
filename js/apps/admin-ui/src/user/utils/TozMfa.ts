@@ -26,44 +26,17 @@ export class TozMFA {
             //Notifications.error("Secret Key is required.");
             return;
           }
-          console.log("THIS IS THE TOTP CODE: " + totpCode)
           totpLabel = totpLabel && totpLabel.trim() ? totpLabel.trim() : 'totp';
-          try {
-            console.log("getting response")
-            const registerResponse = await ToznyMFAServices.registerTotp({
-              realm: this.realm.realm!,
-              userId: this.userId,
-              accessToken: accessToken
-            }, {
-              totp: totpCode,
-              secret: totp.secret,
-              userLabel: totpLabel
-            })
-            console.log(registerResponse)
-          } catch (err){
-            console.log(err)
-          }
-          // ToznyMFAServices.registerTotp({
-          //     realm: this.realm.realm,
-          //     userId: this.userId
-          //   }, {
-          //     totp: totpCode,
-          //     secret: totp.secret,
-          //     userLabel: totpLabel
-          //   },
-          //   function (response) {
-          //     console.log(response);
-          //     Notifications.success("Successfully registered credential");
-          //     const path = `realms/${realm.realm}/users/${user.id}`;
-          //     $location.url(path);
-          //   },
-          //   function (err) {
-          //     Notifications.error(
-          //       $translate.instant("user.credential.fetch.error")
-          //     );
-          //     console.log(err);
-          //   }
-          // );
+
+          return await ToznyMFAServices.registerTotp({
+            realm: this.realm.realm!,
+            userId: this.userId,
+            accessToken: accessToken
+          }, {
+            totp: totpCode,
+            secret: totp.secret,
+            userLabel: totpLabel
+          })
     }
 
     async InitiateTotp(accessToken: string){
@@ -73,9 +46,6 @@ export class TozMFA {
             accessToken: accessToken
           },
         );
-        // if ($scope.totp.qrCode) {
-        //     $scope.qrcodeText = $scope.totp.qrCode;
-        //   }
     }
 
     async InitiateWebauthn(webauthnLabel: string, accessToken: string){

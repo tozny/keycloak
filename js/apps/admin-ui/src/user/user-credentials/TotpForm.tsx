@@ -5,11 +5,13 @@ import {
   ActionGroup,
   Button,
   ButtonVariant,
+  AlertVariant,
 } from "@patternfly/react-core";
 import { TextControl } from "@keycloak/keycloak-ui-shared";
 import { useTranslation } from "react-i18next";
 import { TozMFA } from "../utils/TozMfa";
-import KeycloakAdminClient from "libs/keycloak-admin-client/lib";
+import KeycloakAdminClient, { NetworkError } from "libs/keycloak-admin-client/lib";
+import { useAlerts } from "@keycloak/keycloak-ui-shared";
 
 type TotpFormData = {
     "totpDevice": string;
@@ -20,9 +22,10 @@ type TotpFormData = {
     totp: any; // use a specific type if available
     tozMfa: TozMFA
     adminClient : KeycloakAdminClient
+    onSuccess: (value: boolean) => void
   };
 
-  const TotpForm: React.FC<TotpFormProps> = ({ totp, tozMfa, adminClient }) => {
+  const TotpForm: React.FC<TotpFormProps> = ({ totp, tozMfa, adminClient, onSuccess }) => {
     const {
       control,
       handleSubmit,
@@ -36,17 +39,22 @@ type TotpFormData = {
 
 
     const { t } = useTranslation();
+    const { addAlert, addError } = useAlerts();
 
     const onSubmit = async (data: TotpFormData) => {
       try{
-        console.log("IN HERE")
         let accessToken = await adminClient.getAccessToken();
-        console.log("Got Token")
         let totpCode = data["totpCode"]
         let totpDevice = data["totpDevice"]
         await tozMfa.RegisterTotp(totp, totpCode, totpDevice, accessToken!);
+        onSuccess(true)
+        addAlert(`Successfully registered credential ${totpDevice}`, AlertVariant.success);
       } catch (err){
-        console.error(err)
+        if (err instanceof NetworkError){
+          addError(`Unable to register credential: ${err.message}`, AlertVariant.danger);
+        } else if (err instanceof Error){
+          addError(`Something went wrong: ${err.message}`, AlertVariant.danger);
+        }
       }
 
     };
