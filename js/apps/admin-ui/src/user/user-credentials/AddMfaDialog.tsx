@@ -9,7 +9,7 @@ import useToggle from "../../utils/useToggle";
 import { useRealm } from "../../context/realm-context/RealmContext";
 import { useEffect, useState } from "react";
 import { useAdminClient } from "../../admin-client";
-import { NetworkError } from "libs/keycloak-admin-client/lib";
+import { NetworkError } from "@keycloak/keycloak-admin-client";
 
 
 type TotpPolicy = {
