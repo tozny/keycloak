@@ -97,7 +97,7 @@ export const AddMfaDialog = ({
                         {totp.supportedApplications && (<List>
                             {totp.supportedApplications.map((item) =>(
                                 <ListItem>
-                                    <Text component={TextVariants.p}>{item}</Text>
+                                    <Text component={TextVariants.p}>{t(item)}</Text>
                                 </ListItem>
                             ))}
                         </List>)}
