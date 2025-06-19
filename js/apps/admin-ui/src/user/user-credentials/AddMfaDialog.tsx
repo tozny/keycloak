@@ -20,7 +20,6 @@ type TotpPolicy = {
     lookAheadWindow : number;
     period : number;
     algorithmKey : string;
-    supportedApplications : string[] | undefined
 }
 
 type Totp = {
@@ -28,6 +27,7 @@ type Totp = {
   secret : string;
   qrCode : string;
   policy : TotpPolicy
+  supportedApplications : string[]
 }
 
 type AddMfaDialogProps = {
@@ -94,8 +94,8 @@ export const AddMfaDialog = ({
                 <List component="ol" className="col-md-12 leading-spacious">
                     <ListItem>
                         <Text component={TextVariants.p}>Install one of the following applications on your mobile:</Text>
-                        {totp.policy.supportedApplications && (<List>
-                            {totp.policy.supportedApplications.map((item) =>(
+                        {totp.supportedApplications && (<List>
+                            {totp.supportedApplications.map((item) =>(
                                 <ListItem>
                                     <Text component={TextVariants.p}>{item}</Text>
                                 </ListItem>
