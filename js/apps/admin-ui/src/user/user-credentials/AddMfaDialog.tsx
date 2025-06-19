@@ -1,10 +1,8 @@
-import { ActionGroup, AlertVariant, Button, ButtonVariant, Divider, Flex, FlexItem, Form, Label, List, ListItem, Modal, ModalVariant, PageSection, Text ,TextContent, TextVariants, Title } from "@patternfly/react-core"
+import { AlertVariant, Divider, Flex, FlexItem, Label, List, ListItem, Modal, ModalVariant, PageSection, Text ,TextVariants, Title } from "@patternfly/react-core"
 import { QRCodeSVG } from "qrcode.react"
-import { KeycloakSpinner, TextControl, useAlerts } from "@keycloak/keycloak-ui-shared";
+import { KeycloakSpinner, useAlerts } from "@keycloak/keycloak-ui-shared";
 import { useTranslation } from "react-i18next";
-import Page from "../../page/Page";
 import { TozMFA } from "../utils/TozMfa";
-import RealmRepresentation from "libs/keycloak-admin-client/lib/defs/realmRepresentation";
 import UserRepresentation from "libs/keycloak-admin-client/lib/defs/userRepresentation";
 import TotpForm from "./TotpForm";
 import useToggle from "../../utils/useToggle";
@@ -12,7 +10,6 @@ import { useRealm } from "../../context/realm-context/RealmContext";
 import { useEffect, useState } from "react";
 import { useAdminClient } from "../../admin-client";
 import { NetworkError } from "libs/keycloak-admin-client/lib";
-import { add } from "lodash-es";
 
 
 type TotpPolicy = {
