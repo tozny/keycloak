@@ -55,8 +55,10 @@ export class TozMFA {
             accessToken: accessToken
           }
         );
-        console.log(initiateResponse)
-        await this.registerWebauthnDevice(initiateResponse, webauthnLabel, accessToken)
+        const initiateResponseData = await initiateResponse.text();
+        const initiateWebauthnJson = JSON.parse(initiateResponseData)
+        console.log(initiateWebauthnJson)
+        await this.registerWebauthnDevice(initiateWebauthnJson, webauthnLabel, accessToken)
     }
 
     private async registerWebauthnDevice(webauthnChallengeResponse: any, webauthnLabel: string, accessToken: string) {
@@ -68,6 +70,7 @@ export class TozMFA {
             webauthnChallengeResponse.tab_id,
             webauthnChallengeResponse.login_context
           );
+          console.log(challengeData)
           let registrationData;
           try {
             registrationData = await navigator.credentials.create({
