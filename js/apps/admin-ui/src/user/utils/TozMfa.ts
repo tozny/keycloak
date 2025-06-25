@@ -49,14 +49,14 @@ export class TozMFA {
     }
 
     async InitiateWebauthn(webauthnLabel: string, accessToken: string){
-        const initiateResponse = ToznyMFAServices.initiateWebauthn({
+        const initiateResponse = await ToznyMFAServices.initiateWebauthn({
             realm: this.realm.realm!,
             userId: this.userId,
             accessToken: accessToken
           }
         );
         console.log(initiateResponse)
-        this.registerWebauthnDevice(initiateResponse, webauthnLabel, accessToken)
+        await this.registerWebauthnDevice(initiateResponse, webauthnLabel, accessToken)
     }
 
     private async registerWebauthnDevice(webauthnChallengeResponse: any, webauthnLabel: string, accessToken: string) {
