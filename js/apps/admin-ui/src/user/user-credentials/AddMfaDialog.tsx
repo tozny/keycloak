@@ -10,6 +10,7 @@ import { useRealm } from "../../context/realm-context/RealmContext";
 import { useEffect, useState } from "react";
 import { useAdminClient } from "../../admin-client";
 import { NetworkError } from "@keycloak/keycloak-admin-client";
+import WebauthnForm from "./WebauthnForm";
 
 
 type TotpPolicy = {
@@ -155,6 +156,7 @@ export const AddMfaDialog = ({
                     <Text>Security Key Authentication</Text>
                 </Title>
                 <Divider orientation={{ default: 'horizontal' }} />
+                <WebauthnForm tozMfa={tozMfa} adminClient={adminClient} onSuccess={setAddedMfa}/>
             </PageSection>
         </Modal>
         </>
