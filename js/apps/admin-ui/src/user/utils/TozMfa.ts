@@ -60,10 +60,9 @@ export class TozMFA {
     }
 
     private async registerWebauthnDevice(webauthnChallengeResponse: any, webauthnLabel: string, accessToken: string) {
-        if (webauthnChallengeResponse) {
+        if (!webauthnChallengeResponse) {
             console.error('no challege data');
-            //Notifications.error("No Challenge data found! Please try again.");
-            return;
+            throw new Error("No challege data")
           }
           const challengeData = new Tozny.types.InitiateWebAuthnChallengeData(
             webauthnChallengeResponse.tab_id,
@@ -75,8 +74,7 @@ export class TozMFA {
               publicKey: challengeData.toPublicKeyCredentialCreationOptions(),
             })
           } catch (exception) {
-            console.error(exception);
-            return;
+            throw exception
           }
 
 

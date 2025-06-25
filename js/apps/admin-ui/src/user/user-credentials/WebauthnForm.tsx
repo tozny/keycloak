@@ -28,7 +28,7 @@ const WebauthnForm: React.FC<WebauthnFormProps> = ({tozMfa, adminClient, onSucce
       formState: { errors },
     } = useForm<WebauthnFormData>({
       defaultValues: {
-        "webauthnLabel": "webauthn"
+        "webauthnLabel": "securitykey"
       },
     });
 
@@ -59,7 +59,7 @@ const WebauthnForm: React.FC<WebauthnFormProps> = ({tozMfa, adminClient, onSucce
                   control={control}
                   label={t("webauthnLabel")}
                   rules={{ required: t("required") }}
-                  defaultValue="webauthn"
+                  defaultValue="securitykey"
                 />
                 <Button
                   id="reset-submit"
