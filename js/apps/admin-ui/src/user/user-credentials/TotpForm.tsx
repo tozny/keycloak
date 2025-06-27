@@ -20,7 +20,7 @@ type TotpFormData = {
   };
 
   type TotpFormProps = {
-    totp: any; // use a specific type if available
+    totp: any;
     tozMfa: TozMFA
     adminClient : KeycloakAdminClient
     onSuccess: (value: boolean) => void
