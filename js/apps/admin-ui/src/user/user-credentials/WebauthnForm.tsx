@@ -8,6 +8,7 @@ import {
   Button,
   ButtonVariant,
   AlertVariant,
+  ActionGroup,
 } from "@patternfly/react-core";
 import { useState } from "react";
 
@@ -64,17 +65,19 @@ const WebauthnForm: React.FC<WebauthnFormProps> = ({tozMfa, adminClient, onSucce
                   rules={{ required: t("required") }}
                   defaultValue="securitykey"
                 />
-                <Button
-                  id="webauthn-submit"
-                  data-testid="webauthn-submit"
-                  key="submit"
-                  type="submit"
-                  variant={ButtonVariant.primary}
-                  isActive={!isCompleted}
-                  style={{ width: "auto", display: "inline-block" }}
-                >
-                    {t("submit")}
-                </Button>
+                <ActionGroup>
+                  <Button
+                    id="webauthn-submit"
+                    data-testid="webauthn-submit"
+                    key="submit"
+                    type="submit"
+                    variant={ButtonVariant.primary}
+                    isDisabled={isCompleted}
+                  >
+                      {t("submit")}
+                  </Button>
+                </ActionGroup>
+
             </Form>
         );
 }

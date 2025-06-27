@@ -5,6 +5,7 @@ import {
   Button,
   ButtonVariant,
   AlertVariant,
+  ActionGroup,
 } from "@patternfly/react-core";
 import { TextControl } from "@keycloak/keycloak-ui-shared";
 import { useTranslation } from "react-i18next";
@@ -77,18 +78,20 @@ type TotpFormData = {
               label={t("totpCode")}
               rules={{ required: t("required") }}
             />
+              <ActionGroup>
+                <Button
+                  id="totp-submit"
+                  data-testid="totp-submit"
+                  key="submit"
+                  type="submit"
+                  variant={ButtonVariant.primary}
+                  isDisabled={isCompleted}
+                  style={{ width: "auto", display: "inline-block" }}
+                >
+                  {t("submit")}
+                </Button>
+              </ActionGroup>
 
-              <Button
-                id="totp-submit"
-                data-testid="totp-submit"
-                key="submit"
-                type="submit"
-                variant={ButtonVariant.primary}
-                isActive={!isCompleted}
-                style={{ width: "auto", display: "inline-block" }}
-              >
-                {t("submit")}
-              </Button>
         </Form>
     );
   };
