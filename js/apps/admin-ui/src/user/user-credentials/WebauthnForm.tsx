@@ -9,6 +9,7 @@ import {
   ButtonVariant,
   AlertVariant,
 } from "@patternfly/react-core";
+import { useState } from "react";
 
 type WebauthnFormData = {
     "webauthnLabel": string;
@@ -34,6 +35,7 @@ const WebauthnForm: React.FC<WebauthnFormProps> = ({tozMfa, adminClient, onSucce
 
     const { t } = useTranslation();
     const { addAlert, addError } = useAlerts();
+    const [ isCompleted, setIsCompleted] = useState(false)
 
     const onSubmit = async (data: WebauthnFormData) => {
       try{
@@ -41,12 +43,13 @@ const WebauthnForm: React.FC<WebauthnFormProps> = ({tozMfa, adminClient, onSucce
         let webauthnLabel = data["webauthnLabel"]
         await tozMfa.InitiateWebauthn(webauthnLabel, accessToken!)
         onSuccess(true)
+        setIsCompleted(true)
         addAlert(`Successfully registered credential ${webauthnLabel}`, AlertVariant.success);
       } catch (err){
         if (err instanceof NetworkError){
           addError(`Unable to register credential: ${err.message}`, AlertVariant.danger);
         } else if (err instanceof Error){
-          addError(`Something went wrong: ${err.message}`, AlertVariant.danger);
+          addError(`Something went wrong: ${t(err.message)}`, AlertVariant.danger);
         }
       }
 
@@ -62,11 +65,13 @@ const WebauthnForm: React.FC<WebauthnFormProps> = ({tozMfa, adminClient, onSucce
                   defaultValue="securitykey"
                 />
                 <Button
-                  id="reset-submit"
-                  data-testid="submit"
+                  id="webauthn-submit"
+                  data-testid="webauthn-submit"
                   key="submit"
                   type="submit"
                   variant={ButtonVariant.primary}
+                  isActive={!isCompleted}
+                  style={{ width: "auto", display: "inline-block" }}
                 >
                     {t("submit")}
                 </Button>

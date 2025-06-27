@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   Form,
@@ -40,6 +40,7 @@ type TotpFormData = {
 
     const { t } = useTranslation();
     const { addAlert, addError } = useAlerts();
+    const [ isCompleted, setIsCompleted] = useState(false)
 
     const onSubmit = async (data: TotpFormData) => {
       try{
@@ -48,12 +49,13 @@ type TotpFormData = {
         let totpDevice = data["totpDevice"]
         await tozMfa.RegisterTotp(totp, totpCode, totpDevice, accessToken!);
         onSuccess(true)
+        setIsCompleted(true)
         addAlert(`Successfully registered credential ${totpDevice}`, AlertVariant.success);
       } catch (err){
         if (err instanceof NetworkError){
           addError(`Unable to register credential: ${err.message}`, AlertVariant.danger);
         } else if (err instanceof Error){
-          addError(`Something went wrong: ${err.message}`, AlertVariant.danger);
+          addError(`Something went wrong: ${t(err.message)}`, AlertVariant.danger);
         }
       }
 
@@ -77,11 +79,13 @@ type TotpFormData = {
             />
 
               <Button
-                id="reset-submit"
-                data-testid="submit"
+                id="totp-submit"
+                data-testid="totp-submit"
                 key="submit"
                 type="submit"
                 variant={ButtonVariant.primary}
+                isActive={!isCompleted}
+                style={{ width: "auto", display: "inline-block" }}
               >
                 {t("submit")}
               </Button>

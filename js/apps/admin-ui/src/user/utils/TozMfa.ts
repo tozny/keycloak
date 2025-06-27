@@ -1,5 +1,7 @@
 import RealmRepresentation from "libs/keycloak-admin-client/lib/defs/realmRepresentation"
 import { ToznyMFAServices } from "./TozMfaServices";
+import { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 
 export class TozMFA {
 
@@ -17,14 +19,10 @@ export class TozMFA {
     async RegisterTotp(totp: any, totpCode: string, totpLabel: string, accessToken: string){
 
         if (!totpCode) {
-          console.log("totpCode:")
-            //Notifications.error("One-time code is required.");
-            return;
+           throw Error("missingTotpCode")
           }
           if (!totp || !totp.secret) {
-            console.log("totp issue")
-            //Notifications.error("Secret Key is required.");
-            return;
+            throw Error("missingSecretKey")
           }
           totpLabel = totpLabel && totpLabel.trim() ? totpLabel.trim() : 'totp';
 
@@ -63,8 +61,7 @@ export class TozMFA {
 
     private async registerWebauthnDevice(webauthnChallengeResponse: any, webauthnLabel: string, accessToken: string) {
         if (!webauthnChallengeResponse) {
-            console.error('no challege data');
-            throw new Error("No challege data")
+            throw new Error("missingChallengeData")
           }
           const challengeData = new Tozny.types.InitiateWebAuthnChallengeData(
             webauthnChallengeResponse.tab_id,
