@@ -120,14 +120,11 @@ export const AddMfaDialog = ({
                         {/* Manual Block */}
                         <FlexItem className="manual-block">
                             <Title headingLevel="h3">Manual Configuration</Title>
-                            <div>
-                            <Label>Secret Key</Label>
-                            <div className="pf-c-form-control">
-                                <Text>{totp.secret}</Text>
-                            </div>
-
-                            {totp.policy && (
+                            {totp.policy && totp.secret && (
                                 <>
+                                <Text component={TextVariants.p}>
+                                    Secret Key: <strong>{totp.secret}</strong>
+                                </Text>
                                 <Text component={TextVariants.p}>
                                     Type: <strong>{totp.policy.type === 'totp' ? 'Time Based' : totp.policy.type}</strong>
                                 </Text>
@@ -142,7 +139,6 @@ export const AddMfaDialog = ({
                                 </Text>
                                 </>
                             )}
-                            </div>
                         </FlexItem>
                     </Flex>
                     </ListItem>
