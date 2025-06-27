@@ -156,7 +156,13 @@ export const AddMfaDialog = ({
                     <Text>Security Key Authentication</Text>
                 </Title>
                 <Divider orientation={{ default: 'horizontal' }} />
-                <WebauthnForm tozMfa={tozMfa} adminClient={adminClient} onSuccess={setAddedMfa}/>
+                <List component="ol">
+                    <ListItem>
+                        <Text>{t("webauthnEnrollInstruction")}</Text>
+                        <WebauthnForm tozMfa={tozMfa} adminClient={adminClient} onSuccess={setAddedMfa}/>
+                    </ListItem>
+                </List>
+
             </PageSection>
         </Modal>
         </>
