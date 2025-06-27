@@ -33,6 +33,7 @@ import { ResetPasswordDialog } from "./user-credentials/ResetPasswordDialog";
 
 import "./user-credentials.css";
 import { useLocation } from "react-router-dom";
+import { AddMfaDialog } from "./user-credentials/AddMfaDialog";
 
 type UserCredentialsProps = {
   user: UserRepresentation;
@@ -104,6 +105,7 @@ export const UserCredentials = ({ user, setUser }: UserCredentialsProps) => {
   const refresh = () => setKey(key + 1);
   const [isOpen, setIsOpen] = useState(false);
   const [openCredentialReset, setOpenCredentialReset] = useState(false);
+  const [openAddMFA, setOpenAddMfa] = useState(false)
   const [userCredentials, setUserCredentials] = useState<
     CredentialRepresentation[]
   >([]);
@@ -402,6 +404,13 @@ export const UserCredentials = ({ user, setUser }: UserCredentialsProps) => {
           onClose={() => setOpenCredentialReset(false)}
         />
       )}
+      {openAddMFA && (
+        <AddMfaDialog
+          user={user}
+          refresh={refresh}
+          onClose={() => setOpenAddMfa(false)}
+        />
+      )}
       <DeleteConfirm />
       {user.email && !emptyState && (
         <Button
@@ -413,6 +422,14 @@ export const UserCredentials = ({ user, setUser }: UserCredentialsProps) => {
           {t("credentialResetBtn")}
         </Button>
       )}
+      <Button
+        className="kc-resetCredentialBtn-header"
+        variant="primary"
+        data-testid="addMfaBtn"
+        onClick={() => setOpenAddMfa(true)}
+      >
+        Add MFA
+      </Button>
       {userCredentials.length !== 0 && passwordTypeFinder === undefined && (
         <>
           <Button

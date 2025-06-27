@@ -122,16 +122,7 @@ export class TozUser {
     } catch (error){
       throw error
     }
-    return ["", "Uh Oh!"]
-
-        // .then(message => {
-        //     const successMessage = "Password reset complete for " + username + ": " + message;
-        //     //Send Success
-        // })
-        // .catch((err) => {
-        //     //displayBrokerError(err);
-        //     // Force re-render... this does not like displaying messages in this context
-        // });
+    return ["", "Unable to send password recovery"]
 }
 
 }
