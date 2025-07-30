@@ -5,6 +5,10 @@
 			"displayName": "${username}",
 			"validations": {
 				"length": { "min": 3, "max": 255 },
+				"pattern": {
+					"pattern": "^[a-zA-Z0-9._-]+$",
+					"error-message": "Only letters, numbers, dots, hyphens and underscores are allowed."
+				},
 				"username-prohibited-characters": {}
 			}
 		},
@@ -26,6 +30,10 @@
 			},
 			"validations": {
 				"length": { "max": 255 },
+				"pattern": {
+					"pattern": "^[a-zA-Z0-9._-]+$",
+					"error-message": "Only letters, numbers, dots, hyphens and underscores are allowed."
+				},
 				"person-name-prohibited-characters": {}
 			}
 		},
@@ -39,7 +47,10 @@
 			},
 			"validations": {
 				"length": { "max": 255 },
-				"person-name-prohibited-characters": {}
+				"pattern": {
+					"pattern": "^[a-zA-Z0-9._-]+$",
+					"error-message": "Only letters, numbers, dots, hyphens and underscores are allowed."
+				}
 			}
 		}
 	]
