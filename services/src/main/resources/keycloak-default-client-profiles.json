@@ -2,7 +2,7 @@
   "profiles": [
     {
       "name": "fapi-1-baseline",
-      "description": "Client profile, which enforce clients to conform 'Financial-grade API Security Profile 1.0 - Part 1: Baseline' specification.",
+      "description": "Editeeeeeeeeeeed Client profile, which enforce clients to conform 'Financial-grade API Security Profile 1.0 - Part 1: Baseline' specification.",
       "executors": [
         {
           "executor": "secure-session",
