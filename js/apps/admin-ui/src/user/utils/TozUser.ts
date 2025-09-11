@@ -1,4 +1,4 @@
-import { fetchWithError } from "@keycloak/keycloak-admin-client";
+import { fetchWithError, NetworkError, NetworkErrorOptions } from "@keycloak/keycloak-admin-client";
 import { environment } from "../../environment";
 import RealmRepresentation from "libs/keycloak-admin-client/lib/defs/realmRepresentation";
 
@@ -102,6 +102,7 @@ export class TozUser {
     }
     catch( error: any) {
       let customMessage = "We were unable to create an account for your user, please try again later."
+      let returnError: NetworkErrorOptions = {response: error.response, responseData: {errorMessage:customMessage}}
       if (error.response !== undefined) {
         let statusCode = error.response.status
         if (statusCode == 409) {
@@ -115,14 +116,13 @@ export class TozUser {
               if (typeof bodyObj === "string") {
                 bodyObj = JSON.parse(bodyObj);
               }
-              error.responseData = bodyObj;
-              throw error
+              returnError.responseData = bodyObj;
             } catch (ex) {
               console.log(ex);
             }
         }
       }
-      throw new Error(customMessage)
+      throw new NetworkError("", returnError)
     }
   }
 
