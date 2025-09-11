@@ -69,9 +69,13 @@ export default function CreateUser() {
       navigate(
         toUser({ id: toznyUser.config.keycloakUserId, realm: realmName, tab: "credentials" }, `reset_link=${encodedLink}`),
       );
-    } catch(err) {
-      addError("userCreateError", err);
-
+    } catch(error) {
+      if (isUserProfileError(error)) {
+        setUserProfileServerError(error, form.setError, ((key, param) =>
+          t(key as string, param as any)) as TFunction);
+      } else {
+        addError("userCreateError", error);
+      }
     };
     setLoading(false)
     //End Custom TozID Code
