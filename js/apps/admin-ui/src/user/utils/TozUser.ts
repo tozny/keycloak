@@ -101,14 +101,13 @@ export class TozUser {
       return [toznyUser, resetLink, message, sendPasswordRecoverySuccess]
     }
     catch( error: any) {
-      let customMessage = "We were unable to create an account for your user, please try again later."
-      let returnError: NetworkErrorOptions = {response: error.response, responseData: {errorMessage:customMessage}}
+      let returnError: NetworkErrorOptions = {response: error.response, responseData: {errorMessage:"We were unable to create an account for your user, please try again later."}}
       if (error.response !== undefined) {
         let statusCode = error.response.status
         if (statusCode == 409) {
-          customMessage = "Sorry, the user " + email + " already exists."
+          returnError.responseData = {errorMessage: `Sorry, the user ${email} already exists.`}
         } else if (statusCode == 401) {
-          customMessage = "Please provide a valid registration token"
+          returnError.responseData = {errorMessage: "Please provide a valid registration token"}
         } else {
           try {
               const bodyString = await error.response.text();
