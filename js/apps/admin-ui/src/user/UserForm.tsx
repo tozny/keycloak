@@ -276,6 +276,7 @@ export const UserForm = ({
               label={t("email")}
               type="email"
               rules={{
+                required: t("required"),
                 pattern: {
                   value: emailRegexPattern,
                   message: t("emailInvalid"),
