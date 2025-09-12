@@ -52,6 +52,7 @@ export default function CreateUser() {
   );
 
   const save = async (data: UserFormFields) => {
+    console.log("Added groups", addedGroups);
     setLoading(true)
     //Custom TozID Code
     const username = data.username!.toLowerCase().trim();
