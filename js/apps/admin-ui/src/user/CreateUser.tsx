@@ -59,7 +59,11 @@ export default function CreateUser() {
 
     // instantiate tozID client
     try{
-      const [toznyUser, resetLink, message, success] = await tozUser.CreateUser(username, data.email!, data.firstName!, data.lastName!, data.authentication?.emailRecoveryExpirationMinutes,data.authentication?.adminRecoveryExpirationMinutes)
+      let groups: string[] = []
+      addedGroups.map((group)=>{
+        groups.push(group.path!)
+      })
+      const [toznyUser, resetLink, message, success] = await tozUser.CreateUser(username, data.email!, data.firstName!, data.lastName!, data.authentication?.emailRecoveryExpirationMinutes,data.authentication?.adminRecoveryExpirationMinutes, groups)
       const encodedLink = encodeURIComponent(resetLink)
       if (success){
         addAlert(t("userCreated"), AlertVariant.success);
