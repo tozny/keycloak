@@ -271,10 +271,11 @@ export const UserForm = ({
                 }}
               />
             )}
-            <TextControl
+            {/* <TextControl
               name="email"
               label="checkmmmmmm"
               type="email"
+              helperText="hello test"
               rules={{
                 required: {
                   value: true,
@@ -285,7 +286,7 @@ export const UserForm = ({
                   message: t("emailInvalid"),
                 },
               }}
-            />
+            /> */}
             <SwitchControl
               name="emailVerified"
               label={t("emailVerified")}
