@@ -253,7 +253,7 @@ export const UserForm = ({
                   t(key as string, params as any)) as TFunction
               }
             />
-            {!user?.id && (<ToznyPasswordBrokerFields realm={realm}/>)}
+            {!user?.id && <ToznyPasswordBrokerFields realm={realm} />}
           </>
         ) : (
           <>
@@ -271,22 +271,17 @@ export const UserForm = ({
                 }}
               />
             )}
-            {/* <TextControl
+            <TextControl
               name="email"
-              label="checkmmmmmm"
+              label={t("email")}
               type="email"
-              helperText="hello test"
               rules={{
-                required: {
-                  value: true,
-                  message: t("required"),
-                },
                 pattern: {
                   value: emailRegexPattern,
                   message: t("emailInvalid"),
                 },
               }}
-            /> */}
+            />
             <SwitchControl
               name="emailVerified"
               label={t("emailVerified")}
@@ -295,7 +290,7 @@ export const UserForm = ({
               labelOff={t("no")}
             />
 
-            <ToznyPasswordBrokerFields realm={realm}/>
+            <ToznyPasswordBrokerFields realm={realm} />
             <TextControl name="firstName" label={t("firstName")} />
             <TextControl name="lastName" label={t("lastName")} />
           </>
