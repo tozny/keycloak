@@ -273,7 +273,7 @@ export const UserForm = ({
             )}
             <TextControl
               name="email"
-              label={t("email")}
+              label="checkmmmmmm"
               type="email"
               rules={{
                 required: {
