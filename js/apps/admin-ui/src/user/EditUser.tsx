@@ -311,13 +311,13 @@ export default function EditUser() {
             : []
         }
         dropdownItems={[
-          <DropdownItem
-            key="impersonate"
-            isDisabled={!user.access?.impersonate}
-            onClick={() => toggleImpersonateDialog()}
-          >
-            {t("impersonate")}
-          </DropdownItem>,
+          // <DropdownItem
+          //   key="impersonate"
+          //   isDisabled={!user.access?.impersonate}
+          //   onClick={() => toggleImpersonateDialog()}
+          // >
+          //   {t("impersonate")}
+          // </DropdownItem>,
           <DropdownItem
             key="delete"
             isDisabled={!user.access?.manage}
@@ -407,13 +407,13 @@ export default function EditUser() {
                   <Organizations user={user} />
                 </Tab>
               )}
-              <Tab
+              {/* <Tab
                 data-testid="user-consents-tab"
                 title={<TabTitleText>{t("consents")}</TabTitleText>}
                 {...consentsTab}
               >
                 <UserConsents />
-              </Tab>
+              </Tab> */}
               <Tab
                 data-testid="identity-provider-links-tab"
                 title={
