@@ -217,11 +217,13 @@ export const UserForm = ({
             </FormGroup>
           </>
         )}
+        {user?.id && (
         <RequiredActionMultiSelect
           name="requiredActions"
           label="requiredUserActions"
           help="requiredUserActionsHelp"
         />
+        )}
         {user?.federationLink && canViewFederationLink && (
           <FormGroup
             label={t("federationLink")}
