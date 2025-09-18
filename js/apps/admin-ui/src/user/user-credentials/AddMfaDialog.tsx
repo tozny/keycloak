@@ -110,7 +110,7 @@ export const AddMfaDialog = ({
                         <FlexItem className="scan-block">
                             <Title headingLevel="h3">Scan the QR Code</Title>
                             {totp.qrCode && (
-                                <QRCodeSVG value={totp.qrCode} bgColor="#aeaeae" size={230}></QRCodeSVG>
+                                <QRCodeSVG value={totp.qrCode} bgColor="#ffffff" size={230}></QRCodeSVG>
                             )}
                         </FlexItem>
 
