@@ -98,9 +98,9 @@ export const AddMfaDialog = ({
                         {totp.supportedApplications && (<List>
                             {totp.supportedApplications.map((item) =>(
                                 <ListItem>
-                                    <Text component={TextVariants.p}>{t(`otpSupportedApplications.${item}`)}</Text>
-                                </ListItem>
-                            ))}
+                                        <Text component={TextVariants.p}>{t(`otpSupportedApplications.${item}`)}</Text>
+                                    </ListItem>
+                                ))}
                         </List>)}
                     </ListItem>
                     <ListItem>
@@ -152,7 +152,7 @@ export const AddMfaDialog = ({
                     <Text>Security Key Authentication</Text>
                 </Title>
                 <Divider orientation={{ default: 'horizontal' }} className="pf-v5-u-mb-lg" />
-                <List component="ol" className="pf-v5-u-mt-xl">
+                <List component="ol">
                     <ListItem>
                         <Stack hasGutter>
                             <StackItem>
