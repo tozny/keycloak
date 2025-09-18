@@ -79,7 +79,6 @@ export const AddMfaDialog = ({
     }
 
 
-    if (!totp) return <KeycloakSpinner />;
     return (
         <>
         <Modal
@@ -87,6 +86,12 @@ export const AddMfaDialog = ({
             isOpen={confirm}
             onClose={checkAddedMfaBeforeClose}
             variant={ModalVariant.large}>
+            {!totp ? (
+                <PageSection variant="light">
+                    <KeycloakSpinner />
+                </PageSection>
+            ) : (
+                <>
             <PageSection variant="light">
                 <Title headingLevel="h2">
                     <Text>Authenticator App</Text>
@@ -95,13 +100,15 @@ export const AddMfaDialog = ({
                 <List component="ol" className="col-md-12 leading-spacious">
                     <ListItem>
                         <Text component={TextVariants.p}>Install one of the following applications on your mobile:</Text>
-                        {totp.supportedApplications && (<List>
-                            {totp.supportedApplications.map((item) =>(
-                                <ListItem>
+                        {totp.supportedApplications && (
+                            <List>
+                                {totp.supportedApplications.map((item: string, idx: number) => (
+                                    <ListItem key={item || idx}>
                                         <Text component={TextVariants.p}>{t(`otpSupportedApplications.${item}`)}</Text>
                                     </ListItem>
                                 ))}
-                        </List>)}
+                            </List>
+                        )}
                     </ListItem>
                     <ListItem>
                         <Text component={TextVariants.p}>Open the application and scan the QR code or manually configure</Text>
@@ -165,6 +172,8 @@ export const AddMfaDialog = ({
                     </ListItem>
                 </List>
             </PageSection>
+                </>
+            )}
         </Modal>
         </>
     )
