@@ -151,8 +151,8 @@ export const AddMfaDialog = ({
                 <Title headingLevel="h2">
                     <Text>Security Key Authentication</Text>
                 </Title>
-                <Divider orientation={{ default: 'horizontal' }} />
-                <List component="ol">
+                <Divider orientation={{ default: 'horizontal' }} className="pf-v5-u-mb-lg" />
+                <List component="ol" className="pf-v5-u-mt-xl">
                     <ListItem>
                         <Stack hasGutter>
                             <StackItem>
