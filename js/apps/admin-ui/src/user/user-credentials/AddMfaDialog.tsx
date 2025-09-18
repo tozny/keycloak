@@ -1,4 +1,4 @@
-import { AlertVariant, Divider, Flex, FlexItem, Label, List, ListItem, Modal, ModalVariant, PageSection, Text ,TextVariants, Title } from "@patternfly/react-core"
+import { AlertVariant, Divider, Flex, FlexItem, Label, List, ListItem, Modal, ModalVariant, PageSection, Text ,TextVariants, Title, Stack, StackItem } from "@patternfly/react-core"
 import { QRCodeSVG } from "qrcode.react"
 import { KeycloakSpinner, useAlerts } from "@keycloak/keycloak-ui-shared";
 import { useTranslation } from "react-i18next";
@@ -87,7 +87,7 @@ export const AddMfaDialog = ({
             isOpen={confirm}
             onClose={checkAddedMfaBeforeClose}
             variant={ModalVariant.large}>
-            <PageSection>
+            <PageSection variant="light">
                 <Title headingLevel="h2">
                     <Text>Authenticator App</Text>
                 </Title>
@@ -147,18 +147,23 @@ export const AddMfaDialog = ({
                     </ListItem>
                 </List>
             </PageSection>
-            <PageSection>
+            <PageSection variant="light">
                 <Title headingLevel="h2">
                     <Text>Security Key Authentication</Text>
                 </Title>
                 <Divider orientation={{ default: 'horizontal' }} />
                 <List component="ol">
                     <ListItem>
-                        <Text>{t("webauthnEnrollInstruction")}</Text>
-                        <WebauthnForm tozMfa={tozMfa} adminClient={adminClient} onSuccess={setAddedMfa}/>
+                        <Stack hasGutter>
+                            <StackItem>
+                                <Text>{t("webauthnEnrollInstruction")}</Text>
+                            </StackItem>
+                            <StackItem>
+                                <WebauthnForm tozMfa={tozMfa} adminClient={adminClient} onSuccess={setAddedMfa}/>
+                            </StackItem>
+                        </Stack>
                     </ListItem>
                 </List>
-
             </PageSection>
         </Modal>
         </>
