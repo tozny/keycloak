@@ -154,4 +154,20 @@ export class TozUser {
       }
   }
 
+  async UnlockUserAccount(userId: string | undefined): Promise<Boolean | Error> {
+    const reqURL = environment.authUrl + '/realms/' + this.realm + '/user/' + userId + '/account/unlock'
+    try {
+        const response: any = await fetchWithError(
+            reqURL,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json"
+              },
+            })
+        return response.data
+      } catch(err : any){
+        return err
+      }           
+  }
 }

@@ -113,6 +113,15 @@ export const UserForm = ({
     checkLockStatus();
   }, [user?.id]);
 
+  const unLockUserAccount = async () => {
+    try {
+      await tozUser.UnlockUserAccount(user!.id!);
+      addAlert(t("unlockSuccess"), AlertVariant.success);
+    } catch(error){
+      addError("unlockError", error);
+    }
+  }
+
   const unLockUser = async () => {
     try {
       await adminClient.users.update({ id: user!.id! }, { enabled: true });
@@ -240,6 +249,27 @@ export const UserForm = ({
           label="requiredUserActions"
           help="requiredUserActionsHelp"
         />
+        )}
+        {user?.id && isAccountLocked && (
+          <FormGroup
+            label={t("temporaryLocked")}
+            fieldId="temporaryLocked"
+            labelIcon={
+              <HelpItem
+                helpText={t("temporaryLockedHelp")}
+                fieldLabelId="temporaryLocked"
+              />
+            }
+          >
+            <Button
+              id="toz-unlock-account"
+              onClick={unLockUserAccount}
+              variant="secondary"
+              data-testid="toz-unlock-account-button"
+              >
+                Unlock Account
+            </Button>
+          </FormGroup>
         )}
         {user?.federationLink && canViewFederationLink && (
           <FormGroup
