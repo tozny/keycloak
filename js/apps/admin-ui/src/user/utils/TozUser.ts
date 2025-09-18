@@ -138,7 +138,7 @@ export class TozUser {
 }
 
   async getUserAccountLockStatus(userId: string | undefined): Promise<Boolean | Error> {
-     const reqURL = environment.authUrl + '/realms/' + this.realm + '/user/' + userId + '/account/status'
+     const reqURL = environment.authUrl + '/realms/' + this.realm?.realm + '/user/' + userId + '/account/status'
      try {
         const response: any = await fetchWithError(
             reqURL,
@@ -155,7 +155,7 @@ export class TozUser {
   }
 
   async UnlockUserAccount(userId: string | undefined): Promise<Boolean | Error> {
-    const reqURL = environment.authUrl + '/realms/' + this.realm + '/user/' + userId + '/account/unlock'
+    const reqURL = environment.authUrl + '/realms/' + this.realm?.realm + '/user/' + userId + '/account/unlock'
     try {
         const response: any = await fetchWithError(
             reqURL,
