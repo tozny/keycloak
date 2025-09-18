@@ -41,6 +41,7 @@ import { RequiredActionMultiSelect } from "./user-credentials/RequiredActionMult
 import { useNavigate } from "react-router-dom";
 import { CopyToClipboardButton } from "../components/copy-to-clipboard-button/CopyToClipboardButton";
 import { ToznyPasswordBrokerFields } from "./ToznyPasswordBrokerFields";
+import { TozUser } from "./utils/TozUser";
 
 export type BruteForced = {
   isBruteForceProtected?: boolean;
@@ -91,10 +92,26 @@ export const UserForm = ({
   const [open, setOpen] = useState(false);
   const [locked, setLocked] = useState(isLocked);
   const navigate = useNavigate();
+  const tozUser = new TozUser(realm!);
+  const [isAccountLocked, setIsAccountLocked] = useState(false);
 
   useEffect(() => {
     setValue("requiredActions", user?.requiredActions || []);
   }, [user, setValue]);
+
+  useEffect(() => {
+    if (!user?.id) return;
+      const checkLockStatus = async () => {
+        try {
+        const locked: any = await tozUser.getUserAccountLockStatus(user.id);
+        setIsAccountLocked(locked);
+        } catch (err) {
+          setIsAccountLocked(false);
+        }
+      };
+
+    checkLockStatus();
+  }, [user?.id]);
 
   const unLockUser = async () => {
     try {

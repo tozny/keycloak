@@ -137,4 +137,21 @@ export class TozUser {
     return ["", "Unable to send password recovery"]
 }
 
+  async getUserAccountLockStatus(userId: string | undefined): Promise<Boolean | Error> {
+     const reqURL = environment.authUrl + '/realms/' + this.realm + '/user/' + userId + '/account/status'
+     try {
+        const response: any = await fetchWithError(
+            reqURL,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json"
+              },
+            })
+        return response.data
+      } catch(err : any){
+        return err
+      }
+  }
+
 }
