@@ -103,7 +103,8 @@ export const UserForm = ({
     if (!user?.id) return;
       const checkLockStatus = async () => {
         try {
-        const locked: any = await tozUser.getUserAccountLockStatus(user.id);
+        const accessToken = await adminClient.getAccessToken();
+        const locked: any = await tozUser.getUserAccountLockStatus(user.id, accessToken);
         setIsAccountLocked(locked);
         } catch (err) {
           setIsAccountLocked(false);
@@ -115,7 +116,8 @@ export const UserForm = ({
 
   const unLockUserAccount = async () => {
     try {
-      await tozUser.UnlockUserAccount(user!.id!);
+       const accessToken = await adminClient.getAccessToken();
+      await tozUser.UnlockUserAccount(user!.id!, accessToken);
       addAlert(t("unlockSuccess"), AlertVariant.success);
     } catch(error){
       addError("unlockError", error);

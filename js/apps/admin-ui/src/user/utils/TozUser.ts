@@ -1,6 +1,7 @@
 import { fetchWithError, NetworkError, NetworkErrorOptions } from "@keycloak/keycloak-admin-client";
 import { environment } from "../../environment";
 import RealmRepresentation from "libs/keycloak-admin-client/lib/defs/realmRepresentation";
+import { getAuthorizationHeaders } from "../../utils/getAuthorizationHeaders";
 
 export class TozUser {
 
@@ -137,7 +138,7 @@ export class TozUser {
     return ["", "Unable to send password recovery"]
 }
 
-  async getUserAccountLockStatus(userId: string | undefined): Promise<Boolean | Error> {
+  async getUserAccountLockStatus(userId: string | undefined, accessToken: string | undefined): Promise<Boolean | Error> {
      const reqURL = environment.authUrl + '/realms/' + this.realm?.realm + '/user/' + userId + '/account/status'
      try {
         const response: any = await fetchWithError(
@@ -145,7 +146,8 @@ export class TozUser {
             {
               method: "GET",
               headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                ...getAuthorizationHeaders(accessToken)
               },
             })
         return response.data
@@ -154,7 +156,7 @@ export class TozUser {
       }
   }
 
-  async UnlockUserAccount(userId: string | undefined): Promise<Boolean | Error> {
+  async UnlockUserAccount(userId: string | undefined, accessToken: string | undefined): Promise<Boolean | Error> {
     const reqURL = environment.authUrl + '/realms/' + this.realm?.realm + '/user/' + userId + '/account/unlock'
     try {
         const response: any = await fetchWithError(
@@ -162,7 +164,8 @@ export class TozUser {
             {
               method: "GET",
               headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                ...getAuthorizationHeaders(accessToken)
               },
             })
         return response.data
