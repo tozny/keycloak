@@ -1,4 +1,4 @@
-import { AlertVariant, Divider, Flex, FlexItem, Label, List, ListItem, Modal, ModalVariant, PageSection, Text ,TextVariants, Title, Stack, StackItem } from "@patternfly/react-core"
+import { AlertVariant, Divider, Flex, FlexItem, Label, List, ListItem, Modal, ModalVariant, PageSection, Text ,TextVariants, Title, Stack, StackItem, Skeleton } from "@patternfly/react-core"
 import { QRCodeSVG } from "qrcode.react"
 import { KeycloakSpinner, useAlerts } from "@keycloak/keycloak-ui-shared";
 import { useTranslation } from "react-i18next";
@@ -86,21 +86,20 @@ export const AddMfaDialog = ({
             isOpen={confirm}
             onClose={checkAddedMfaBeforeClose}
             variant={ModalVariant.large}>
-            {!totp ? (
-                <PageSection variant="light">
-                    <KeycloakSpinner />
-                </PageSection>
-            ) : (
-                <>
             <PageSection variant="light">
                 <Title headingLevel="h2">
                     <Text>Authenticator App</Text>
                 </Title>
+                {!totp && (
+                    <div className="pf-v5-u-mb-md" aria-busy="true">
+                        <KeycloakSpinner />
+                    </div>
+                )}
                 <Divider orientation={{ default: 'horizontal' }} />
                 <List component="ol" className="col-md-12 leading-spacious">
                     <ListItem>
                         <Text component={TextVariants.p}>Install one of the following applications on your mobile:</Text>
-                        {totp.supportedApplications && (
+                        {totp && totp.supportedApplications ? (
                             <List>
                                 {totp.supportedApplications.map((item: string, idx: number) => (
                                     <ListItem key={item || idx}>
@@ -108,6 +107,12 @@ export const AddMfaDialog = ({
                                     </ListItem>
                                 ))}
                             </List>
+                        ) : (
+                            <Stack hasGutter>
+                                <Skeleton width="20%" />
+                                <Skeleton width="25%" />
+                                <Skeleton width="30%" />
+                            </Stack>
                         )}
                     </ListItem>
                     <ListItem>
@@ -116,8 +121,12 @@ export const AddMfaDialog = ({
                         {/* Scan Block */}
                         <FlexItem className="scan-block">
                             <Title headingLevel="h3">Scan the QR Code</Title>
-                            {totp.qrCode && (
+                            {totp && totp.qrCode ? (
                                 <QRCodeSVG value={totp.qrCode} bgColor="#ffffff" size={230}></QRCodeSVG>
+                            ) : (
+                                <div style={{ width: 230, height: 230 }}>
+                                    <Skeleton height="100%" width="100%" />
+                                </div>
                             )}
                         </FlexItem>
 
@@ -127,7 +136,7 @@ export const AddMfaDialog = ({
                         {/* Manual Block */}
                         <FlexItem className="manual-block">
                             <Title headingLevel="h3">Manual Configuration</Title>
-                            {totp.policy && totp.secret && (
+                            {totp && totp.policy && totp.secret ? (
                                 <>
                                 <Text component={TextVariants.p}>
                                     Secret Key: <strong>{totp.secret}</strong>
@@ -145,12 +154,24 @@ export const AddMfaDialog = ({
                                     Interval: <strong>{totp.policy.period}</strong>
                                 </Text>
                                 </>
+                            ) : (
+                                <Stack hasGutter>
+                                    <Skeleton width="60%" />
+                                    <Skeleton width="40%" />
+                                    <Skeleton width="35%" />
+                                    <Skeleton width="30%" />
+                                    <Skeleton width="25%" />
+                                </Stack>
                             )}
                         </FlexItem>
                     </Flex>
                     </ListItem>
                     <ListItem>
-                        <TotpForm totp={totp} tozMfa={tozMfa} adminClient={adminClient} onSuccess={setAddedMfa}/>
+                        {totp ? (
+                            <TotpForm totp={totp} tozMfa={tozMfa} adminClient={adminClient} onSuccess={setAddedMfa}/>
+                        ) : (
+                            <Skeleton width="50%" />
+                        )}
                     </ListItem>
                 </List>
             </PageSection>
@@ -163,17 +184,20 @@ export const AddMfaDialog = ({
                     <ListItem>
                         <Stack hasGutter>
                             <StackItem>
-                                <Text>{t("webauthnEnrollInstruction")}</Text>
+                                {totp ? <Text>{t("webauthnEnrollInstruction")}</Text> : <Skeleton width="40%" />}
                             </StackItem>
                             <StackItem>
-                                <WebauthnForm tozMfa={tozMfa} adminClient={adminClient} onSuccess={setAddedMfa}/>
+                                {totp ? (
+                                    <WebauthnForm tozMfa={tozMfa} adminClient={adminClient} onSuccess={setAddedMfa}/>
+                                ) : (
+                                    <Skeleton width="50%" />
+                                )}
                             </StackItem>
                         </Stack>
                     </ListItem>
                 </List>
+
             </PageSection>
-                </>
-            )}
         </Modal>
         </>
     )
