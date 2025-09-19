@@ -149,8 +149,9 @@ export class TozUser {
                 "Content-Type": "application/json",
                 ...getAuthorizationHeaders(accessToken)
               },
-            })
-        return response.data
+            });
+        const data = await response.json()
+        return data;
       } catch(err : any){
         return err
       }
