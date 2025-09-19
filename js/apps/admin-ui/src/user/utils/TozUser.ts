@@ -163,7 +163,7 @@ export class TozUser {
         const response: any = await fetchWithError(
             reqURL,
             {
-              method: "GET",
+              method: "POST",
               headers: {
                 "Content-Type": "application/json",
                 ...getAuthorizationHeaders(accessToken)
