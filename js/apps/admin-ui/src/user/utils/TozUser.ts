@@ -169,7 +169,7 @@ export class TozUser {
                 ...getAuthorizationHeaders(accessToken)
               },
             })
-        return response.data
+        return await response.json()
       } catch(err : any){
         return err
       }           
