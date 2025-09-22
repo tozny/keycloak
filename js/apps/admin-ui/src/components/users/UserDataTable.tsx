@@ -179,10 +179,13 @@ export function UserDataTable() {
     }
 
     try {
-      return await findUsers(adminClient, {
+      const users = await findUsers(adminClient, {
         briefRepresentation: true,
         ...params,
       });
+      
+      // Filter out users with first name 'Sovereign'
+      return users.filter(user => user.firstName !== 'Sovereign');
     } catch (error) {
       if (uiRealmInfo.userProfileProvidersEnabled) {
         addError("noUsersFoundErrorStorage", error);
