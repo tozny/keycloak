@@ -38,6 +38,7 @@ import { UiRealmInfo } from "../../context/auth/uiRealmInfo";
 import { useRealm } from "../../context/realm-context/RealmContext";
 import { SearchType } from "../../user/details/SearchFilter";
 import { toAddUser } from "../../user/routes/AddUser";
+import { toImportUsers } from "../../user/routes/ImportUsers";
 import { toUser } from "../../user/routes/User";
 import { emptyFormatter } from "../../util";
 import { useConfirmDialog } from "../confirm-dialog/ConfirmDialog";
@@ -234,6 +235,7 @@ export function UserDataTable() {
   });
 
   const goToCreate = () => navigate(toAddUser({ realm: realmName }));
+  const goToImport = () => navigate(toImportUsers({ realm: realmName }));
 
   if (!uiRealmInfo || !realm) {
     return <KeycloakSpinner />;
@@ -314,6 +316,7 @@ export function UserDataTable() {
         toggleDeleteDialog={toggleDeleteDialog}
         toggleUnlockUsersDialog={toggleUnlockUsersDialog}
         goToCreate={goToCreate}
+        goToImport={goToImport}
         searchType={searchType}
         setSearchType={setSearchType}
         searchUser={searchUser}
