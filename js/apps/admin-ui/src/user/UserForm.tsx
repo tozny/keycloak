@@ -119,6 +119,7 @@ export const UserForm = ({
        const accessToken = await adminClient.getAccessToken();
       await tozUser.UnlockUserAccount(user!.id!, accessToken);
       addAlert(t("unlockSuccess"), AlertVariant.success);
+      setIsAccountLocked(false);
     } catch(error){
       addError("unlockError", error);
     }
