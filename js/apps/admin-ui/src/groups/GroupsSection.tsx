@@ -38,6 +38,7 @@ import { DeleteGroup } from "./components/DeleteGroup";
 import { GroupTree } from "./components/GroupTree";
 import { getId, getLastId } from "./groupIdUtils";
 import { toGroups } from "./routes/Groups";
+import GroupMpcSettings from "./GroupMpcSettings";
 
 import "./GroupsSection.css";
 import { AdminEvents } from "../events/AdminEvents";
@@ -274,6 +275,13 @@ export default function GroupsSection() {
                       </Tabs>
                     </Tab>
                   )}
+                  <Tab
+                    eventKey={6}
+                    data-testid="mpc-settings-tab"
+                    title={<TabTitleText>{t("mpcSettingsTabTitle", { defaultValue: "Settings" })}</TabTitleText>}
+                  >
+                    <GroupMpcSettings />
+                  </Tab>
                 </Tabs>
               )}
               {subGroups.length === 0 && <GroupTable refresh={refresh} />}
