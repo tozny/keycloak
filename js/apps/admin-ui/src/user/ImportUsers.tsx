@@ -11,7 +11,6 @@ import {
   Form,
   FormGroup,
   PageSection,
-  Radio,
   Stack,
   StackItem,
   Text,
@@ -19,7 +18,7 @@ import {
   TextVariants,
 } from "@patternfly/react-core";
 import { ExclamationCircleIcon } from "@patternfly/react-icons";
-import { useAlerts } from "@keycloak/keycloak-ui-shared";
+import { TextControl, useAlerts } from "@keycloak/keycloak-ui-shared";
 import { ViewHeader } from "../components/view-header/ViewHeader";
 import { useRealm } from "../context/realm-context/RealmContext";
 import { useAdminClient } from "../admin-client";
@@ -28,14 +27,14 @@ import { toUsers } from "./routes/Users";
 type FormData = {
   file: File | null;
   fileContent: string;
-  importType: "json" | "csv";
+  brokerUrl: string;
 };
 
 export default function ImportUsers() {
   const { adminClient } = useAdminClient();
   const { t } = useTranslation();
   const { addAlert, addError } = useAlerts();
-  const { realm } = useRealm();
+  const { realmRepresentation: realm } = useRealm();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [filename, setFilename] = useState("");
@@ -49,15 +48,14 @@ export default function ImportUsers() {
   } = useForm<FormData>({
     mode: "onChange",
     defaultValues: {
-      importType: "json",
       file: null,
       fileContent: "",
+      brokerUrl: "",
     },
   });
 
   const file = watch("file");
   const fileContent = watch("fileContent");
-  const importType = watch("importType");
 
   const handleFileChange = (file: File) => {
     setFilename(file.name);
@@ -94,7 +92,6 @@ export default function ImportUsers() {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       
       addAlert(t("usersImported"), AlertVariant.success);
-      navigate(toUsers({ realm }));
     } catch (error) {
       console.error("Error importing users:", error);
       addError("userImportError", error);
@@ -105,7 +102,6 @@ export default function ImportUsers() {
 
   const fileUploadOptions = {
     accept: {
-      'application/json': ['.json'],
       'text/csv': ['.csv'],
     },
     maxSize: 10485760, // 10MB
@@ -123,30 +119,21 @@ export default function ImportUsers() {
 
   return (
     <>
-      <ViewHeader titleKey="importUsers" subKey="importUsersDescription" />
+      <ViewHeader titleKey="importUsers" subKey="" />
       <PageSection variant="light">
         <Form isHorizontal onSubmit={handleSubmit(onSubmit)}>
           <FormGroup
-            label={t("fileType")}
-            fieldId="importType"
+            label={t("brokerUrl")}
+            fieldId="brokerUrl"
             isRequired
           >
-            <Stack hasGutter>
-              <Radio
-                id="json"
-                name="importType"
-                label={t("jsonFile")}
-                isChecked={importType === "json"}
-                onChange={() => setValue("importType", "json")}
-              />
-              <Radio
-                id="csv"
-                name="importType"
-                label={t("csvFile")}
-                isChecked={importType === "csv"}
-                onChange={() => setValue("importType", "csv")}
-              />
-            </Stack>
+            <TextControl
+                name="brokerUrl"
+                label={t("brokerUrl")}
+                rules={{ required: t("required") }}
+                labelIcon={t("brokerUrlHelp")}
+                defaultValue={realm?.attributes?.["recoverUri"]}
+            />
           </FormGroup>
 
           <FormGroup
@@ -196,19 +183,12 @@ export default function ImportUsers() {
                 </Button>
                 <Button
                   variant={ButtonVariant.link}
-                  onClick={() => navigate(toUsers({ realm }))}
+                  onClick={() => navigate(toUsers({ "realm": realm?.realm? realm.realm : "" }))}
                   isDisabled={isSubmitting}
                   className="pf-v5-u-ml-sm"
                 >
                   {t("cancel")}
                 </Button>
-              </StackItem>
-              <StackItem>
-                <TextContent>
-                  <Text component={TextVariants.small}>
-                    {t("importUsersHelpText")}
-                  </Text>
-                </TextContent>
               </StackItem>
             </Stack>
           </FormGroup>
