@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { useForm, FormProvider } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
@@ -18,7 +18,7 @@ import {
   TextVariants,
 } from "@patternfly/react-core";
 import { ExclamationCircleIcon } from "@patternfly/react-icons";
-import { TextControl, useAlerts } from "@keycloak/keycloak-ui-shared";
+import { HelpItem, TextControl, useAlerts } from "@keycloak/keycloak-ui-shared";
 import { ViewHeader } from "../components/view-header/ViewHeader";
 import { useRealm } from "../context/realm-context/RealmContext";
 import { useAdminClient } from "../admin-client";
@@ -40,22 +40,33 @@ export default function ImportUsers() {
   const [filename, setFilename] = useState("");
   const [isFileRejected, setIsFileRejected] = useState(false);
 
+  const form = useForm<FormData>({
+    mode: "onChange",
+    defaultValues: {
+      file: null,
+      fileContent: "",
+      brokerUrl: realm?.attributes?.["recoverUri"] ?? "",
+    },
+  });
+
   const {
     handleSubmit,
     setValue,
     watch,
     formState: { errors },
-  } = useForm<FormData>({
-    mode: "onChange",
-    defaultValues: {
-      file: null,
-      fileContent: "",
-      brokerUrl: "",
-    },
-  });
+  } = form;
 
   const file = watch("file");
   const fileContent = watch("fileContent");
+  const brokerUrl = watch("brokerUrl");
+
+  // If realm loads after first render, populate brokerUrl only when empty
+  useEffect(() => {
+    const uri = realm?.attributes?.["recoverUri"] ?? "";
+    if (!brokerUrl && uri) {
+      setValue("brokerUrl", uri, { shouldDirty: false });
+    }
+  }, [realm, brokerUrl, setValue]);
 
   const handleFileChange = (file: File) => {
     setFilename(file.name);
@@ -121,23 +132,22 @@ export default function ImportUsers() {
     <>
       <ViewHeader titleKey="importUsers" subKey="" />
       <PageSection variant="light">
-        <Form isHorizontal onSubmit={handleSubmit(onSubmit)}>
-          <FormGroup
-            label={t("brokerUrl")}
-            fieldId="brokerUrl"
-            isRequired
-          >
+        <FormProvider {...form}>
+          <Form isHorizontal onSubmit={handleSubmit(onSubmit)}>
+          <FormGroup fieldId="brokerUrl">
             <TextControl
                 name="brokerUrl"
                 label={t("brokerUrl")}
                 rules={{ required: t("required") }}
-                labelIcon={t("brokerUrlHelp")}
-                defaultValue={realm?.attributes?.["recoverUri"]}
+                labelIcon={<HelpItem helpText={t("brokerUrlHelp")} fieldLabelId="brokerUrl" />}
             />
           </FormGroup>
 
           <FormGroup
             label={t("fileUpload")}
+            labelIcon={
+              <HelpItem helpText={t("importUsersHelp")} fieldLabelId="userUploadHelp" />
+            }
             fieldId="file"
             isRequired
           >
@@ -192,7 +202,8 @@ export default function ImportUsers() {
               </StackItem>
             </Stack>
           </FormGroup>
-        </Form>
+          </Form>
+        </FormProvider>
       </PageSection>
     </>
   );
