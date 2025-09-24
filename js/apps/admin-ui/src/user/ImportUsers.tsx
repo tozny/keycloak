@@ -8,6 +8,8 @@ import {
   Button,
   ButtonVariant,
   FileUpload,
+  Flex,
+  FlexItem,
   Form,
   FormGroup,
   PageSection,
@@ -69,6 +71,7 @@ export default function ImportUsers() {
   }, [realm, brokerUrl, setValue]);
 
   const handleFileChange = (file: File) => {
+    console.log("File changed:", file)
     setFilename(file.name);
     setValue("file", file);
     setIsFileRejected(false);
@@ -134,19 +137,22 @@ export default function ImportUsers() {
       <PageSection variant="light">
         <FormProvider {...form}>
           <Form isHorizontal onSubmit={handleSubmit(onSubmit)}>
-          <FormGroup fieldId="brokerUrl">
-            <TextControl
-                name="brokerUrl"
-                label={t("brokerUrl")}
-                rules={{ required: t("required") }}
-                labelIcon={<HelpItem helpText={t("brokerUrlHelp")} fieldLabelId="brokerUrl" />}
-            />
-          </FormGroup>
-
+          <Flex>
+            <FlexItem>
+              <FormGroup fieldId="brokerUrl">
+                <TextControl
+                    name="brokerUrl"
+                    label={t("brokerUrl")}
+                    rules={{ required: t("required") }}
+                    labelIcon={t("brokerUrlHelp")}
+                />
+              </FormGroup>
+            </FlexItem>
+          </Flex>
           <FormGroup
             label={t("fileUpload")}
             labelIcon={
-              <HelpItem helpText={t("importUsersHelp")} fieldLabelId="userUploadHelp" />
+              <HelpItem helpText={t("importLocalUsersHelp")} fieldLabelId="userUploadHelp" />
             }
             fieldId="file"
             isRequired
