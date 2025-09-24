@@ -72,8 +72,10 @@ export default function ImportUsers() {
     }
   }, [realm, brokerUrl]);
 
-  const handleFileChange = (file: any) => {
-    console.log("File changed:", file)
+  const handleFileChange = (fileOrFiles: any) => {
+    const file = Array.isArray(fileOrFiles) ? fileOrFiles[0] : fileOrFiles;
+    if (!file) return;
+    console.log("File changed:", file);
     setFilename(file.name);
     setValue("file", file);
     setIsFileRejected(false);
@@ -152,13 +154,25 @@ export default function ImportUsers() {
             fieldId="file"
             isRequired
           >
-            <FileUploadForm
-              id={"userImportFile"}
-              extension="csv"
-              onChange={handleFileChange}
-              helpText={t("importLocalUsersHelp")}
-            >
-            </FileUploadForm>
+            <FileUpload
+              id="file-upload"
+              value={fileContent}
+              filename={filename}
+              filenamePlaceholder={t("dragAndDropFile")}
+              browseButtonText={t("browse")}
+              clearButtonText={t("clear")}
+              dropzoneProps={fileUploadOptions}
+              onClearClick={clearFile}
+            />
+            {isFileRejected && (
+              <Alert
+                variant="danger"
+                isInline
+                isPlain
+                title={t("fileUploadError")}
+                className="pf-v5-u-mt-sm"
+              />
+            )}
           </FormGroup>
 
           <FormGroup>
