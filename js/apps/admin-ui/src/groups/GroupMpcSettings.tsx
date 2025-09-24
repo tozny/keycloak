@@ -11,7 +11,7 @@ import {
   Select,
   SelectOption,
   SelectList,
-  SelectToggle,
+  MenuToggle,
   Switch,
   Title,
   Tooltip,
@@ -328,14 +328,15 @@ export default function GroupMpcSettings() {
     isOpen={rolesOpen}
     onOpenChange={setRolesOpen}
     toggle={(toggleRef) => (
-      <SelectToggle
+      <MenuToggle
         ref={toggleRef}
+        isExpanded={rolesOpen}
         onClick={() => setRolesOpen(!rolesOpen)}
       >
         {selectedRoles.size > 0
           ? [...selectedRoles].join(", ")
           : t("selectOneOrMore")}
-      </SelectToggle>
+      </MenuToggle>
     )}
   >
     <SelectList>
@@ -468,14 +469,15 @@ export default function GroupMpcSettings() {
                           isOpen={jiraOpen}
                           onOpenChange={setJiraOpen}
                           toggle={(toggleRef) => (
-                            <SelectToggle
-                              ref={toggleRef}
-                              onClick={() => setJiraOpen(!jiraOpen)}
-                            >
-                              {settings.jiraPlugin
-                                ? (settings.jiraPlugin as PamPlugin).name
-                                : t("selectJiraIntegration")}
-                            </SelectToggle>
+                            <MenuToggle
+                                ref={toggleRef}
+                                isExpanded={jiraOpen}
+                                onClick={() => setJiraOpen(!jiraOpen)}
+                              >
+                                {settings.jiraPlugin
+                                  ? (settings.jiraPlugin as PamPlugin).name
+                                  : t("selectJiraIntegration")}
+                              </MenuToggle>
                           )}
                         >
                           <SelectList>
