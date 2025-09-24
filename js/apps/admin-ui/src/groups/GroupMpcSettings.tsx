@@ -10,6 +10,7 @@ import {
   NumberInput,
   Select,
   SelectOption,
+  SelectList,
   Switch,
   Title,
   Tooltip,
@@ -323,19 +324,21 @@ export default function GroupMpcSettings() {
   const ApproverRolesSelect = (
     <Select
       aria-label="approver-roles"
-      variant="typeaheadmulti"
       isOpen={rolesOpen}
-      onOpenChange={(isOpen: boolean) => setRolesOpen(isOpen)}
-      onSelect={onRoleSelect}
-      selections={[...selectedRoles]}
-      onClear={() => setSettings({ ...settings, approverRoles: [] })}
-      placeholderText={t("selectOneOrMore")}
-      isDisabled={settings.jiraControlled}
-      maxHeight={300}
+      onOpenChange={setRolesOpen}
+      toggleLabel={t("selectOneOrMore")}
     >
+      <SelectList>
       {(roles || []).sort((a, b) => (a.name || "").localeCompare(b.name || "")).map((r) => (
-        <SelectOption key={r.id} value={r.name || ""} />
+        <SelectOption
+          key={r.id}
+          value={r.name || ""}
+          selected={selectedRoles.has(r.name || "")}
+          isDisabled={settings.jiraControlled}
+          onClick={() => onRoleSelect(null, r.name || "")}
+        />
       ))}
+      </SelectList>
     </Select>
   );
 
@@ -449,21 +452,24 @@ export default function GroupMpcSettings() {
                     <>
                       <FormGroup label={<>{t("mpcJiraIntegrationLabel", { defaultValue: "Jira Integration" })} <span className="pf-v5-u-danger-color-100">*</span></>} fieldId="jira-plugin">
                         <Select
-                          aria-label="jira-plugin"
-                          isOpen={jiraOpen}
-                          onOpenChange={(isOpen: boolean) => setJiraOpen(isOpen)}
-                          selections={settings.jiraPlugin ? (settings.jiraPlugin as PamPlugin).name : undefined}
-                          onSelect={(_e: unknown, value?: string | number) => {
-                            const plugin = pamPlugins.jira.find((p) => p.name === String(value));
-                            setSettings({ ...settings, jiraPlugin: plugin || false });
-                            setJiraOpen(false);
-                          }}
-                          placeholderText={t("selectJiraIntegration", { defaultValue: "Select Jira integration" })}
-                          variant="single"
-                        >
-                          {pamPlugins.jira.map((p) => (
-                            <SelectOption key={p.id} value={p.name} />
-                          ))}
+                            aria-label="jira-plugin"
+                            isOpen={jiraOpen}
+                            onOpenChange={setJiraOpen}
+                            toggleLabel={settings.jiraPlugin ? (settings.jiraPlugin as PamPlugin).name : t("selectJiraIntegration")}
+                          >
+                          <SelectList>
+                            {pamPlugins.jira.map((p) => (
+                              <SelectOption
+                                key={p.id}
+                                value={p.name}
+                                selected={settings.jiraPlugin ? (settings.jiraPlugin as PamPlugin).id === p.id : false}
+                                onClick={() => {
+                                  setSettings({ ...settings, jiraPlugin: p });
+                                  setJiraOpen(false);
+                                }}
+                              />
+                            ))}
+                          </SelectList>
                         </Select>
                       </FormGroup>
                       {settings.jiraPlugin && (settings.jiraPlugin as PamPlugin).authHeader && (
