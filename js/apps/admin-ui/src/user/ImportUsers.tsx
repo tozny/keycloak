@@ -25,6 +25,7 @@ import { ViewHeader } from "../components/view-header/ViewHeader";
 import { useRealm } from "../context/realm-context/RealmContext";
 import { useAdminClient } from "../admin-client";
 import { toUsers } from "./routes/Users";
+import { FileUploadForm } from "../components/json-file-upload/FileUploadForm";
 
 type FormData = {
   file: File | null;
@@ -64,13 +65,14 @@ export default function ImportUsers() {
 
   // If realm loads after first render, populate brokerUrl only when empty
   useEffect(() => {
+    console.log("useeffect triggered")
     const uri = realm?.attributes?.["recoverUri"] ?? "";
     if (!brokerUrl && uri) {
       setValue("brokerUrl", uri, { shouldDirty: false });
     }
-  }, [realm, brokerUrl, setValue]);
+  }, [realm, brokerUrl]);
 
-  const handleFileChange = (file: File) => {
+  const handleFileChange = (file: any) => {
     console.log("File changed:", file)
     setFilename(file.name);
     setValue("file", file);
@@ -119,9 +121,8 @@ export default function ImportUsers() {
       'text/csv': ['.csv'],
     },
     maxSize: 10485760, // 10MB
-    onLoad: (event: ProgressEvent<FileReader>, file: File) =>
-      handleFileChange(file),
-    onFileReject: handleFileRejected,
+    onDropRejected: handleFileRejected,
+    onDrop: handleFileChange,
   };
 
   const clearFile = () => {
@@ -137,18 +138,12 @@ export default function ImportUsers() {
       <PageSection variant="light">
         <FormProvider {...form}>
           <Form isHorizontal onSubmit={handleSubmit(onSubmit)}>
-          <Flex>
-            <FlexItem>
-              <FormGroup fieldId="brokerUrl">
-                <TextControl
-                    name="brokerUrl"
-                    label={t("brokerUrl")}
-                    rules={{ required: t("required") }}
-                    labelIcon={t("brokerUrlHelp")}
-                />
-              </FormGroup>
-            </FlexItem>
-          </Flex>
+            <TextControl
+                name="brokerUrl"
+                label={t("brokerUrl")}
+                rules={{ required: t("required") }}
+                labelIcon={t("brokerUrlHelp")}
+            />
           <FormGroup
             label={t("fileUpload")}
             labelIcon={
@@ -157,33 +152,13 @@ export default function ImportUsers() {
             fieldId="file"
             isRequired
           >
-            {errors.file && (
-              <div className="pf-v5-c-form__helper-text pf-m-error">
-                <span className="pf-v5-c-form__helper-text-icon">
-                  <ExclamationCircleIcon />
-                </span>
-                {t("required")}
-              </div>
-            )}
-            <FileUpload
-              id="file-upload"
-              value={fileContent}
-              filename={filename}
-              filenamePlaceholder={t("dragAndDropFile")}
-              browseButtonText={t("browse")}
-              clearButtonText={t("clear")}
-              dropzoneProps={fileUploadOptions}
-              onClearClick={clearFile}
-            />
-            {isFileRejected && (
-              <Alert
-                variant="danger"
-                isInline
-                isPlain
-                title={t("fileUploadError")}
-                className="pf-v5-u-mt-sm"
-              />
-            )}
+            <FileUploadForm
+              id={"userImportFile"}
+              extension="csv"
+              onChange={handleFileChange}
+              helpText={t("importLocalUsersHelp")}
+            >
+            </FileUploadForm>
           </FormGroup>
 
           <FormGroup>
