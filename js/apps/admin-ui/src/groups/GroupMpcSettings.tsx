@@ -310,8 +310,8 @@ export default function GroupMpcSettings() {
   // UI helpers
   const selectedRoles = useMemo(() => new Set((settings.approverRoles || []).map((r) => r.name)), [settings.approverRoles]);
 
-  const onRoleSelect = (_: unknown, value: string) => {
-    const role = roles.find((r) => r.name === value);
+  const onRoleSelect = (_event: unknown, value?: string | number) => {
+    const role = roles.find((r) => r.name === String(value));
     if (!role) return;
     const exists = settings.approverRoles.some((r) => r.id === role.id);
     const next = exists
@@ -325,7 +325,7 @@ export default function GroupMpcSettings() {
       aria-label="approver-roles"
       variant="typeaheadmulti"
       isOpen={rolesOpen}
-      onToggle={setRolesOpen}
+      onOpenChange={(isOpen: boolean) => setRolesOpen(isOpen)}
       onSelect={onRoleSelect}
       selections={[...selectedRoles]}
       onClear={() => setSettings({ ...settings, approverRoles: [] })}
@@ -353,7 +353,7 @@ export default function GroupMpcSettings() {
             <Switch
               id="mpc-enabled"
               isChecked={settings.enabled}
-              onChange={(checked) => setSettings({ ...settings, enabled: checked })}
+              onChange={(_event: unknown, checked: boolean) => setSettings({ ...settings, enabled: !!checked })}
               label={t("onText")}
               labelOff={t("offText")}
             />
@@ -375,11 +375,6 @@ export default function GroupMpcSettings() {
               <FormGroup
                 label={t("mpcMaxDurationLabel", { defaultValue: "Maximum access policy duration in seconds" })}
                 fieldId="access-duration"
-                helperText={
-                  <HelperText>
-                    <HelperTextItem icon={<InfoCircleIcon />}>{t("mpcMaxDurationHelp", { seconds: realmSettings.defaultAccessDurationSeconds, defaultValue: `The maximum time that the access policy will last once approved. Defaults to ${realmSettings.defaultAccessDurationSeconds} seconds.` })}</HelperTextItem>
-                  </HelperText>
-                }
               >
                 <NumberInput
                   id="access-duration"
@@ -389,21 +384,24 @@ export default function GroupMpcSettings() {
                     setSettings({ ...settings, accessDurationSeconds: Math.max(1, (settings.accessDurationSeconds || 1) - 1) })
                   }
                   onPlus={() => setSettings({ ...settings, accessDurationSeconds: (settings.accessDurationSeconds || 0) + 1 })}
-                  onChange={(_evt: unknown, value: string) =>
-                    setSettings({ ...settings, accessDurationSeconds: Number(value) || 0 })
+                  onChange={(event: any) =>
+                    setSettings({
+                      ...settings,
+                      accessDurationSeconds: Number((event.currentTarget as HTMLInputElement).value) || 0,
+                    })
                   }
                   widthChars={10}
                 />
+                <div className="pf-v5-u-mt-sm">
+                  <HelperText>
+                    <HelperTextItem icon={<InfoCircleIcon />}>{t("mpcMaxDurationHelp", { seconds: realmSettings.defaultAccessDurationSeconds, defaultValue: `The maximum time that the access policy will last once approved. Defaults to ${realmSettings.defaultAccessDurationSeconds} seconds.` })}</HelperTextItem>
+                  </HelperText>
+                </div>
               </FormGroup>
 
               <FormGroup
                 label={t("mpcRequiredApprovalsLabel", { defaultValue: "Number of approvals required" })}
                 fieldId="required-approvals"
-                helperText={
-                  <HelperText>
-                    <HelperTextItem icon={<InfoCircleIcon />}>{t("mpcRequiredApprovalsHelp", { count: realmSettings.defaultRequiredApprovers, defaultValue: `Defaults to ${realmSettings.defaultRequiredApprovers} approver(s).` })}</HelperTextItem>
-                  </HelperText>
-                }
               >
                 <NumberInput
                   id="required-approvals"
@@ -413,11 +411,19 @@ export default function GroupMpcSettings() {
                     setSettings({ ...settings, requiredApprovals: Math.max(1, (settings.requiredApprovals || 1) - 1) })
                   }
                   onPlus={() => setSettings({ ...settings, requiredApprovals: (settings.requiredApprovals || 0) + 1 })}
-                  onChange={(_evt: unknown, value: string) =>
-                    setSettings({ ...settings, requiredApprovals: Number(value) || 0 })
+                  onChange={(event: any) =>
+                    setSettings({
+                      ...settings,
+                      requiredApprovals: Number((event.currentTarget as HTMLInputElement).value) || 0,
+                    })
                   }
                   widthChars={10}
                 />
+                <div className="pf-v5-u-mt-sm">
+                  <HelperText>
+                    <HelperTextItem icon={<InfoCircleIcon />}>{t("mpcRequiredApprovalsHelp", { count: realmSettings.defaultRequiredApprovers, defaultValue: `Defaults to ${realmSettings.defaultRequiredApprovers} approver(s).` })}</HelperTextItem>
+                  </HelperText>
+                </div>
               </FormGroup>
 
               {realmSettings.jiraEnabledForRealm && (
@@ -429,7 +435,7 @@ export default function GroupMpcSettings() {
                     <Switch
                       id="jira-controlled"
                       isChecked={settings.jiraControlled}
-                      onChange={(checked) => setSettings({ ...settings, jiraControlled: checked })}
+                      onChange={(_event: unknown, checked: boolean) => setSettings({ ...settings, jiraControlled: !!checked })}
                       isDisabled={!realmSettings.jiraEnabledForRealm}
                       label={t("onText")}
                       labelOff={t("offText")}
@@ -445,9 +451,9 @@ export default function GroupMpcSettings() {
                         <Select
                           aria-label="jira-plugin"
                           isOpen={jiraOpen}
-                          onToggle={setJiraOpen}
+                          onOpenChange={(isOpen: boolean) => setJiraOpen(isOpen)}
                           selections={settings.jiraPlugin ? (settings.jiraPlugin as PamPlugin).name : undefined}
-                          onSelect={(_e, value) => {
+                          onSelect={(_e: unknown, value?: string | number) => {
                             const plugin = pamPlugins.jira.find((p) => p.name === String(value));
                             setSettings({ ...settings, jiraPlugin: plugin || false });
                             setJiraOpen(false);
@@ -474,7 +480,7 @@ export default function GroupMpcSettings() {
                           min={1}
                           onMinus={() => setSettings({ ...settings, jiraBoardId: Math.max(1, (settings.jiraBoardId || 1) - 1) })}
                           onPlus={() => setSettings({ ...settings, jiraBoardId: (settings.jiraBoardId || 0) + 1 })}
-                          onChange={(_evt: unknown, value: string) => setSettings({ ...settings, jiraBoardId: Number(value) || 0 })}
+                          onChange={(event: any) => setSettings({ ...settings, jiraBoardId: Number((event.currentTarget as HTMLInputElement).value) || 0 })}
                           widthChars={10}
                         />
                       </FormGroup>
