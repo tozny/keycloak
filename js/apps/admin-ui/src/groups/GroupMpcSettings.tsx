@@ -332,6 +332,7 @@ export default function GroupMpcSettings() {
         ref={toggleRef}
         isExpanded={rolesOpen}
         onClick={() => setRolesOpen(!rolesOpen)}
+        style={{ width: 600 }}
       >
         {selectedRoles.size > 0
           ? [...selectedRoles].join(", ")
@@ -339,7 +340,7 @@ export default function GroupMpcSettings() {
       </MenuToggle>
     )}
   >
-    <SelectList>
+    <SelectList style={{ maxHeight: 300, overflow: "auto", width: 600 }}>
       {(roles || [])
         .sort((a, b) => (a.name || "").localeCompare(b.name || ""))
         .map((r) => (
@@ -358,14 +359,15 @@ export default function GroupMpcSettings() {
   if (!groupId) return null;
 
   return (
-    <Form isHorizontal>
+    <div className="pf-v5-u-mt-lg pf-v5-u-ml-lg">
+      <Form isHorizontal>
       {realmSettings.enabled && (
         <>
           <Title headingLevel="h2" className="pf-v5-u-mb-md">
             {t("mpcSettingsTitle", { defaultValue: "Multi-party Control (MPC) Settings" })}
           </Title>
 
-          <FormGroup label={t("mpcEnableLabel", { defaultValue: "Enable multi-party control for group" })} fieldId="mpc-enabled">
+          <FormGroup label={<span className="pf-v5-u-text-nowrap">{t("mpcEnableLabel", { defaultValue: "Enable multi-party control for group" })}</span>} fieldId="mpc-enabled">
             <Switch
               id="mpc-enabled"
               isChecked={settings.enabled}
@@ -380,7 +382,7 @@ export default function GroupMpcSettings() {
               <FormGroup
                 label={
                   <>
-                    {t("mpcApproverRolesLabel", { defaultValue: "Users with the following roles can grant permissions" })} <span className="pf-v5-u-danger-color-100">*</span>
+                    <span className="pf-v5-u-text-nowrap">{t("mpcApproverRolesLabel", { defaultValue: "Users with the following roles can grant permissions" })}</span> <span className="pf-v5-u-danger-color-100">*</span>
                   </>
                 }
                 fieldId="approver-roles"
@@ -389,7 +391,7 @@ export default function GroupMpcSettings() {
               </FormGroup>
 
               <FormGroup
-                label={t("mpcMaxDurationLabel", { defaultValue: "Maximum access policy duration in seconds" })}
+                label={<span className="pf-v5-u-text-nowrap">{t("mpcMaxDurationLabel", { defaultValue: "Maximum access policy duration in seconds" })}</span>}
                 fieldId="access-duration"
               >
                 <NumberInput
@@ -406,7 +408,7 @@ export default function GroupMpcSettings() {
                       accessDurationSeconds: Number((event.currentTarget as HTMLInputElement).value) || 0,
                     })
                   }
-                  widthChars={10}
+                  style={{ width: 600 }}
                 />
                 <div className="pf-v5-u-mt-sm">
                   <HelperText>
@@ -416,7 +418,7 @@ export default function GroupMpcSettings() {
               </FormGroup>
 
               <FormGroup
-                label={t("mpcRequiredApprovalsLabel", { defaultValue: "Number of approvals required" })}
+                label={<span className="pf-v5-u-text-nowrap">{t("mpcRequiredApprovalsLabel", { defaultValue: "Number of approvals required" })}</span>}
                 fieldId="required-approvals"
               >
                 <NumberInput
@@ -433,7 +435,7 @@ export default function GroupMpcSettings() {
                       requiredApprovals: Number((event.currentTarget as HTMLInputElement).value) || 0,
                     })
                   }
-                  widthChars={10}
+                  style={{ width: 600 }}
                 />
                 <div className="pf-v5-u-mt-sm">
                   <HelperText>
@@ -453,8 +455,8 @@ export default function GroupMpcSettings() {
                       isChecked={settings.jiraControlled}
                       onChange={(_event: unknown, checked: boolean) => setSettings({ ...settings, jiraControlled: !!checked })}
                       isDisabled={!realmSettings.jiraEnabledForRealm}
-                      label={t("onText")}
-                      labelOff={t("offText")}
+                      label={t("ON")}
+                      labelOff={t("OFF")}
                     />
                     <Tooltip content={t("mpcJiraToggleHelp", { defaultValue: "This realm has a Jira integration setup. Enabling this feature allows users to create & manage access requests from a Jira board. Note that Jira only supports one required approval." })}>
                       <Button variant="link" isInline className="pf-v5-u-ml-sm">{t("mpcMoreInfo", { defaultValue: "More info" })}</Button>
@@ -470,17 +472,18 @@ export default function GroupMpcSettings() {
                           onOpenChange={setJiraOpen}
                           toggle={(toggleRef) => (
                             <MenuToggle
-                                ref={toggleRef}
-                                isExpanded={jiraOpen}
-                                onClick={() => setJiraOpen(!jiraOpen)}
-                              >
+                              ref={toggleRef}
+                              isExpanded={jiraOpen}
+                              onClick={() => setJiraOpen(!jiraOpen)}
+                              style={{ width: 600 }}
+                            >
                                 {settings.jiraPlugin
                                   ? (settings.jiraPlugin as PamPlugin).name
                                   : t("selectJiraIntegration")}
-                              </MenuToggle>
+                            </MenuToggle>
                           )}
                         >
-                          <SelectList>
+                          <SelectList style={{ maxHeight: 300, overflow: "auto", width: 600 }}>
                             {pamPlugins.jira.map((p) => (
                               <SelectOption
                                 key={p.id}
@@ -506,7 +509,7 @@ export default function GroupMpcSettings() {
                           {t("mpcJiraAuthHeaderSuffix", { defaultValue: "in the Authorization header." })}
                         </div>
                       )}
-                      <FormGroup label={<>{t("mpcJiraBoardIdLabel", { defaultValue: "Jira Board Id" })} <span className="pf-v5-u-danger-color-100">*</span></>} fieldId="jira-board-id">
+                      <FormGroup label={<><span className="pf-v5-u-text-nowrap">{t("mpcJiraBoardIdLabel", { defaultValue: "Jira Board Id" })}</span> <span className="pf-v5-u-danger-color-100">*</span></>} fieldId="jira-board-id">
                         <NumberInput
                           id="jira-board-id"
                           value={settings.jiraBoardId || 0}
@@ -514,7 +517,7 @@ export default function GroupMpcSettings() {
                           onMinus={() => setSettings({ ...settings, jiraBoardId: Math.max(1, (settings.jiraBoardId || 1) - 1) })}
                           onPlus={() => setSettings({ ...settings, jiraBoardId: (settings.jiraBoardId || 0) + 1 })}
                           onChange={(event: any) => setSettings({ ...settings, jiraBoardId: Number((event.currentTarget as HTMLInputElement).value) || 0 })}
-                          widthChars={10}
+                          style={{ width: 600 }}
                         />
                       </FormGroup>
                     </>
@@ -546,6 +549,7 @@ export default function GroupMpcSettings() {
           <div className="pf-v5-u-color-200">{t("mpcSettingsDisabled", { defaultValue: "MPC settings are disabled for this realm." })}</div>
         </>
       )}
-    </Form>
+      </Form>
+    </div>
   );
 }
