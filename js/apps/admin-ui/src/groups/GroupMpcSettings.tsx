@@ -332,7 +332,7 @@ export default function GroupMpcSettings() {
         ref={toggleRef}
         isExpanded={rolesOpen}
         onClick={() => setRolesOpen(!rolesOpen)}
-        style={{ width: 600 }}
+        isFullWidth
       >
         {selectedRoles.size > 0
           ? [...selectedRoles].join(", ")
@@ -340,7 +340,7 @@ export default function GroupMpcSettings() {
       </MenuToggle>
     )}
   >
-    <SelectList style={{ maxHeight: 300, overflow: "auto", width: 600 }}>
+    <SelectList style={{ maxHeight: 300, overflow: "auto", width: "100%" }}>
       {(roles || [])
         .sort((a, b) => (a.name || "").localeCompare(b.name || ""))
         .map((r) => (
@@ -360,7 +360,14 @@ export default function GroupMpcSettings() {
 
   return (
     <div className="pf-v5-u-mt-lg pf-v5-u-ml-lg">
-      <Form isHorizontal>
+      <Form
+        isHorizontal
+        style={{
+          [
+            "--pf-v5-c-form--m-horizontal__group--md--GridTemplateColumns" as any
+          ]: "360px 1fr",
+        }}
+      >
       {realmSettings.enabled && (
         <>
           <Title headingLevel="h2" className="pf-v5-u-mb-md">
@@ -372,8 +379,8 @@ export default function GroupMpcSettings() {
               id="mpc-enabled"
               isChecked={settings.enabled}
               onChange={(_event: unknown, checked: boolean) => setSettings({ ...settings, enabled: !!checked })}
-              label={t("onText")}
-              labelOff={t("offText")}
+              label="ON"
+              labelOff="OFF"
             />
           </FormGroup>
 
@@ -408,7 +415,7 @@ export default function GroupMpcSettings() {
                       accessDurationSeconds: Number((event.currentTarget as HTMLInputElement).value) || 0,
                     })
                   }
-                  style={{ width: 600 }}
+                  style={{ width: "100%" }}
                 />
                 <div className="pf-v5-u-mt-sm">
                   <HelperText>
@@ -450,19 +457,6 @@ export default function GroupMpcSettings() {
                     {t("mpcPluginsTitle", { defaultValue: "Plugins" })}
                   </Title>
                   <FormGroup label={t("mpcJiraToggleLabel", { defaultValue: "Enable Control From Jira" })} fieldId="jira-controlled">
-                    <Switch
-                      id="jira-controlled"
-                      isChecked={settings.jiraControlled}
-                      onChange={(_event: unknown, checked: boolean) => setSettings({ ...settings, jiraControlled: !!checked })}
-                      isDisabled={!realmSettings.jiraEnabledForRealm}
-                      label={t("ON")}
-                      labelOff={t("OFF")}
-                    />
-                    <Tooltip content={t("mpcJiraToggleHelp", { defaultValue: "This realm has a Jira integration setup. Enabling this feature allows users to create & manage access requests from a Jira board. Note that Jira only supports one required approval." })}>
-                      <Button variant="link" isInline className="pf-v5-u-ml-sm">{t("mpcMoreInfo", { defaultValue: "More info" })}</Button>
-                    </Tooltip>
-                  </FormGroup>
-
                   {settings.jiraControlled && (
                     <>
                       <FormGroup label={<>{t("mpcJiraIntegrationLabel", { defaultValue: "Jira Integration" })} <span className="pf-v5-u-danger-color-100">*</span></>} fieldId="jira-plugin">
@@ -475,7 +469,7 @@ export default function GroupMpcSettings() {
                               ref={toggleRef}
                               isExpanded={jiraOpen}
                               onClick={() => setJiraOpen(!jiraOpen)}
-                              style={{ width: 600 }}
+                              isFullWidth
                             >
                                 {settings.jiraPlugin
                                   ? (settings.jiraPlugin as PamPlugin).name
@@ -483,7 +477,7 @@ export default function GroupMpcSettings() {
                             </MenuToggle>
                           )}
                         >
-                          <SelectList style={{ maxHeight: 300, overflow: "auto", width: 600 }}>
+                          <SelectList style={{ maxHeight: 300, overflow: "auto", width: "100%" }}>
                             {pamPlugins.jira.map((p) => (
                               <SelectOption
                                 key={p.id}
@@ -517,7 +511,7 @@ export default function GroupMpcSettings() {
                           onMinus={() => setSettings({ ...settings, jiraBoardId: Math.max(1, (settings.jiraBoardId || 1) - 1) })}
                           onPlus={() => setSettings({ ...settings, jiraBoardId: (settings.jiraBoardId || 0) + 1 })}
                           onChange={(event: any) => setSettings({ ...settings, jiraBoardId: Number((event.currentTarget as HTMLInputElement).value) || 0 })}
-                          style={{ width: 600 }}
+                          style={{ width: "100%" }}
                         />
                       </FormGroup>
                     </>
