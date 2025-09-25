@@ -457,65 +457,66 @@ export default function GroupMpcSettings() {
                     {t("mpcPluginsTitle", { defaultValue: "Plugins" })}
                   </Title>
                   <FormGroup label={t("mpcJiraToggleLabel", { defaultValue: "Enable Control From Jira" })} fieldId="jira-controlled">
-                  {settings.jiraControlled && (
-                    <>
-                      <FormGroup label={<>{t("mpcJiraIntegrationLabel", { defaultValue: "Jira Integration" })} <span className="pf-v5-u-danger-color-100">*</span></>} fieldId="jira-plugin">
-                        <Select
-                          aria-label="jira-plugin"
-                          isOpen={jiraOpen}
-                          onOpenChange={setJiraOpen}
-                          toggle={(toggleRef) => (
-                            <MenuToggle
-                              ref={toggleRef}
-                              isExpanded={jiraOpen}
-                              onClick={() => setJiraOpen(!jiraOpen)}
-                              isFullWidth
-                            >
-                                {settings.jiraPlugin
-                                  ? (settings.jiraPlugin as PamPlugin).name
-                                  : t("selectJiraIntegration")}
-                            </MenuToggle>
-                          )}
-                        >
-                          <SelectList style={{ maxHeight: 300, overflow: "auto", width: "100%" }}>
-                            {pamPlugins.jira.map((p) => (
-                              <SelectOption
-                                key={p.id}
-                                value={p.name}
-                                selected={
-                                  settings.jiraPlugin
-                                    ? (settings.jiraPlugin as PamPlugin).id === p.id
-                                    : false
-                                }
-                                onClick={() => {
-                                  setSettings({ ...settings, jiraPlugin: p });
-                                  setJiraOpen(false);
-                                }}
-                              />
-                            ))}
-                          </SelectList>
-                        </Select>
-                      </FormGroup>
-                      {settings.jiraPlugin && (settings.jiraPlugin as PamPlugin).authHeader && (
-                        <div className="pf-v5-u-color-200 pf-v5-u-mb-md">
-                          {t("mpcJiraAuthHeaderIntro", { defaultValue: "For this integration, Jira Automation requests should be configured with" })}
-                          <code className="pf-v5-u-ml-sm pf-v5-u-mr-sm">{(settings.jiraPlugin as PamPlugin).authHeader}</code>
-                          {t("mpcJiraAuthHeaderSuffix", { defaultValue: "in the Authorization header." })}
-                        </div>
-                      )}
-                      <FormGroup label={<><span className="pf-v5-u-text-nowrap">{t("mpcJiraBoardIdLabel", { defaultValue: "Jira Board Id" })}</span> <span className="pf-v5-u-danger-color-100">*</span></>} fieldId="jira-board-id">
-                        <NumberInput
-                          id="jira-board-id"
-                          value={settings.jiraBoardId || 0}
-                          min={1}
-                          onMinus={() => setSettings({ ...settings, jiraBoardId: Math.max(1, (settings.jiraBoardId || 1) - 1) })}
-                          onPlus={() => setSettings({ ...settings, jiraBoardId: (settings.jiraBoardId || 0) + 1 })}
-                          onChange={(event: any) => setSettings({ ...settings, jiraBoardId: Number((event.currentTarget as HTMLInputElement).value) || 0 })}
-                          style={{ width: "100%" }}
-                        />
-                      </FormGroup>
-                    </>
-                  )}
+                    {settings.jiraControlled && (
+                      <>
+                        <FormGroup label={<>{t("mpcJiraIntegrationLabel", { defaultValue: "Jira Integration" })} <span className="pf-v5-u-danger-color-100">*</span></>} fieldId="jira-plugin">
+                          <Select
+                            aria-label="jira-plugin"
+                            isOpen={jiraOpen}
+                            onOpenChange={setJiraOpen}
+                            toggle={(toggleRef) => (
+                              <MenuToggle
+                                ref={toggleRef}
+                                isExpanded={jiraOpen}
+                                onClick={() => setJiraOpen(!jiraOpen)}
+                                isFullWidth
+                              >
+                                  {settings.jiraPlugin
+                                    ? (settings.jiraPlugin as PamPlugin).name
+                                    : t("selectJiraIntegration")}
+                              </MenuToggle>
+                            )}
+                          >
+                            <SelectList style={{ maxHeight: 300, overflow: "auto", width: "100%" }}>
+                              {pamPlugins.jira.map((p) => (
+                                <SelectOption
+                                  key={p.id}
+                                  value={p.name}
+                                  selected={
+                                    settings.jiraPlugin
+                                      ? (settings.jiraPlugin as PamPlugin).id === p.id
+                                      : false
+                                  }
+                                  onClick={() => {
+                                    setSettings({ ...settings, jiraPlugin: p });
+                                    setJiraOpen(false);
+                                  }}
+                                />
+                              ))}
+                            </SelectList>
+                          </Select>
+                        </FormGroup>
+                        {settings.jiraPlugin && (settings.jiraPlugin as PamPlugin).authHeader && (
+                          <div className="pf-v5-u-color-200 pf-v5-u-mb-md">
+                            {t("mpcJiraAuthHeaderIntro", { defaultValue: "For this integration, Jira Automation requests should be configured with" })}
+                            <code className="pf-v5-u-ml-sm pf-v5-u-mr-sm">{(settings.jiraPlugin as PamPlugin).authHeader}</code>
+                            {t("mpcJiraAuthHeaderSuffix", { defaultValue: "in the Authorization header." })}
+                          </div>
+                        )}
+                        <FormGroup label={<><span className="pf-v5-u-text-nowrap">{t("mpcJiraBoardIdLabel", { defaultValue: "Jira Board Id" })}</span> <span className="pf-v5-u-danger-color-100">*</span></>} fieldId="jira-board-id">
+                          <NumberInput
+                            id="jira-board-id"
+                            value={settings.jiraBoardId || 0}
+                            min={1}
+                            onMinus={() => setSettings({ ...settings, jiraBoardId: Math.max(1, (settings.jiraBoardId || 1) - 1) })}
+                            onPlus={() => setSettings({ ...settings, jiraBoardId: (settings.jiraBoardId || 0) + 1 })}
+                            onChange={(event: any) => setSettings({ ...settings, jiraBoardId: Number((event.currentTarget as HTMLInputElement).value) || 0 })}
+                            style={{ width: "100%" }}
+                          />
+                        </FormGroup>
+                      </>
+                    )}
+                  </FormGroup>
                 </>
               )}
 
