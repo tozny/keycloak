@@ -126,6 +126,11 @@ export class TozUser {
     }
   }
 
+  async CreateUserWithPassword(username: string, password: string, email: string, firstName: string, lastName: string) : Promise<[any, string, string, boolean]>{
+    const regToken = this.realm.attributes?.["registrationToken"]
+    return this.tozIDRealm.register(username, password, regToken, email, firstName, lastName, undefined, undefined, [])
+  }
+
   async ResetPassword(username: string, emailRecoveryExpirationMinutes: number | undefined, adminRecoveryExpirationMinutes: number | undefined){
     try{
       const [resetLink, message, sendPasswordRecoverySuccess] = await this.sendPasswordRecovery(username, "resetting a password", "password_reset", emailRecoveryExpirationMinutes, adminRecoveryExpirationMinutes)
