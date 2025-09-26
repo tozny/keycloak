@@ -335,8 +335,7 @@ export default function GroupMpcSettings() {
       <Form
         isHorizontal
         style={{
-          '--pf-v5-c-form--m-horizontal__group-label--md--GridColumnWidth': '450px',
-          '--pf-v5-c-form--m-horizontal__group-control--md--GridColumnWidth': 'calc(100% - 450px)',
+          '--pf-v5-c-form--m-horizontal__group--md--GridTemplateColumns': '400px 1fr',
         } as React.CSSProperties}
       >
       {realmSettings.enabled && (
