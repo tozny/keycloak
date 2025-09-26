@@ -312,51 +312,21 @@ export default function GroupMpcSettings() {
   // UI helpers
   const selectedRoles = useMemo(() => new Set((settings.approverRoles || []).map((r) => r.name)), [settings.approverRoles]);
 
-  const onRoleSelect = (_event: unknown, value?: string | number) => {
-    const role = roles.find((r) => r.name === String(value));
+  const onRoleSelect = (event: React.MouseEvent | undefined, value: string | number | undefined) => {
+    if (value === undefined) return;
+    
+    const roleName = String(value);
+    const role = roles.find((r) => r.name === roleName);
     if (!role) return;
+    
     const exists = settings.approverRoles.some((r) => r.id === role.id);
     const next = exists
       ? settings.approverRoles.filter((r) => r.id !== role.id)
       : [...settings.approverRoles, role as ToznyRole];
+    
     setSettings({ ...settings, approverRoles: next });
+    setRolesOpen(false); // Close the dropdown after selection
   };
-
-  const ApproverRolesSelect = (
-    <div style={{ width: "100%", maxWidth: "400px" }}>
-      <Select
-      aria-label="approver-roles"
-      isOpen={rolesOpen}
-      onOpenChange={setRolesOpen}
-      toggle={(toggleRef) => (
-        <MenuToggle
-          ref={toggleRef}
-          isExpanded={rolesOpen}
-          onClick={() => setRolesOpen(!rolesOpen)}
-          isFullWidth
-        >
-          {selectedRoles.size > 0
-            ? [...selectedRoles].join(", ")
-            : t("")}
-        </MenuToggle>
-      )}
-    >
-      <SelectList style={{ maxHeight: 300, overflow: "auto", width: "100%" }}>
-        {(roles || [])
-          .sort((a, b) => (a.name || "").localeCompare(b.name || ""))
-          .map((r) => (
-            <SelectOption
-              key={r.id}
-              value={r.name || ""}
-              selected={selectedRoles.has(r.name || "")}
-              isDisabled={settings.jiraControlled}
-              onClick={() => onRoleSelect(null, r.name || "")}
-            />
-          ))}
-      </SelectList>
-    </Select>
-  </div>
-  );
 
   if (!groupId) return null;
 
@@ -404,6 +374,8 @@ export default function GroupMpcSettings() {
                       aria-label="approver-roles"
                       isOpen={rolesOpen}
                       onOpenChange={setRolesOpen}
+                      selected={selectedRoles.size > 0 ? [...selectedRoles].join(", ") : t("selectRoles")}
+                      onSelect={(event, value) => onRoleSelect(event, value)}
                       toggle={(toggleRef) => (
                         <MenuToggle
                           ref={toggleRef}
@@ -424,10 +396,11 @@ export default function GroupMpcSettings() {
                             <SelectOption
                               key={r.id}
                               value={r.name || ""}
-                              selected={selectedRoles.has(r.name || "")}
+                              isSelected={selectedRoles.has(r.name || "")}
                               isDisabled={settings.jiraControlled}
-                              onClick={() => onRoleSelect(null, r.name || "")}
-                            />
+                            >
+                              {r.name}
+                            </SelectOption>
                           ))}
                       </SelectList>
                     </Select>
