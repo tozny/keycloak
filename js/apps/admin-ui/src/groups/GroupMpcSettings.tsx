@@ -335,7 +335,8 @@ export default function GroupMpcSettings() {
       <Form
         isHorizontal
         style={{
-          '--pf-v5-c-form--m-horizontal__group--md--GridTemplateColumns': '400px 1fr',
+          '--pf-v5-c-form--m-horizontal__group-label--md--GridColumnWidth': '450px',
+          '--pf-v5-c-form--m-horizontal__group-control--md--GridColumnWidth': 'calc(100% - 450px)',
         } as React.CSSProperties}
       >
       {realmSettings.enabled && (
@@ -344,8 +345,15 @@ export default function GroupMpcSettings() {
             {t("mpcSettingsTitle", { defaultValue: "Multi-party Control (MPC) Settings" })}
           </Title>
 
-          <FormGroup label={<span className="pf-v5-u-text-nowrap">{t("mpcEnableLabel", { defaultValue: "Enable multi-party control for group" })}</span>} fieldId="mpc-enabled">
-            <div style={{ width: "100%", maxWidth: "200px" }}>
+          <FormGroup 
+              label={
+                <div className="pf-v5-u-text-wrap">
+                  {t("mpcEnableLabel", { defaultValue: "Enable multi-party control for group" })}
+                </div>
+              } 
+              fieldId="mpc-enabled"
+            >
+            <div style={{ marginLeft: '20%' }}>
               <Switch
                 id="mpc-enabled"
                 isChecked={settings.enabled}
@@ -361,7 +369,7 @@ export default function GroupMpcSettings() {
               <FormGroup
                   label={
                     <div>
-                      <div className="pf-v5-u-text-nowrap pf-v5-u-mb-xs">
+                      <div className="pf-v5-u-text-wrap pf-v5-u-mb-xs">
                         {t("mpcApproverRolesLabel", { defaultValue: "Users with the following roles can grant permissions" })}
                       </div>
                       <span className="pf-v5-u-danger-color-100">*</span>
@@ -369,7 +377,7 @@ export default function GroupMpcSettings() {
                   }
                   fieldId="approver-roles"
                 >
-                  <div style={{ width: "100%", maxWidth: "400px" }}>
+                  <div style={{ marginLeft: "20%", maxWidth: "70%" }}>
                     <Select
                       aria-label="approver-roles"
                       isOpen={rolesOpen}
@@ -424,11 +432,12 @@ export default function GroupMpcSettings() {
               }
               fieldId="access-duration"
             >
-              <div style={{ width: "100%", maxWidth: "200px" }}>
+              <div style={{ marginLeft: '20%' }}>
                 <NumberInput
                   id="access-duration"
                   value={settings.accessDurationSeconds}
                   min={1}
+                  widthChars={10}
                   onMinus={() =>
                     setSettings({ ...settings, accessDurationSeconds: Math.max(1, (settings.accessDurationSeconds || 1) - 1) })
                   }
@@ -460,7 +469,7 @@ export default function GroupMpcSettings() {
                   }
                   fieldId="required-approvals"
                 >
-                  <div style={{ width: "100%", maxWidth: "200px" }}>
+                  <div style={{ marginLeft: '20%' }}>
                     <NumberInput
                       id="required-approvals"
                       value={settings.requiredApprovals}
@@ -520,6 +529,14 @@ export default function GroupMpcSettings() {
                                 aria-label="jira-plugin"
                                 isOpen={jiraOpen}
                                 onOpenChange={setJiraOpen}
+                                selected={settings.jiraPlugin ? (settings.jiraPlugin as PamPlugin).name : t("selectJiraIntegration")}
+                                onSelect={(event, value) => {
+                                  const plugin = pamPlugins.jira.find(p => p.name === value);
+                                  if (plugin) {
+                                    setSettings({ ...settings, jiraPlugin: plugin });
+                                    setJiraOpen(false);
+                                  }
+                                }}
                                 toggle={(toggleRef) => (
                                   <MenuToggle
                                     ref={toggleRef}
