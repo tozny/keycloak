@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActionGroup,
   AlertVariant,
@@ -336,7 +336,7 @@ export default function GroupMpcSettings() {
       >
         {selectedRoles.size > 0
           ? [...selectedRoles].join(", ")
-          : t("selectOneOrMore")}
+          : t("")}
       </MenuToggle>
     )}
   >
@@ -363,10 +363,8 @@ export default function GroupMpcSettings() {
       <Form
         isHorizontal
         style={{
-          [
-            "--pf-v5-c-form--m-horizontal__group--md--GridTemplateColumns" as any
-          ]: "360px 1fr",
-        }}
+          '--pf-v5-c-form--m-horizontal__group--md--GridTemplateColumns': '300px 1fr',
+        } as React.CSSProperties}
       >
       {realmSettings.enabled && (
         <>
@@ -388,9 +386,12 @@ export default function GroupMpcSettings() {
             <>
               <FormGroup
                 label={
-                  <>
-                    <span className="pf-v5-u-text-nowrap">{t("mpcApproverRolesLabel", { defaultValue: "Users with the following roles can grant permissions" })}</span> <span className="pf-v5-u-danger-color-100">*</span>
-                  </>
+                  <div>
+                    <div className="pf-v5-u-text-nowrap pf-v5-u-mb-xs">
+                      {t("mpcApproverRolesLabel", { defaultValue: "Users with the following roles can grant permissions" })}
+                    </div>
+                    <span className="pf-v5-u-danger-color-100">*</span>
+                  </div>
                 }
                 fieldId="approver-roles"
               >
@@ -398,58 +399,72 @@ export default function GroupMpcSettings() {
               </FormGroup>
 
               <FormGroup
-                label={<span className="pf-v5-u-text-nowrap">{t("mpcMaxDurationLabel", { defaultValue: "Maximum access policy duration in seconds" })}</span>}
-                fieldId="access-duration"
-              >
-                <NumberInput
-                  id="access-duration"
-                  value={settings.accessDurationSeconds}
-                  min={1}
-                  onMinus={() =>
-                    setSettings({ ...settings, accessDurationSeconds: Math.max(1, (settings.accessDurationSeconds || 1) - 1) })
-                  }
-                  onPlus={() => setSettings({ ...settings, accessDurationSeconds: (settings.accessDurationSeconds || 0) + 1 })}
-                  onChange={(event: any) =>
-                    setSettings({
-                      ...settings,
-                      accessDurationSeconds: Number((event.currentTarget as HTMLInputElement).value) || 0,
-                    })
-                  }
-                  style={{ width: "100%" }}
-                />
-                <div className="pf-v5-u-mt-sm">
-                  <HelperText>
-                    <HelperTextItem icon={<InfoCircleIcon />}>{t("mpcMaxDurationHelp", { seconds: realmSettings.defaultAccessDurationSeconds, defaultValue: `The maximum time that the access policy will last once approved. Defaults to ${realmSettings.defaultAccessDurationSeconds} seconds.` })}</HelperTextItem>
-                  </HelperText>
-                </div>
-              </FormGroup>
+              label={
+                <span className="pf-v5-u-text-nowrap">
+                  {t("mpcMaxDurationLabel", { defaultValue: "Maximum access policy duration in seconds" })}
+                  <Tooltip
+                    content={t("mpcMaxDurationHelp", { 
+                      seconds: realmSettings.defaultAccessDurationSeconds, 
+                      defaultValue: `The maximum time that the access policy will last once approved. Defaults to ${realmSettings.defaultAccessDurationSeconds} seconds.` 
+                    })}
+                    position="top"
+                  >
+                    <InfoCircleIcon className="pf-v5-u-ml-sm pf-v5-u-color-200" style={{ cursor: 'pointer' }} />
+                  </Tooltip>
+                </span>
+              }
+              fieldId="access-duration"
+            >
+              <NumberInput
+                id="access-duration"
+                value={settings.accessDurationSeconds}
+                min={1}
+                onMinus={() =>
+                  setSettings({ ...settings, accessDurationSeconds: Math.max(1, (settings.accessDurationSeconds || 1) - 1) })
+                }
+                onPlus={() => setSettings({ ...settings, accessDurationSeconds: (settings.accessDurationSeconds || 0) + 1 })}
+                onChange={(event: any) =>
+                  setSettings({
+                    ...settings,
+                    accessDurationSeconds: Number((event.currentTarget as HTMLInputElement).value) || 0,
+                  })
+                }
+              />
+            </FormGroup>
 
               <FormGroup
-                label={<span className="pf-v5-u-text-nowrap">{t("mpcRequiredApprovalsLabel", { defaultValue: "Number of approvals required" })}</span>}
-                fieldId="required-approvals"
-              >
-                <NumberInput
-                  id="required-approvals"
-                  value={settings.requiredApprovals}
-                  min={1}
-                  onMinus={() =>
-                    setSettings({ ...settings, requiredApprovals: Math.max(1, (settings.requiredApprovals || 1) - 1) })
+                  label={
+                    <span className="pf-v5-u-text-nowrap">
+                      {t("mpcRequiredApprovalsLabel", { defaultValue: "Number of approvals required" })}
+                      <Tooltip
+                        content={t("mpcRequiredApprovalsHelp", { 
+                          count: realmSettings.defaultRequiredApprovers, 
+                          defaultValue: `Defaults to ${realmSettings.defaultRequiredApprovers} approver(s).` 
+                        })}
+                        position="top"
+                      >
+                        <InfoCircleIcon className="pf-v5-u-ml-sm pf-v5-u-color-200" style={{ cursor: 'pointer' }} />
+                      </Tooltip>
+                    </span>
                   }
-                  onPlus={() => setSettings({ ...settings, requiredApprovals: (settings.requiredApprovals || 0) + 1 })}
-                  onChange={(event: any) =>
-                    setSettings({
-                      ...settings,
-                      requiredApprovals: Number((event.currentTarget as HTMLInputElement).value) || 0,
-                    })
-                  }
-                  style={{ width: 600 }}
-                />
-                <div className="pf-v5-u-mt-sm">
-                  <HelperText>
-                    <HelperTextItem icon={<InfoCircleIcon />}>{t("mpcRequiredApprovalsHelp", { count: realmSettings.defaultRequiredApprovers, defaultValue: `Defaults to ${realmSettings.defaultRequiredApprovers} approver(s).` })}</HelperTextItem>
-                  </HelperText>
-                </div>
-              </FormGroup>
+                  fieldId="required-approvals"
+                >
+                  <NumberInput
+                    id="required-approvals"
+                    value={settings.requiredApprovals}
+                    min={1}
+                    onMinus={() =>
+                      setSettings({ ...settings, requiredApprovals: Math.max(1, (settings.requiredApprovals || 1) - 1) })
+                    }
+                    onPlus={() => setSettings({ ...settings, requiredApprovals: (settings.requiredApprovals || 0) + 1 })}
+                    onChange={(event: any) =>
+                      setSettings({
+                        ...settings,
+                        requiredApprovals: Number((event.currentTarget as HTMLInputElement).value) || 0,
+                      })
+                    }
+                  />
+                </FormGroup>
 
               {realmSettings.jiraEnabledForRealm && (
                 <>
@@ -459,7 +474,17 @@ export default function GroupMpcSettings() {
                   <FormGroup label={t("mpcJiraToggleLabel", { defaultValue: "Enable Control From Jira" })} fieldId="jira-controlled">
                     {settings.jiraControlled && (
                       <>
-                        <FormGroup label={<>{t("mpcJiraIntegrationLabel", { defaultValue: "Jira Integration" })} <span className="pf-v5-u-danger-color-100">*</span></>} fieldId="jira-plugin">
+                        <FormGroup 
+                              label={
+                                <div>
+                                  <div className="pf-v5-u-text-nowrap pf-v5-u-mb-xs">
+                                    {t("mpcJiraIntegrationLabel", { defaultValue: "Jira Integration" })}
+                                  </div>
+                                  <span className="pf-v5-u-danger-color-100">*</span>
+                                </div>
+                              } 
+                              fieldId="jira-plugin"
+                            >
                           <Select
                             aria-label="jira-plugin"
                             isOpen={jiraOpen}
