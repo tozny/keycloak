@@ -323,37 +323,39 @@ export default function GroupMpcSettings() {
   };
 
   const ApproverRolesSelect = (
-    <Select
-    aria-label="approver-roles"
-    isOpen={rolesOpen}
-    onOpenChange={setRolesOpen}
-    toggle={(toggleRef) => (
-      <MenuToggle
-        ref={toggleRef}
-        isExpanded={rolesOpen}
-        onClick={() => setRolesOpen(!rolesOpen)}
-        isFullWidth
-      >
-        {selectedRoles.size > 0
-          ? [...selectedRoles].join(", ")
-          : t("")}
-      </MenuToggle>
-    )}
-  >
-    <SelectList style={{ maxHeight: 300, overflow: "auto", width: "100%" }}>
-      {(roles || [])
-        .sort((a, b) => (a.name || "").localeCompare(b.name || ""))
-        .map((r) => (
-          <SelectOption
-            key={r.id}
-            value={r.name || ""}
-            selected={selectedRoles.has(r.name || "")}
-            isDisabled={settings.jiraControlled}
-            onClick={() => onRoleSelect(null, r.name || "")}
-          />
-        ))}
-    </SelectList>
-  </Select>
+    <div style={{ width: "100%", maxWidth: "400px" }}>
+      <Select
+      aria-label="approver-roles"
+      isOpen={rolesOpen}
+      onOpenChange={setRolesOpen}
+      toggle={(toggleRef) => (
+        <MenuToggle
+          ref={toggleRef}
+          isExpanded={rolesOpen}
+          onClick={() => setRolesOpen(!rolesOpen)}
+          isFullWidth
+        >
+          {selectedRoles.size > 0
+            ? [...selectedRoles].join(", ")
+            : t("")}
+        </MenuToggle>
+      )}
+    >
+      <SelectList style={{ maxHeight: 300, overflow: "auto", width: "100%" }}>
+        {(roles || [])
+          .sort((a, b) => (a.name || "").localeCompare(b.name || ""))
+          .map((r) => (
+            <SelectOption
+              key={r.id}
+              value={r.name || ""}
+              selected={selectedRoles.has(r.name || "")}
+              isDisabled={settings.jiraControlled}
+              onClick={() => onRoleSelect(null, r.name || "")}
+            />
+          ))}
+      </SelectList>
+    </Select>
+  </div>
   );
 
   if (!groupId) return null;
@@ -363,7 +365,7 @@ export default function GroupMpcSettings() {
       <Form
         isHorizontal
         style={{
-          '--pf-v5-c-form--m-horizontal__group--md--GridTemplateColumns': '300px 1fr',
+          '--pf-v5-c-form--m-horizontal__group--md--GridTemplateColumns': '400px 1fr',
         } as React.CSSProperties}
       >
       {realmSettings.enabled && (
@@ -373,30 +375,64 @@ export default function GroupMpcSettings() {
           </Title>
 
           <FormGroup label={<span className="pf-v5-u-text-nowrap">{t("mpcEnableLabel", { defaultValue: "Enable multi-party control for group" })}</span>} fieldId="mpc-enabled">
-            <Switch
-              id="mpc-enabled"
-              isChecked={settings.enabled}
-              onChange={(_event: unknown, checked: boolean) => setSettings({ ...settings, enabled: !!checked })}
-              label="ON"
-              labelOff="OFF"
-            />
+            <div style={{ width: "100%", maxWidth: "200px" }}>
+              <Switch
+                id="mpc-enabled"
+                isChecked={settings.enabled}
+                onChange={(_event: unknown, checked: boolean) => setSettings({ ...settings, enabled: !!checked })}
+                label="ON"
+                labelOff="OFF"
+              />
+            </div>
           </FormGroup>
 
           {settings.enabled && (
             <>
               <FormGroup
-                label={
-                  <div>
-                    <div className="pf-v5-u-text-nowrap pf-v5-u-mb-xs">
-                      {t("mpcApproverRolesLabel", { defaultValue: "Users with the following roles can grant permissions" })}
+                  label={
+                    <div>
+                      <div className="pf-v5-u-text-nowrap pf-v5-u-mb-xs">
+                        {t("mpcApproverRolesLabel", { defaultValue: "Users with the following roles can grant permissions" })}
+                      </div>
+                      <span className="pf-v5-u-danger-color-100">*</span>
                     </div>
-                    <span className="pf-v5-u-danger-color-100">*</span>
+                  }
+                  fieldId="approver-roles"
+                >
+                  <div style={{ width: "100%", maxWidth: "400px" }}>
+                    <Select
+                      aria-label="approver-roles"
+                      isOpen={rolesOpen}
+                      onOpenChange={setRolesOpen}
+                      toggle={(toggleRef) => (
+                        <MenuToggle
+                          ref={toggleRef}
+                          isExpanded={rolesOpen}
+                          onClick={() => setRolesOpen(!rolesOpen)}
+                          isFullWidth
+                        >
+                          {selectedRoles.size > 0
+                            ? [...selectedRoles].join(", ")
+                            : t("selectRoles")}
+                        </MenuToggle>
+                      )}
+                    >
+                      <SelectList style={{ maxHeight: 300, overflow: "auto", width: "100%" }}>
+                        {(roles || [])
+                          .sort((a, b) => (a.name || "").localeCompare(b.name || ""))
+                          .map((r) => (
+                            <SelectOption
+                              key={r.id}
+                              value={r.name || ""}
+                              selected={selectedRoles.has(r.name || "")}
+                              isDisabled={settings.jiraControlled}
+                              onClick={() => onRoleSelect(null, r.name || "")}
+                            />
+                          ))}
+                      </SelectList>
+                    </Select>
                   </div>
-                }
-                fieldId="approver-roles"
-              >
-                {ApproverRolesSelect}
-              </FormGroup>
+                </FormGroup>
 
               <FormGroup
               label={
@@ -415,21 +451,23 @@ export default function GroupMpcSettings() {
               }
               fieldId="access-duration"
             >
-              <NumberInput
-                id="access-duration"
-                value={settings.accessDurationSeconds}
-                min={1}
-                onMinus={() =>
-                  setSettings({ ...settings, accessDurationSeconds: Math.max(1, (settings.accessDurationSeconds || 1) - 1) })
-                }
-                onPlus={() => setSettings({ ...settings, accessDurationSeconds: (settings.accessDurationSeconds || 0) + 1 })}
-                onChange={(event: any) =>
-                  setSettings({
-                    ...settings,
-                    accessDurationSeconds: Number((event.currentTarget as HTMLInputElement).value) || 0,
-                  })
-                }
-              />
+              <div style={{ width: "100%", maxWidth: "200px" }}>
+                <NumberInput
+                  id="access-duration"
+                  value={settings.accessDurationSeconds}
+                  min={1}
+                  onMinus={() =>
+                    setSettings({ ...settings, accessDurationSeconds: Math.max(1, (settings.accessDurationSeconds || 1) - 1) })
+                  }
+                  onPlus={() => setSettings({ ...settings, accessDurationSeconds: (settings.accessDurationSeconds || 0) + 1 })}
+                  onChange={(event: any) =>
+                    setSettings({
+                      ...settings,
+                      accessDurationSeconds: Number((event.currentTarget as HTMLInputElement).value) || 0,
+                    })
+                  }
+                />
+              </div>
             </FormGroup>
 
               <FormGroup
@@ -449,102 +487,135 @@ export default function GroupMpcSettings() {
                   }
                   fieldId="required-approvals"
                 >
-                  <NumberInput
-                    id="required-approvals"
-                    value={settings.requiredApprovals}
-                    min={1}
-                    onMinus={() =>
-                      setSettings({ ...settings, requiredApprovals: Math.max(1, (settings.requiredApprovals || 1) - 1) })
-                    }
-                    onPlus={() => setSettings({ ...settings, requiredApprovals: (settings.requiredApprovals || 0) + 1 })}
-                    onChange={(event: any) =>
-                      setSettings({
-                        ...settings,
-                        requiredApprovals: Number((event.currentTarget as HTMLInputElement).value) || 0,
-                      })
-                    }
-                  />
+                  <div style={{ width: "100%", maxWidth: "200px" }}>
+                    <NumberInput
+                      id="required-approvals"
+                      value={settings.requiredApprovals}
+                      min={1}
+                      onMinus={() =>
+                        setSettings({ ...settings, requiredApprovals: Math.max(1, (settings.requiredApprovals || 1) - 1) })
+                      }
+                      onPlus={() => setSettings({ ...settings, requiredApprovals: (settings.requiredApprovals || 0) + 1 })}
+                      onChange={(event: any) =>
+                        setSettings({
+                          ...settings,
+                          requiredApprovals: Number((event.currentTarget as HTMLInputElement).value) || 0,
+                        })
+                      }
+                    />
+                  </div>
                 </FormGroup>
 
-              {realmSettings.jiraEnabledForRealm && (
-                <>
-                  <Title headingLevel="h3" className="pf-v5-u-mt-lg">
-                    {t("mpcPluginsTitle", { defaultValue: "Plugins" })}
-                  </Title>
-                  <FormGroup label={t("mpcJiraToggleLabel", { defaultValue: "Enable Control From Jira" })} fieldId="jira-controlled">
-                    {settings.jiraControlled && (
-                      <>
-                        <FormGroup 
-                              label={
-                                <div>
-                                  <div className="pf-v5-u-text-nowrap pf-v5-u-mb-xs">
-                                    {t("mpcJiraIntegrationLabel", { defaultValue: "Jira Integration" })}
-                                  </div>
-                                  <span className="pf-v5-u-danger-color-100">*</span>
-                                </div>
-                              } 
-                              fieldId="jira-plugin"
-                            >
-                          <Select
-                            aria-label="jira-plugin"
-                            isOpen={jiraOpen}
-                            onOpenChange={setJiraOpen}
-                            toggle={(toggleRef) => (
-                              <MenuToggle
-                                ref={toggleRef}
-                                isExpanded={jiraOpen}
-                                onClick={() => setJiraOpen(!jiraOpen)}
-                                isFullWidth
-                              >
-                                  {settings.jiraPlugin
-                                    ? (settings.jiraPlugin as PamPlugin).name
-                                    : t("selectJiraIntegration")}
-                              </MenuToggle>
-                            )}
-                          >
-                            <SelectList style={{ maxHeight: 300, overflow: "auto", width: "100%" }}>
-                              {pamPlugins.jira.map((p) => (
-                                <SelectOption
-                                  key={p.id}
-                                  value={p.name}
-                                  selected={
-                                    settings.jiraPlugin
-                                      ? (settings.jiraPlugin as PamPlugin).id === p.id
-                                      : false
-                                  }
-                                  onClick={() => {
-                                    setSettings({ ...settings, jiraPlugin: p });
-                                    setJiraOpen(false);
-                                  }}
-                                />
-                              ))}
-                            </SelectList>
-                          </Select>
-                        </FormGroup>
-                        {settings.jiraPlugin && (settings.jiraPlugin as PamPlugin).authHeader && (
-                          <div className="pf-v5-u-color-200 pf-v5-u-mb-md">
-                            {t("mpcJiraAuthHeaderIntro", { defaultValue: "For this integration, Jira Automation requests should be configured with" })}
-                            <code className="pf-v5-u-ml-sm pf-v5-u-mr-sm">{(settings.jiraPlugin as PamPlugin).authHeader}</code>
-                            {t("mpcJiraAuthHeaderSuffix", { defaultValue: "in the Authorization header." })}
-                          </div>
-                        )}
-                        <FormGroup label={<><span className="pf-v5-u-text-nowrap">{t("mpcJiraBoardIdLabel", { defaultValue: "Jira Board Id" })}</span> <span className="pf-v5-u-danger-color-100">*</span></>} fieldId="jira-board-id">
-                          <NumberInput
-                            id="jira-board-id"
-                            value={settings.jiraBoardId || 0}
-                            min={1}
-                            onMinus={() => setSettings({ ...settings, jiraBoardId: Math.max(1, (settings.jiraBoardId || 1) - 1) })}
-                            onPlus={() => setSettings({ ...settings, jiraBoardId: (settings.jiraBoardId || 0) + 1 })}
-                            onChange={(event: any) => setSettings({ ...settings, jiraBoardId: Number((event.currentTarget as HTMLInputElement).value) || 0 })}
-                            style={{ width: "100%" }}
+                {realmSettings.jiraEnabledForRealm && (
+                    <>
+                      <Title headingLevel="h3" className="pf-v5-u-mt-lg">
+                        {t("mpcPluginsTitle", { defaultValue: "Plugins" })}
+                      </Title>
+                      
+                      {/* Jira Toggle Switch */}
+                      <FormGroup 
+                        label={t("mpcJiraToggleLabel", { defaultValue: "Enable Control From Jira" })} 
+                        fieldId="jira-controlled"
+                      >
+                        <div style={{ width: "100%", maxWidth: "200px" }}>
+                          <Switch
+                            id="jira-controlled"
+                            isChecked={settings.jiraControlled}
+                            onChange={(_event: unknown, checked: boolean) => setSettings({ ...settings, jiraControlled: !!checked })}
+                            label="ON"
+                            labelOff="OFF"
                           />
-                        </FormGroup>
-                      </>
-                    )}
-                  </FormGroup>
-                </>
-              )}
-
+                        </div>
+                      </FormGroup>
+                      
+                      {/* Jira Configuration (only shown when enabled) */}
+                      {settings.jiraControlled && (
+                        <>
+                          <FormGroup 
+                            label={
+                              <div>
+                                <div className="pf-v5-u-text-nowrap pf-v5-u-mb-xs">
+                                  {t("mpcJiraIntegrationLabel", { defaultValue: "Jira Integration" })}
+                                </div>
+                                <span className="pf-v5-u-danger-color-100">*</span>
+                              </div>
+                            } 
+                            fieldId="jira-plugin"
+                          >
+                            <div style={{ width: "100%", maxWidth: "400px" }}>
+                              <Select
+                                aria-label="jira-plugin"
+                                isOpen={jiraOpen}
+                                onOpenChange={setJiraOpen}
+                                toggle={(toggleRef) => (
+                                  <MenuToggle
+                                    ref={toggleRef}
+                                    isExpanded={jiraOpen}
+                                    onClick={() => setJiraOpen(!jiraOpen)}
+                                    isFullWidth
+                                  >
+                                    {settings.jiraPlugin
+                                      ? (settings.jiraPlugin as PamPlugin).name
+                                      : t("selectJiraIntegration")}
+                                  </MenuToggle>
+                                )}
+                              >
+                                <SelectList style={{ maxHeight: 300, overflow: "auto", width: "100%" }}>
+                                  {pamPlugins.jira.map((p) => (
+                                    <SelectOption
+                                      key={p.id}
+                                      value={p.name}
+                                      selected={
+                                        settings.jiraPlugin
+                                          ? (settings.jiraPlugin as PamPlugin).id === p.id
+                                          : false
+                                      }
+                                      onClick={() => {
+                                        setSettings({ ...settings, jiraPlugin: p });
+                                        setJiraOpen(false);
+                                      }}
+                                    />
+                                  ))}
+                                </SelectList>
+                              </Select>
+                            </div>
+                          </FormGroup>
+                          
+                          {settings.jiraPlugin && (settings.jiraPlugin as PamPlugin).authHeader && (
+                            <div className="pf-v5-u-color-200 pf-v5-u-mb-md">
+                              {t("mpcJiraAuthHeaderIntro", { defaultValue: "For this integration, Jira Automation requests should be configured with" })}
+                              <code className="pf-v5-u-ml-sm pf-v5-u-mr-sm">{(settings.jiraPlugin as PamPlugin).authHeader}</code>
+                              {t("mpcJiraAuthHeaderSuffix", { defaultValue: "in the Authorization header." })}
+                            </div>
+                          )}
+                          
+                          <FormGroup 
+                            label={
+                              <div>
+                                <div className="pf-v5-u-text-nowrap pf-v5-u-mb-xs">
+                                  {t("mpcJiraBoardIdLabel", { defaultValue: "Jira Board Id" })}
+                                </div>
+                                <span className="pf-v5-u-danger-color-100">*</span>
+                              </div>
+                            } 
+                            fieldId="jira-board-id"
+                          >
+                            <div style={{ width: "100%", maxWidth: "200px" }}>
+                              <NumberInput
+                                id="jira-board-id"
+                                value={settings.jiraBoardId || 0}
+                                min={1}
+                                widthChars={8}
+                                onMinus={() => setSettings({ ...settings, jiraBoardId: Math.max(1, (settings.jiraBoardId || 1) - 1) })}
+                                onPlus={() => setSettings({ ...settings, jiraBoardId: (settings.jiraBoardId || 0) + 1 })}
+                                onChange={(event: any) => setSettings({ ...settings, jiraBoardId: Number((event.currentTarget as HTMLInputElement).value) || 0 })}
+                              />
+                            </div>
+                          </FormGroup>
+                        </>
+                      )}
+                    </>
+                  )}
               <ActionGroup>
                 <Button
                   variant="primary"
