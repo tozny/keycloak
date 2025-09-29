@@ -174,7 +174,7 @@ export default function ImportUsers() {
               addAlert(t("usersImported"), AlertVariant.success);
           })
     } catch (error) {
-      addError("userImportError", error);
+      addError(t("userImportError"), error);
     } finally {
       setIsSubmitting(false);
     }
