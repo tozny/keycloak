@@ -8,7 +8,7 @@ export type ImportUsersParams = { realm: string };
 const ImportUsers = lazy(() => import("../ImportUsers"));
 
 export const ImportUsersRoute: AppRouteObject = {
-  path: "/:realm/users/import-users",
+  path: "/:realm/users/import",
   element: <ImportUsers />,
   breadcrumb: (t) => t("importUsers"),
   handle: {
