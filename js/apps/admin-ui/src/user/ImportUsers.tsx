@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useForm, FormProvider } from "react-hook-form";
+import { useForm, FormProvider, set } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
@@ -11,6 +11,7 @@ import {
   Form,
   FormGroup,
   PageSection,
+  Progress,
   Stack,
   StackItem,
 } from "@patternfly/react-core";
@@ -37,6 +38,8 @@ export default function ImportUsers() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [filename, setFilename] = useState("");
   const [isFileRejected, setIsFileRejected] = useState(false);
+  const [importUsersTotal, setImportUsersTotal] = useState(0);
+  const [importUsersCurrent, setImportUsersCurrent] = useState(0);
   const tozUser = new TozUser(realm!)
 
   const form = useForm<FormData>({
@@ -105,69 +108,71 @@ export default function ImportUsers() {
                   providedHeaders[header] = i
               }
           }
-            if (!validateHeaders(providedHeaders)) {
-                addError(t("userImportHeaderError"),"");
-               //"File format is invalid, username and password are required headers."
-                return
+          if (!validateHeaders(providedHeaders)) {
+              addError(t("userImportHeaderError"),"");
+              //"File format is invalid, username and password are required headers."
+              return
+          }
+
+          let userLines
+          if (fileLines[fileLines.length - 1] == "") {
+              userLines = fileLines.slice(1, fileLines.length - 1) // remove header line and empty new line
+          } else {
+              userLines = fileLines.slice(1) // remove header line
+          }
+
+          // initiate inprogress display for users
+          setImportUsersTotal(userLines.length)
+          setImportUsersCurrent(0)
+
+          // create users
+          let resultMap: any = {}
+          let result = userLines.reduce((prevPromise: any, nextUserLine: any) => {
+            let userConfig = nextUserLine.split(/,/);
+            let username = providedHeaders["username"] !== undefined ? userConfig[providedHeaders["username"]] : ""
+            let password = providedHeaders["password"] !== undefined ? userConfig[providedHeaders["password"]] : ""
+            let email = providedHeaders["email"] !== undefined ? userConfig[providedHeaders["email"]] : ""
+            let firstName = providedHeaders["firstname"] !== undefined ? userConfig[providedHeaders["firstname"]] : ""
+            let lastName = providedHeaders["lastname"] !== undefined ? userConfig[providedHeaders["lastname"]] : ""
+
+            if (!username || !password) {
+                resultMap[username] = "Username or Password cannot be empty";
+                setImportUsersCurrent(importUsersCurrent + 1);
+                return prevPromise
             }
 
-            let userLines
-            if (fileLines[fileLines.length - 1] == "") {
-                userLines = fileLines.slice(1, fileLines.length - 1) // remove header line and empty new line
-            } else {
-                userLines = fileLines.slice(1) // remove header line
-            }
-
-            // create users
-            let resultMap: any = {}
-            let result = userLines.reduce((prevPromise: any, nextUserLine: any) => {
-                let userConfig = nextUserLine.split(/,/);
-                let username = providedHeaders["username"] !== undefined ? userConfig[providedHeaders["username"]] : ""
-                let password = providedHeaders["password"] !== undefined ? userConfig[providedHeaders["password"]] : ""
-                let email = providedHeaders["email"] !== undefined ? userConfig[providedHeaders["email"]] : ""
-                let firstName = providedHeaders["firstname"] !== undefined ? userConfig[providedHeaders["firstname"]] : ""
-                let lastName = providedHeaders["lastname"] !== undefined ? userConfig[providedHeaders["lastname"]] : ""
-
-                if (!username || !password) {
-                    resultMap[username] = "Username or Password cannot be empty"
-                    // $scope.bulkUserCurrent += 1
-                   //  $scope.$apply();
-                    return prevPromise
-                }
-
-                resultMap[username] = "success" // defaults to success, errors are caught and this message is over written
-                return prevPromise.then(() => {
-                    // $scope.bulkUserCurrent += 1
-                    // $scope.$apply();
-                    return createSingleUser(username, password, email, firstName, lastName)
-                }).catch((error: any) => {
-                    if (error.response !== undefined) {
-                        let statusCode = error.response.status
-                        if (statusCode == 409) {
-                            resultMap[username] = "Sorry, the user already exists."
-                        }
-                        else if (statusCode == 401) {
-                            resultMap[username] = "Please provide a valid registration token"
-                        }
-                        return
-                    }
-                    resultMap[username] = "Error: " + error.message
-                })
-            }, Promise.resolve())
-
-            result.then(() => {
-                // encode result map
-                var results = Object.keys(resultMap).map(function (key) {
-                    return key + "," + resultMap[key]
-                }).join("\n")
-                var downloadElement = document.createElement('a');
-                downloadElement.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURI(results));
-                downloadElement.setAttribute('download', 'bulkCreateResults.csv');
-                document.body.appendChild(downloadElement);
-                downloadElement.click();
-                document.body.removeChild(downloadElement);
+            resultMap[username] = "success" // defaults to success, errors are caught and this message is over written
+            return prevPromise.then(() => {
+              setImportUsersCurrent(importUsersCurrent + 1);
+              return createSingleUser(username, password, email, firstName, lastName)
+            }).catch((error: any) => {
+              if (error.response !== undefined) {
+                  let statusCode = error.response.status
+                  if (statusCode == 409) {
+                      resultMap[username] = "Sorry, the user already exists."
+                  }
+                  else if (statusCode == 401) {
+                      resultMap[username] = "Please provide a valid registration token"
+                  }
+                  return
+              }
+              resultMap[username] = "Error: " + error.message
             })
-      addAlert(t("usersImported"), AlertVariant.success);
+          }, Promise.resolve())
+
+          result.then(() => {
+              // encode result map
+              var results = Object.keys(resultMap).map(function (key) {
+                  return key + "," + resultMap[key]
+              }).join("\n")
+              var downloadElement = document.createElement('a');
+              downloadElement.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURI(results));
+              downloadElement.setAttribute('download', 'bulkCreateResults.csv');
+              document.body.appendChild(downloadElement);
+              downloadElement.click();
+              document.body.removeChild(downloadElement);
+              addAlert(t("usersImported"), AlertVariant.success);
+          })
     } catch (error) {
       addError("userImportError", error);
     } finally {
@@ -268,6 +273,16 @@ export default function ImportUsers() {
           </FormGroup>
           </Form>
         </FormProvider>
+        { importUsersTotal > 0 && (
+          <Progress 
+            measureLocation="none"
+            value={(importUsersCurrent * 100) / importUsersTotal} 
+            title={`${importUsersCurrent} / ${importUsersTotal}`}
+            variant={
+              importUsersCurrent === importUsersTotal ? "success" : "warning"
+            }
+            />
+        )}
       </PageSection>
     </>
   );
