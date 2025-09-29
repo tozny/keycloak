@@ -40,6 +40,7 @@ export default function ImportUsers() {
   const [isFileRejected, setIsFileRejected] = useState(false);
   const [importUsersTotal, setImportUsersTotal] = useState(0);
   const [importUsersCurrent, setImportUsersCurrent] = useState(0);
+  const [progressVariant, setProgressVariant] = useState("");
   const tozUser = new TozUser(realm!)
 
   const form = useForm<FormData>({
@@ -98,6 +99,7 @@ export default function ImportUsers() {
     }
     setIsSubmitting(true);
     try {
+          let userImportError = false;
           let fileLines = formData.fileContent.split(/\r?\n/);
           let headerLine = fileLines[0]
           let providedHeaders: any = { "username": undefined, "password": undefined, "email": undefined, "firstname": undefined, "lastname": undefined }
@@ -146,6 +148,7 @@ export default function ImportUsers() {
               setImportUsersCurrent(importUsersCurrent => importUsersCurrent + 1);
               return createSingleUser(username, password, email, firstName, lastName)
             }).catch((error: any) => {
+              userImportError = true;
               if (error.response !== undefined) {
                   let statusCode = error.response.status
                   if (statusCode == 409) {
@@ -171,9 +174,15 @@ export default function ImportUsers() {
               document.body.appendChild(downloadElement);
               downloadElement.click();
               document.body.removeChild(downloadElement);
+              if (userImportError) {
+                  setProgressVariant("warning")
+              } else {
+                  setProgressVariant("success")
+              }
               addAlert(t("usersImported"), AlertVariant.success);
           })
     } catch (error) {
+      setProgressVariant("danger")
       addError(t("userImportError"), error);
     } finally {
       setIsSubmitting(false);
@@ -278,9 +287,7 @@ export default function ImportUsers() {
             measureLocation="none"
             value={(importUsersCurrent * 100) / importUsersTotal} 
             title={`${importUsersCurrent} / ${importUsersTotal}`}
-            variant={
-              importUsersCurrent === importUsersTotal ? "success" : "warning"
-            }
+            variant={progressVariant !== "" ? (progressVariant as "danger" | "success" | "warning") : undefined}
             />
         )}
       </PageSection>
