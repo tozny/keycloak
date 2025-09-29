@@ -215,6 +215,9 @@ export default function ImportUsers() {
     setValue("fileContent", "");
     setFilename("");
     setIsFileRejected(false);
+    setImportUsersTotal(0);
+    setImportUsersCurrent(0);
+    setProgressVariant("");
   };
 
   return (
