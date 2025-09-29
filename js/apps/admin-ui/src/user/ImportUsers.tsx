@@ -137,13 +137,13 @@ export default function ImportUsers() {
 
             if (!username || !password) {
                 resultMap[username] = "Username or Password cannot be empty";
-                setImportUsersCurrent(importUsersCurrent + 1);
+                setImportUsersCurrent(importUsersCurrent => importUsersCurrent + 1);
                 return prevPromise
             }
 
             resultMap[username] = "success" // defaults to success, errors are caught and this message is over written
             return prevPromise.then(() => {
-              setImportUsersCurrent(importUsersCurrent + 1);
+              setImportUsersCurrent(importUsersCurrent => importUsersCurrent + 1);
               return createSingleUser(username, password, email, firstName, lastName)
             }).catch((error: any) => {
               if (error.response !== undefined) {
