@@ -433,7 +433,7 @@ export default function GroupMpcSettings() {
                   </span>
                   <Tooltip
                     content={
-                      <div>
+                      <div style={{ maxWidth: '300px', whiteSpace: 'normal', textAlign: 'left' }}>
                         {t("mpcMaxDurationHelp", { 
                           seconds: realmSettings.defaultAccessDurationSeconds, 
                           defaultValue: `The maximum time that the access policy will last once approved. Defaults to ${realmSettings.defaultAccessDurationSeconds} seconds.`
@@ -478,7 +478,7 @@ export default function GroupMpcSettings() {
                       </span>
                       <Tooltip
                         content={
-                          <div>
+                          <div style={{ maxWidth: '300px', whiteSpace: 'normal', textAlign: 'left' }}>
                             {t("mpcRequiredApprovalsHelp", { 
                               count: realmSettings.defaultRequiredApprovers, 
                               defaultValue: `The number of approvals that are required to approve the request. Defaults to ${realmSettings.defaultRequiredApprovers} approver(s).`
