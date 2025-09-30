@@ -430,13 +430,20 @@ export default function GroupMpcSettings() {
                 <span className="pf-v5-u-text-nowrap">
                   {t("mpcMaxDurationLabel", { defaultValue: "Maximum access policy duration in seconds" })}
                   <Tooltip
-                    content={t("mpcMaxDurationHelp", { 
-                      seconds: realmSettings.defaultAccessDurationSeconds, 
-                      defaultValue: `The maximum time that the access policy will last once approved. Defaults to ${realmSettings.defaultAccessDurationSeconds} seconds.` 
-                    })}
+                    content={
+                      <div>
+                        {t("mpcMaxDurationHelp", { 
+                          seconds: realmSettings.defaultAccessDurationSeconds, 
+                          defaultValue: `The maximum time that the access policy will last once approved. Defaults to ${realmSettings.defaultAccessDurationSeconds} seconds.`
+                        })}
+                      </div>
+                    }
                     position="top"
+                    triggerRef={null}
                   >
-                    <InfoCircleIcon className="pf-v5-u-ml-sm pf-v5-u-color-200" style={{ cursor: 'pointer' }} />
+                    <div>
+                      <InfoCircleIcon className="pf-v5-u-ml-sm pf-v5-u-color-200" style={{ cursor: 'pointer' }} />
+                    </div>
                   </Tooltip>
                 </span>
               }
@@ -467,13 +474,20 @@ export default function GroupMpcSettings() {
                     <span className="pf-v5-u-text-nowrap">
                       {t("mpcRequiredApprovalsLabel", { defaultValue: "Number of approvals required" })}
                       <Tooltip
-                        content={t("mpcRequiredApprovalsHelp", { 
-                          count: realmSettings.defaultRequiredApprovers, 
-                          defaultValue: `Defaults to ${realmSettings.defaultRequiredApprovers} approver(s).` 
-                        })}
+                        content={
+                          <div>
+                            {t("mpcRequiredApprovalsHelp", { 
+                              count: realmSettings.defaultRequiredApprovers, 
+                              defaultValue: `Defaults to ${realmSettings.defaultRequiredApprovers} approver(s).`
+                            })}
+                          </div>
+                        }
                         position="top"
+                        triggerRef={null}
                       >
-                        <InfoCircleIcon className="pf-v5-u-ml-sm pf-v5-u-color-200" style={{ cursor: 'pointer' }} />
+                        <div>
+                          <InfoCircleIcon className="pf-v5-u-ml-sm pf-v5-u-color-200" style={{ cursor: 'pointer' }} />
+                        </div>
                       </Tooltip>
                     </span>
                   }
