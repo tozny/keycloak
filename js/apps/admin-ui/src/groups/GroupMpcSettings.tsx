@@ -378,10 +378,10 @@ export default function GroupMpcSettings() {
             <>
               <FormGroup
                   label={
-                    <div>
-                      <div className="pf-v5-u-text-wrap pf-v5-u-mb-xs">
+                    <div className="pf-v5-u-display-flex pf-v5-u-align-items-center">
+                      <span className="pf-v5-u-mr-xs">
                         {t("mpcApproverRolesLabel", { defaultValue: "Users with the following roles can grant permissions" })}
-                      </div>
+                      </span>
                       <span className="pf-v5-u-danger-color-100">*</span>
                     </div>
                   }
@@ -427,8 +427,10 @@ export default function GroupMpcSettings() {
 
               <FormGroup
               label={
-                <span className="pf-v5-u-text-nowrap">
-                  {t("mpcMaxDurationLabel", { defaultValue: "Maximum access policy duration in seconds" })}
+                <div className="pf-v5-u-display-flex pf-v5-u-align-items-center">
+                  <span className="pf-v5-u-mr-sm">
+                    {t("mpcMaxDurationLabel", { defaultValue: "Maximum access policy duration in seconds" })}
+                  </span>
                   <Tooltip
                     content={
                       <div>
@@ -441,10 +443,10 @@ export default function GroupMpcSettings() {
                     position="top"
                   >
                     <div ref={(el: HTMLElement | null) => el && el.setAttribute('data-testid', 'max-duration-tooltip-trigger')}>
-                      <InfoCircleIcon className="pf-v5-u-ml-sm pf-v5-u-color-200" style={{ cursor: 'pointer' }} />
+                      <InfoCircleIcon className="pf-v5-u-ml-xs pf-v5-u-color-200" style={{ cursor: 'pointer', verticalAlign: 'middle' }} />
                     </div>
                   </Tooltip>
-                </span>
+                </div>
               }
               fieldId="access-duration"
             >
@@ -470,8 +472,10 @@ export default function GroupMpcSettings() {
 
               <FormGroup
                   label={
-                    <span className="pf-v5-u-text-nowrap">
-                      {t("mpcRequiredApprovalsLabel", { defaultValue: "Number of approvals required" })}
+                    <div className="pf-v5-u-display-flex pf-v5-u-align-items-center">
+                      <span className="pf-v5-u-mr-sm">
+                        {t("mpcRequiredApprovalsLabel", { defaultValue: "Number of approvals required" })}
+                      </span>
                       <Tooltip
                         content={
                           <div>
@@ -484,10 +488,10 @@ export default function GroupMpcSettings() {
                         position="top"
                       >
                         <div ref={(el: HTMLElement | null) => el && el.setAttribute('data-testid', 'required-approvals-tooltip-trigger')}>
-                          <InfoCircleIcon className="pf-v5-u-ml-sm pf-v5-u-color-200" style={{ cursor: 'pointer' }} />
+                          <InfoCircleIcon className="pf-v5-u-ml-xs pf-v5-u-color-200" style={{ cursor: 'pointer', verticalAlign: 'middle' }} />
                         </div>
                       </Tooltip>
-                    </span>
+                    </div>
                   }
                   fieldId="required-approvals"
                 >
