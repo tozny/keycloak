@@ -439,9 +439,8 @@ export default function GroupMpcSettings() {
                       </div>
                     }
                     position="top"
-                    triggerRef={null}
                   >
-                    <div>
+                    <div ref={(el: HTMLElement | null) => el && el.setAttribute('data-testid', 'max-duration-tooltip-trigger')}>
                       <InfoCircleIcon className="pf-v5-u-ml-sm pf-v5-u-color-200" style={{ cursor: 'pointer' }} />
                     </div>
                   </Tooltip>
@@ -483,9 +482,8 @@ export default function GroupMpcSettings() {
                           </div>
                         }
                         position="top"
-                        triggerRef={null}
                       >
-                        <div>
+                        <div ref={(el: HTMLElement | null) => el && el.setAttribute('data-testid', 'required-approvals-tooltip-trigger')}>
                           <InfoCircleIcon className="pf-v5-u-ml-sm pf-v5-u-color-200" style={{ cursor: 'pointer' }} />
                         </div>
                       </Tooltip>
@@ -555,7 +553,7 @@ export default function GroupMpcSettings() {
                                 onOpenChange={setJiraOpen}
                                 selected={settings.jiraPlugin ? (settings.jiraPlugin as PamPlugin).name : t("selectJiraIntegration")}
                                 onSelect={(event, value) => {
-                                  const plugin = pamPlugins.jira.find(p => p.name === value);
+                                  const plugin = pamPlugins.jira.find((p: PamPlugin) => p.name === value);
                                   if (plugin) {
                                     setSettings({ ...settings, jiraPlugin: plugin });
                                     setJiraOpen(false);
