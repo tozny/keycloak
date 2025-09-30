@@ -346,7 +346,7 @@ export default function GroupMpcSettings() {
       <Form
         isHorizontal
         style={{
-          '--pf-v5-c-form--m-horizontal__group--md--GridTemplateColumns': '400px 1fr',
+          '--pf-v5-c-form--m-horizontal__group-label--md--GridColumnWidth': '350px',
         } as React.CSSProperties}
       >
       {realmSettings.enabled && (
@@ -392,7 +392,7 @@ export default function GroupMpcSettings() {
                       aria-label="approver-roles"
                       isOpen={rolesOpen}
                       onOpenChange={setRolesOpen}
-                      selected={selectedRoles.size > 0 ? [...selectedRoles].join(", ") : t("selectRoles")}
+                      selected={selectedRoles.size > 0 ? [...selectedRoles].join(", ") : t("Select Roles")}
                       onSelect={(event, value) => onRoleSelect(event, value)}
                       toggle={(toggleRef) => (
                         <MenuToggle
@@ -403,7 +403,7 @@ export default function GroupMpcSettings() {
                         >
                           {selectedRoles.size > 0
                             ? [...selectedRoles].join(", ")
-                            : t("selectRoles")}
+                            : t("Select Roles")}
                         </MenuToggle>
                       )}
                     >
@@ -450,7 +450,7 @@ export default function GroupMpcSettings() {
               }
               fieldId="access-duration"
             >
-              <div style={{ marginLeft: '20%' }}>
+              <div style={{ marginLeft: '20%', maxWidth: '70%' }}>
                 <NumberInput
                   id="access-duration"
                   value={settings.accessDurationSeconds}
@@ -481,7 +481,7 @@ export default function GroupMpcSettings() {
                           <div>
                             {t("mpcRequiredApprovalsHelp", { 
                               count: realmSettings.defaultRequiredApprovers, 
-                              defaultValue: `Defaults to ${realmSettings.defaultRequiredApprovers} approver(s).`
+                              defaultValue: `The number of approvals that are required to approve the request. Defaults to ${realmSettings.defaultRequiredApprovers} approver(s).`
                             })}
                           </div>
                         }
@@ -495,7 +495,7 @@ export default function GroupMpcSettings() {
                   }
                   fieldId="required-approvals"
                 >
-                  <div style={{ marginLeft: '20%' }}>
+                  <div style={{ marginLeft: '20%', maxWidth: '70%' }}>
                     <NumberInput
                       id="required-approvals"
                       value={settings.requiredApprovals}
