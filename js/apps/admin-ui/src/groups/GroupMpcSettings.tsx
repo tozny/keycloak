@@ -260,9 +260,20 @@ export default function GroupMpcSettings() {
       const accessToken = await adminClient.getAccessToken();
       const baseUrl = adminClient.baseUrl.replace(/\/?$/, "/");
 
+      // Transform roles to use snake_case properties for the API
+      const transformedRoles = settings.enabled 
+        ? settings.approverRoles.map((role: ToznyRole) => ({
+            ...role,
+            client_role: role.clientRole,
+            clientRole: undefined,
+            container_id: role.container_id || (role as any).containerId,
+            containerId: undefined
+          }))
+        : [];
+
       const policy: any = {
         id: settings.id,
-        approval_roles: settings.enabled ? settings.approverRoles : [],
+        approval_roles: transformedRoles,
         required_approvals: settings.requiredApprovals,
         max_access_duration_seconds: settings.accessDurationSeconds,
       };
