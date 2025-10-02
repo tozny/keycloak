@@ -478,7 +478,14 @@ export default function GroupMpcSettings() {
                       </span>
                       <Tooltip
                         content={
-                          <div style={{ maxWidth: '300px', whiteSpace: 'normal', textAlign: 'left' }}>
+                          <div style={{ 
+                            maxWidth: '400px',
+                            whiteSpace: 'normal',
+                            textAlign: 'left',
+                            wordWrap: 'break-word',
+                            overflowWrap: 'break-word',
+                            fontSize: 'var(--pf-v5-global--FontSize--sm)'
+                          }}>
                             {t("mpcRequiredApprovalsHelp", { 
                               count: realmSettings.defaultRequiredApprovers, 
                               defaultValue: `The number of approvals that are required to approve the request. Defaults to ${realmSettings.defaultRequiredApprovers} approver(s).`
