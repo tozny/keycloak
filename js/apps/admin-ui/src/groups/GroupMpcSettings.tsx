@@ -478,7 +478,7 @@ export default function GroupMpcSettings() {
                       </span>
                       <Tooltip
                         content={
-                          <div className="pf-v5-u-text-wrap">
+                          <div style={{ maxWidth: '300px', whiteSpace: 'normal', textAlign: 'left' }}>
                             {t("mpcRequiredApprovalsHelp", { 
                               count: realmSettings.defaultRequiredApprovers, 
                               defaultValue: `The number of approvals that are required to approve the request. Defaults to ${realmSettings.defaultRequiredApprovers} approver(s).`
@@ -486,12 +486,6 @@ export default function GroupMpcSettings() {
                           </div>
                         }
                         position="top"
-                        maxWidth="30rem"
-                        enableFlip={true}
-                        distance={5}
-                        entryDelay={100}
-                        exitDelay={0}
-                        flipBehavior={['top', 'right', 'bottom', 'left']}
                       >
                         <div ref={(el: HTMLElement | null) => el && el.setAttribute('data-testid', 'required-approvals-tooltip-trigger')}>
                           <InfoCircleIcon className="pf-v5-u-ml-xs pf-v5-u-color-200" style={{ cursor: 'pointer', verticalAlign: 'middle' }} />
