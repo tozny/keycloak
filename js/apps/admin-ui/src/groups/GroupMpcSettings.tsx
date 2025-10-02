@@ -481,7 +481,7 @@ export default function GroupMpcSettings() {
                           <div className="pf-v5-u-text-wrap">
                             {t("mpcRequiredApprovalsHelp", { 
                               count: realmSettings.defaultRequiredApprovers, 
-                              defaultValue: `The number of approvals that are required to approve the request.`
+                              defaultValue: `The number of approvals that are required to approve the request. Defaults to ${realmSettings.defaultRequiredApprovers} approver(s).`
                             })}
                           </div>
                         }
