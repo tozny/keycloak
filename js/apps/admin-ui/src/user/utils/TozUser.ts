@@ -179,4 +179,22 @@ export class TozUser {
         return err
       }           
   }
+
+  async DeleteUser(userId: string | undefined, accessToken: string | undefined) {
+    const reqURL = environment.authUrl + '/realms/' + this.realm?.realm + '/user/' + userId
+    try {
+        const response: any = await fetchWithError(
+            reqURL,
+            {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+                ...getAuthorizationHeaders(accessToken)
+              },
+            })
+        return response
+    } catch(err : any){
+       return err
+    }
+  }
 }

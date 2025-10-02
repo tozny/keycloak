@@ -45,6 +45,7 @@ import { useConfirmDialog } from "../confirm-dialog/ConfirmDialog";
 import { BruteUser, findUsers } from "../role-mapping/resource";
 import { UserDataTableToolbarItems } from "./UserDataTableToolbarItems";
 import { NetworkError } from "@keycloak/keycloak-admin-client";
+import { TozUser } from "../../user/utils/TozUser";
 
 export type UserFilter = {
   exact: boolean;
@@ -135,6 +136,7 @@ export function UserDataTable() {
 
   const [key, setKey] = useState(0);
   const refresh = () => setKey(key + 1);
+  const tozUser = new TozUser(realm!);
 
   useFetch(
     async () => {
@@ -222,7 +224,9 @@ export function UserDataTable() {
     continueButtonVariant: ButtonVariant.danger,
     onConfirm: async () => {
       try {
+        const accessToken = await adminClient.getAccessToken();
         for (const user of selectedRows) {
+          await tozUser.DeleteUser(user!.id!, accessToken);
           await adminClient.users.del({ id: user.id! });
         }
         setSelectedRows([]);
