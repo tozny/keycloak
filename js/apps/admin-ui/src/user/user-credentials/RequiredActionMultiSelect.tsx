@@ -32,12 +32,13 @@ export const RequiredActionMultiSelect = <
   const [requiredActions, setRequiredActions] = useState<
     RequiredActionProviderRepresentation[]
   >([]);
+  const requiredActionsBlacklist = ['terms_and_conditions','VERIFY_EMAIL','register_federated_user','UPDATE_PASSWORD','api_login_complete','UPDATE_PROFILE','redirect_login_complete','delete_credential'];
 
   useFetch(
     () => adminClient.authenticationManagement.getRequiredActions(),
     (actions) => {
       const enabledUserActions = actions.filter((action) => {
-        return action.enabled;
+        return action.enabled && !requiredActionsBlacklist.includes(action.alias!);
       });
       setRequiredActions(enabledUserActions);
     },
