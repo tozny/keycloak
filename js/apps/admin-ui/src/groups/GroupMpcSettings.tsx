@@ -168,7 +168,7 @@ export default function GroupMpcSettings() {
       } catch (e) {
         // Roles failing to load should not block UI completely
         // but it will prevent selecting approver roles.
-        console.error("Failed to load realm roles", e);
+        console.error(t("mpcFailedToLoadRealmRoles"), e);
       }
     })();
     return () => {
@@ -238,7 +238,7 @@ export default function GroupMpcSettings() {
       } catch (e) {
         if (!ignore) {
           console.error(e);
-          addError("somethingWentWrong", e);
+          addError(t("mpcSomethingWentWrong"), e);
         }
       }
     })();
@@ -252,6 +252,27 @@ export default function GroupMpcSettings() {
     if (!loaded || !initialRef.current) return;
     setChanged(JSON.stringify(settings) !== JSON.stringify(initialRef.current));
   }, [settings, loaded]);
+
+  // Reconcile settings.approverRoles with realm roles once both are loaded
+  // - Replace with matching realm role objects by id
+  // - Remove roles that no longer exist
+  // - Reset initialRef to the reconciled state to avoid false "changed" state
+  const reconciledRef = useRef(false);
+  useEffect(() => {
+    if (!rolesLoaded || !loaded || reconciledRef.current) return;
+    const current: ToznyRole[] = settings.approverRoles || [];
+    const mapped = current
+      .map((r: ToznyRole) => roles.find((rr: ToznyRole) => rr.id === r.id) || null)
+      .filter((r): r is ToznyRole => r !== null);
+
+    if (JSON.stringify(mapped) !== JSON.stringify(current)) {
+      const next = { ...settings, approverRoles: mapped };
+      setSettings(next);
+      initialRef.current = JSON.parse(JSON.stringify(next));
+      setChanged(false);
+    }
+    reconciledRef.current = true;
+  }, [rolesLoaded, loaded, roles, settings]);
 
   // Handlers
   const save = async () => {
@@ -309,10 +330,10 @@ export default function GroupMpcSettings() {
       initialRef.current = JSON.parse(JSON.stringify(next));
       setSettings(next);
       setChanged(false);
-      addAlert(t("successfullySaved"), AlertVariant.success);
+      addAlert(t("mpcApprovalPoliciesUpdated"), AlertVariant.success);
     } catch (e) {
       console.error(e);
-      addError("somethingWentWrong", e);
+      addError(t("mpcSomethingWentWrong"), e);
     }
   };
 
@@ -424,6 +445,16 @@ export default function GroupMpcSettings() {
                     </Select>
                   </div>
                 </FormGroup>
+                {/* Validation helper for approver roles when Jira is not controlling */}
+                {settings.enabled && !settings.jiraControlled && (settings.approverRoles || []).length === 0 && (
+                  <div style={{ marginLeft: "20%", maxWidth: "70%" }}>
+                    <HelperText>
+                      <HelperTextItem variant="error">
+                        {t("mpcApproverRolesRequired", { defaultValue: "At least one approver role is required when Jira control is disabled." })}
+                      </HelperTextItem>
+                    </HelperText>
+                  </div>
+                )}
 
               <FormGroup
               label={
@@ -595,7 +626,27 @@ export default function GroupMpcSettings() {
                                 </SelectList>
                               </Select>
                             </div>
-                          </FormGroup>
+                            </FormGroup>
+                            {/* Validation helper for Jira board id */}
+                            {settings.jiraControlled && (!settings.jiraBoardId || (settings.jiraBoardId as number) <= 0) && (
+                              <div style={{ width: "100%", maxWidth: "200px" }}>
+                                <HelperText>
+                                  <HelperTextItem variant="error">
+                                    {t("mpcJiraBoardIdRequired", { defaultValue: "Enter a valid Jira Board Id greater than 0." })}
+                                  </HelperTextItem>
+                                </HelperText>
+                              </div>
+                            )}
+                          {/* Validation helper for Jira plugin selection */}
+                          {settings.jiraControlled && !settings.jiraPlugin && (
+                            <div style={{ width: "100%", maxWidth: "400px" }}>
+                              <HelperText>
+                                <HelperTextItem variant="error">
+                                  {t("mpcJiraPluginRequired", { defaultValue: "Select a Jira integration when Jira control is enabled." })}
+                                </HelperTextItem>
+                              </HelperText>
+                            </div>
+                          )}
                           
                           {settings.jiraPlugin && (settings.jiraPlugin as PamPlugin).authHeader && (
                             <div className="pf-v5-u-color-200 pf-v5-u-mb-md">
