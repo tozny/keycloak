@@ -388,9 +388,19 @@ export default function GroupMpcSettings() {
               <Switch
                 id="mpc-enabled"
                 isChecked={settings.enabled}
-                onChange={(_event: unknown, checked: boolean) => setSettings({ ...settings, enabled: !!checked })}
+                onChange={(_event: unknown, checked: boolean) => {
+                  const newSettings = { ...settings, enabled: !!checked };
+                  // If disabling, reset other settings to defaults
+                  if (!checked) {
+                    newSettings.requiredApprovals = realmSettings.defaultRequiredApprovers;
+                    newSettings.accessDurationSeconds = realmSettings.defaultAccessDurationSeconds;
+                    newSettings.approverRoles = [];
+                  }
+                  setSettings(newSettings);
+                }}
                 label="ON"
                 labelOff="OFF"
+                aria-label={settings.enabled ? "Disable MPC" : "Enable MPC"}
               />
             </div>
           </FormGroup>
