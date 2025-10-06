@@ -405,6 +405,7 @@ export default function GroupMpcSettings() {
             </div>
           </FormGroup>
 
+          {/* Form fields that should only show when MPC is enabled */}
           {settings.enabled && (
             <>
               <FormGroup
@@ -682,20 +683,28 @@ export default function GroupMpcSettings() {
                       )}
                     </>
                   )}
-              <ActionGroup>
-                <Button
-                  variant="primary"
-                  onClick={save}
-                  isDisabled={!changed || !mpcSettingsAreValid(settings)}
-                >
-                  {t("mpcSaveButton", { defaultValue: "Save MPC Settings" })}
-                </Button>
-                <Button variant="link" onClick={reset} isDisabled={!changed}>
-                  {t("cancel")}
-                </Button>
-              </ActionGroup>
             </>
           )}
+          
+          {/* Action buttons - always show when MPC settings are enabled for the realm */}
+          <ActionGroup className="pf-v5-u-mt-lg">
+            <Button
+              variant="primary"
+              onClick={save}
+              isDisabled={!changed || (settings.enabled && !mpcSettingsAreValid(settings))}
+              data-testid="save-mpc-settings"
+            >
+              {t("mpcSaveButton", { defaultValue: "Save MPC Settings" })}
+            </Button>
+            <Button 
+              variant="link" 
+              onClick={reset} 
+              isDisabled={!changed}
+              data-testid="cancel-mpc-settings"
+            >
+              {t("cancel")}
+            </Button>
+          </ActionGroup>
         </>
       )}
       {!realmSettings.enabled && (
