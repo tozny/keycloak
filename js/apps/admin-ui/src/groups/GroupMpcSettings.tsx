@@ -445,17 +445,6 @@ export default function GroupMpcSettings() {
                     </Select>
                   </div>
                 </FormGroup>
-                {/* Validation helper for approver roles when Jira is not controlling */}
-                {settings.enabled && !settings.jiraControlled && (settings.approverRoles || []).length === 0 && (
-                  <div style={{ marginLeft: "20%", maxWidth: "70%" }}>
-                    <HelperText>
-                      <HelperTextItem variant="error">
-                        {t("mpcApproverRolesRequired", { defaultValue: "At least one approver role is required when Jira control is disabled." })}
-                      </HelperTextItem>
-                    </HelperText>
-                  </div>
-                )}
-
               <FormGroup
               label={
                 <div className="pf-v5-u-display-flex pf-v5-u-align-items-center">
