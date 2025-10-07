@@ -85,13 +85,17 @@ export const ResetPasswordDialog = ({
     try {
       setIsLoading(true);
       const [resetLink, message] = await tozUser.ResetPassword(user.username!, authentication?.emailRecoveryExpirationMinutes, authentication?.adminRecoveryExpirationMinutes)
-      setResetLink(resetLink)
-      addAlert(
-        isResetPassword
-          ? t("resetCredentialsSuccess")
-          : t("savePasswordSuccess"),
-        AlertVariant.success,
-      );
+      if(resetLink != ""){
+        setResetLink(resetLink)
+        addAlert(
+          isResetPassword
+            ? t("resetCredentialsSuccess")
+            : t("savePasswordSuccess"),
+          AlertVariant.success,
+        );
+      } else {
+        addError(message, new Error(message))
+      }
     } catch (error) {
       addError(
         isResetPassword ? "resetPasswordError" : "savePasswordError",
