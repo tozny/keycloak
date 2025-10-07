@@ -47,6 +47,7 @@ export const ResetPasswordDialog = ({
   const { realmRepresentation: realm } = useRealm();
   const tozUser = new TozUser(realm!)
   const [resetLink, setResetLink] = useState<string >(passedInResetLink);
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm<ToznyPasswordBrokerFieldsForm>({
     defaultValues: {
       authentication: {
@@ -82,6 +83,7 @@ export const ResetPasswordDialog = ({
     authentication
   }: ToznyPasswordBrokerFieldsForm) => {
     try {
+      setIsLoading(true);
       const [resetLink, message] = await tozUser.ResetPassword(user.username!, authentication?.emailRecoveryExpirationMinutes, authentication?.adminRecoveryExpirationMinutes)
       setResetLink(resetLink)
       addAlert(
@@ -95,8 +97,9 @@ export const ResetPasswordDialog = ({
         isResetPassword ? "resetPasswordError" : "savePasswordError",
         error,
       );
+    } finally {
+      setIsLoading(false);
     }
-
   };
 
   return (
@@ -125,6 +128,7 @@ export const ResetPasswordDialog = ({
                 key="submit"
                 type="submit"
                 isDisabled={!isValid}
+                isLoading={isLoading}
                 variant={ButtonVariant.primary}
               >
                 {t("resetPassword")}
