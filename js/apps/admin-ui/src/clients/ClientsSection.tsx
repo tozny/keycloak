@@ -33,6 +33,16 @@ import helpUrls from "../help-urls";
 import { emptyFormatter, exportClient } from "../util";
 import { convertClientToUrl } from "../utils/client-url";
 import { translationFormatter } from "../utils/translationFormatter";
+
+const HIDDEN_CLIENTS = [
+  'account',
+  'account-console',
+  'admin-cli',
+  'broker',
+  'realm-management',
+  'security-admin-console',
+  'tozid-realm-idp',
+];
 import { InitialAccessTokenList } from "./initial-access/InitialAccessTokenList";
 import { ClientRegistration } from "./registration/ClientRegistration";
 import { toAddClient } from "./routes/AddClient";
@@ -156,7 +166,13 @@ export default function ClientsSection() {
       params.clientId = search;
       params.search = true;
     }
-    return adminClient.clients.find({ ...params });
+    
+    const clients = await adminClient.clients.find({ ...params });
+    
+    // Filter out hidden clients
+    return clients.filter(
+      (client: ClientRepresentation) => !HIDDEN_CLIENTS.includes(client.clientId || '')
+    );
   };
 
   const useTab = (tab: ClientsTab) => useRoutableTab(toClients({ realm, tab }));
