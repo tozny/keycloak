@@ -328,6 +328,7 @@ export const UserForm = ({
               label={t("email")}
               type="email"
               rules={{
+                required: t("required"),
                 pattern: {
                   value: emailRegexPattern,
                   message: t("emailInvalid"),
@@ -343,8 +344,8 @@ export const UserForm = ({
             />
 
             <ToznyPasswordBrokerFields realm={realm} />
-            <TextControl name="firstName" label={t("firstName")} />
-            <TextControl name="lastName" label={t("lastName")} />
+            <TextControl name="firstName" label={t("firstName")} rules={{ required: t("required") }} />
+            <TextControl name="lastName" label={t("lastName")} rules={{ required: t("required") }}/>
           </>
         )}
         {isBruteForceProtected && (
