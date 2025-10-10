@@ -90,9 +90,17 @@ export function setUserProfileServerError<T>(
 
 export function isRequiredAttribute({
   required,
+  name,
 }: UserProfileAttributeMetadata): boolean {
-  // Check if required is true
-  return required as boolean;
+  // Enforce required for root attributes across all realms at the UI layer
+  // This ensures Admin UI/Account UI always treat these fields as required,
+  // regardless of realm metadata configuration.
+  if (name && isRootAttribute(name)) {
+    return true;
+  }
+
+  // Fallback to realm-configured required flag
+  return (required as boolean) || false;
 }
 
 export function isUserProfileError(error: unknown): error is UserProfileError {
