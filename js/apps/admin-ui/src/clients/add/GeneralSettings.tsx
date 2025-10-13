@@ -274,21 +274,27 @@ export const GeneralSettings = () => {
         fieldId="preconfigured-clients"
       >
         <Select
-          id="preconfigured-clients"
-          placeholderText={t("selectClientTemplate")}
-          onSelect={(_, value) => handleTemplateChange(value as string)}
-          aria-label={t("selectClientTemplate")}
-        >
-          {PRECONFIGURED_CLIENTS.map((client) => (
-            <SelectOption
-              key={client.name}
-              value={client.name}
-              description={client.description}
-            >
-              {client.name}
-            </SelectOption>
-          ))}
-        </Select>
+            id="preconfigured-clients"
+            variant="single"
+            onToggle={() => setIsOpen(!isOpen)}
+            onSelect={(_, value) => {
+              handleTemplateChange(value as string);
+              setIsOpen(false);
+            }}
+            isOpen={isOpen}
+            aria-label={t("selectClientTemplate")}
+            placeholder={t("selectClientTemplate")}
+          >
+            {PRECONFIGURED_CLIENTS.map((client) => (
+              <SelectOption
+                key={client.name}
+                value={client.name}
+                description={client.description}
+              >
+                {client.name}
+              </SelectOption>
+            ))}
+          </Select>
       </FormGroup>
       
       <SelectControl
