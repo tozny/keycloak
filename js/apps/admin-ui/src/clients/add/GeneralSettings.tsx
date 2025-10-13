@@ -5,7 +5,7 @@ import { useLoginProviders } from "../../context/server-info/ServerInfoProvider"
 import { ClientDescription } from "../ClientDescription";
 import { getProtocolName } from "../utils";
 import { useFormContext } from "react-hook-form";
-import { FormGroup, Select, SelectOption } from "@patternfly/react-core";
+import { FormGroup, Select, SelectOption, SelectToggle } from "@patternfly/react-core";
 import { useState } from "react";
 
 // Predefined client templates
@@ -252,14 +252,11 @@ export const GeneralSettings = () => {
   const handleTemplateChange = (value: string) => {
     const template = PRECONFIGURED_CLIENTS.find(t => t.name === value);
     if (template) {
-      setValue("protocol", template.protocol);
-      setValue("enabled", template.enabled);
-      setValue("standardFlowEnabled", template.standardFlowEnabled);
-      setValue("implicitFlowEnabled", template.implicitFlowEnabled);
-      setValue("directAccessGrantsEnabled", template.directAccessGrantsEnabled);
-      setValue("serviceAccountsEnabled", template.serviceAccountsEnabled);
-      setValue("publicClient", template.publicClient);
-      setValue("authorizationServicesEnabled", template.authorizationServicesEnabled);
+      Object.entries(template).forEach(([key, val]) => {
+        if (typeof val !== "object") {
+          setValue(key, val);
+        }
+      });
     }
   };
 
@@ -277,14 +274,21 @@ export const GeneralSettings = () => {
       >
         <Select
             id="preconfigured-clients"
-            onToggle={() => setIsOpen(!isOpen)}
+            toggle={(toggleRef) => (
+              <SelectToggle
+                ref={toggleRef}
+                onToggle={() => setIsOpen(!isOpen)}
+                aria-label={t("selectClientTemplate")}
+              >
+                {t("selectClientTemplate")}
+              </SelectToggle>
+            )}
             onSelect={(_, value) => {
               handleTemplateChange(value as string);
               setIsOpen(false);
             }}
             isOpen={isOpen}
-            aria-label={t("selectClientTemplate")}
-            placeholder={t("selectClientTemplate")}
+            placeholderText={t("selectClientTemplate")}
           >
             {PRECONFIGURED_CLIENTS.map((client) => (
               <SelectOption
@@ -301,7 +305,12 @@ export const GeneralSettings = () => {
       <SelectControl
         name="protocol"
         label={t("clientType")}
-        labelIcon={t("clientTypeHelp")}
+        labelIcon={
+          <HelpItem
+            helpText={t("clientTypeHelp")}
+            fieldLabelId="clientType"
+          />
+        }
         controller={{
           defaultValue: "",
         }}
