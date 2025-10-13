@@ -1,16 +1,296 @@
 import { useTranslation } from "react-i18next";
-import { SelectControl } from "@keycloak/keycloak-ui-shared";
+import { HelpItem, SelectControl } from "@keycloak/keycloak-ui-shared";
 import { FormAccess } from "../../components/form/FormAccess";
 import { useLoginProviders } from "../../context/server-info/ServerInfoProvider";
 import { ClientDescription } from "../ClientDescription";
 import { getProtocolName } from "../utils";
+import { useFormContext } from "react-hook-form";
+import { FormGroup, Select, SelectOption } from "@patternfly/react-core";
+
+// Predefined client templates
+const PRECONFIGURED_CLIENTS = [
+  // 1. Custom OpenID-Connect
+  {
+    name: "Custom OpenID-Connect",
+    clientId: "",
+    nameValue: "",
+    description: "A custom OpenID Connect client",
+    protocol: "openid-connect",
+    enabled: true,
+    standardFlowEnabled: true,
+    implicitFlowEnabled: false,
+    directAccessGrantsEnabled: true,
+    serviceAccountsEnabled: true,
+    publicClient: false,
+    authorizationServicesEnabled: true,
+  },
+
+  // 2. Custom SAML
+  {
+    name: "Custom SAML",
+    clientId: "",
+    nameValue: "",
+    description: "A custom SAML client",
+    protocol: "saml",
+    enabled: true,
+    standardFlowEnabled: true,
+    implicitFlowEnabled: false,
+    directAccessGrantsEnabled: false,
+    serviceAccountsEnabled: true,
+    publicClient: false,
+    authorizationServicesEnabled: true,
+  },
+
+  // 3. Google SAML
+  {
+    name: "Google SAML",
+    clientId: "google.com/a/{{gSuiteDomain}}",
+    nameValue: "Google",
+    description: "Integration with Google Workspace",
+    protocol: "saml",
+    enabled: true,
+    standardFlowEnabled: true,
+    implicitFlowEnabled: false,
+    directAccessGrantsEnabled: false,
+    serviceAccountsEnabled: true,
+    publicClient: false,
+    authorizationServicesEnabled: true,
+    attributes: {
+      "saml.assertion.signature": "true",
+      "saml.multivalued.roles": "false",
+      "saml.encrypt": "false",
+      "saml_idp_initiated_sso_url_name": "googleapps",
+      "saml.server.signature.keyinfo.ext": "false",
+      "exclude.session.state.from.auth.response": "false",
+      "saml_force_name_id_format": "true",
+      "tls.client.certificate.bound.access.tokens": "false",
+      "saml.client.signature": "false",
+      "display.on.consent.screen": "false",
+      "saml_name_id_format": "email",
+      "saml.server.signature.keyinfo.xmlSigKeyInfoKeyNameTransformer": "NONE",
+      "saml.onetimeuse.condition": "false"
+    }
+  },
+
+  // 4. Slack SAML
+  {
+    name: "Slack SAML",
+    clientId: "{{slackDomain}}",
+    nameValue: "Slack",
+    description: "Integration with Slack",
+    protocol: "saml",
+    enabled: true,
+    standardFlowEnabled: true,
+    implicitFlowEnabled: false,
+    directAccessGrantsEnabled: false,
+    serviceAccountsEnabled: false,
+    publicClient: false,
+    attributes: {
+      "saml.assertion.signature": "true",
+      "saml.force.post.binding": "false",
+      "saml.multivalued.roles": "false",
+      "saml.encrypt": "false",
+      "saml.server.signature": "false",
+      "saml.server.signature.keyinfo.ext": "false",
+      "saml_idp_initiated_sso_url_name": "slack",
+      "saml.force.name.id.format": "true",
+      "saml.name.id.format": "email",
+      "saml.assertion.lifespan": "60",
+      "saml.artifact.binding": "false",
+      "saml.client.signature": "false",
+      "saml.authnstatement": "true",
+      "saml.onetimeuse.condition": "false"
+    }
+  },
+
+  // 5. Jira (Atlassian) SAML
+  {
+    name: "Jira (Atlassian) SAML",
+    clientId: "{{atlassianDomain}}",
+    nameValue: "Jira",
+    description: "Integration with Jira",
+    protocol: "saml",
+    enabled: true,
+    standardFlowEnabled: true,
+    implicitFlowEnabled: false,
+    directAccessGrantsEnabled: false,
+    serviceAccountsEnabled: false,
+    publicClient: false,
+    attributes: {
+      "saml.assertion.signature": "true",
+      "saml.force.post.binding": "false",
+      "saml.multivalued.roles": "false",
+      "saml.encrypt": "false",
+      "saml.server.signature": "true",
+      "saml.server.signature.keyinfo.ext": "false",
+      "saml_idp_initiated_sso_url_name": "jira",
+      "saml.force.name.id.format": "true",
+      "saml.name.id.format": "email",
+      "saml.assertion.lifespan": "60",
+      "saml.artifact.binding": "false",
+      "saml.client.signature": "false",
+      "saml.authnstatement": "true",
+      "saml.onetimeuse.condition": "false"
+    }
+  },
+
+  // 6. Dropbox SAML
+  {
+    name: "Dropbox SAML",
+    clientId: "https://www.dropbox.com/saml2",
+    nameValue: "Dropbox",
+    description: "Integration with Dropbox",
+    protocol: "saml",
+    enabled: true,
+    standardFlowEnabled: true,
+    implicitFlowEnabled: false,
+    directAccessGrantsEnabled: false,
+    serviceAccountsEnabled: false,
+    publicClient: false,
+    attributes: {
+      "saml.assertion.signature": "true",
+      "saml.force.post.binding": "true",
+      "saml.multivalued.roles": "false",
+      "saml.encrypt": "false",
+      "saml.server.signature": "false",
+      "saml_idp_initiated_sso_url_name": "dropbox",
+      "saml.force.name.id.format": "true",
+      "saml.name.id.format": "email",
+      "saml.assertion.lifespan": "60",
+      "saml.artifact.binding": "false",
+      "saml.client.signature": "false",
+      "saml.authnstatement": "true"
+    }
+  },
+
+  // 7. Office 365 SAML
+  {
+    name: "Office 365 SAML",
+    clientId: "https://login.microsoftonline.com/{{tenantId}}/saml2",
+    nameValue: "Office 365",
+    description: "Integration with Office 365",
+    protocol: "saml",
+    enabled: true,
+    standardFlowEnabled: true,
+    implicitFlowEnabled: false,
+    directAccessGrantsEnabled: false,
+    serviceAccountsEnabled: false,
+    publicClient: false,
+    attributes: {
+      "saml.assertion.signature": "true",
+      "saml.force.post.binding": "true",
+      "saml.multivalued.roles": "false",
+      "saml.encrypt": "false",
+      "saml.server.signature": "true",
+      "saml_idp_initiated_sso_url_name": "office365",
+      "saml.force.name.id.format": "true",
+      "saml.name.id.format": "email",
+      "saml.assertion.lifespan": "60",
+      "saml.artifact.binding": "false",
+      "saml.client.signature": "false",
+      "saml.authnstatement": "true"
+    }
+  },
+
+  // 8. Freshdesk OpenID-Connect
+  {
+    name: "Freshdesk OpenID-Connect",
+    clientId: "{{freshdeskSubdomain}}",
+    nameValue: "Freshdesk",
+    description: "Integration with Freshdesk using OpenID Connect",
+    protocol: "openid-connect",
+    enabled: true,
+    standardFlowEnabled: true,
+    implicitFlowEnabled: false,
+    directAccessGrantsEnabled: false,
+    serviceAccountsEnabled: false,
+    publicClient: false,
+    authorizationServicesEnabled: false,
+    attributes: {
+      "saml.assertion.signature": "false",
+      "saml.force.post.binding": "false",
+      "saml.multivalued.roles": "false",
+      "saml.encrypt": "false",
+      "saml.server.signature": "false",
+      "saml.server.signature.keyinfo.ext": "false",
+      "exclude.session.state.from.auth.response": "false",
+      "saml.force.artifact.binding": "false",
+      "saml.artifact.binding.identifier": "",
+      "saml.artifact.binding.url": "",
+      "saml.artifact.resolve": "false",
+      "saml.artifact.binding": "false",
+      "saml.authnstatement": "false",
+      "saml.onetimeuse.condition": "false",
+      "saml.client.signature": "false",
+      "tls.client.certificate.bound.access.tokens": "false",
+      "saml.server.signature.keyinfo": "false",
+      "saml.assertion.lifespan": "",
+      "client.secret.creation.time": "0",
+      "access.token.lifespan": "",
+      "saml.signature.algorithm": "RSA_SHA256",
+      "saml_single_logout_service_url_redirect": "",
+      "saml_single_logout_service_url_post": "",
+      "saml.encryption.certificate": "",
+      "saml.signing.certificate": "",
+      "saml.signing.private.key": "",
+      "saml.signature.canonicalization.method": "http://www.w3.org/2001/10/xml-exc-c14n#",
+      "saml.encryption.private.key": "",
+      "saml.idp.initiated.sso.url.name": "",
+      "saml.idp.initiated.sso.relay.state": ""
+    }
+  }
+];
 
 export const GeneralSettings = () => {
   const { t } = useTranslation();
   const providers = useLoginProviders();
+  const { setValue, watch } = useFormContext();
+  const protocol = watch("protocol");
+
+  const handleTemplateChange = (value: string) => {
+    const template = PRECONFIGURED_CLIENTS.find(t => t.name === value);
+    if (template) {
+      setValue("protocol", template.protocol);
+      setValue("enabled", template.enabled);
+      setValue("standardFlowEnabled", template.standardFlowEnabled);
+      setValue("implicitFlowEnabled", template.implicitFlowEnabled);
+      setValue("directAccessGrantsEnabled", template.directAccessGrantsEnabled);
+      setValue("serviceAccountsEnabled", template.serviceAccountsEnabled);
+      setValue("publicClient", template.publicClient);
+      setValue("authorizationServicesEnabled", template.authorizationServicesEnabled);
+    }
+  };
 
   return (
     <FormAccess isHorizontal role="manage-clients">
+      <FormGroup
+        label={t("preconfiguredClients")}
+        labelIcon={
+          <HelpItem
+            helpText={t("preconfiguredClientsHelp")}
+            fieldLabelId="preconfigured-clients"
+          />
+        }
+        fieldId="preconfigured-clients"
+      >
+        <Select
+          id="preconfigured-clients"
+          placeholderText={t("selectClientTemplate")}
+          onSelect={(_, value) => handleTemplateChange(value as string)}
+          aria-label={t("selectClientTemplate")}
+        >
+          {PRECONFIGURED_CLIENTS.map((client) => (
+            <SelectOption
+              key={client.name}
+              value={client.name}
+              description={client.description}
+            >
+              {client.name}
+            </SelectOption>
+          ))}
+        </Select>
+      </FormGroup>
+      
       <SelectControl
         name="protocol"
         label={t("clientType")}
