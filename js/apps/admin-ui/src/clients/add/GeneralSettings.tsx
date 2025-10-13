@@ -313,12 +313,7 @@ export const GeneralSettings = () => {
       <SelectControl
         name="protocol"
         label={t("clientType")}
-        labelIcon={
-          <HelpItem
-            helpText={t("clientTypeHelp")}
-            fieldLabelId="clientType"
-          />
-        }
+        labelIcon={t("clientTypeHelp")}
         controller={{ defaultValue: protocol || "" }}
         options={providers.map((option) => ({
           key: option,
