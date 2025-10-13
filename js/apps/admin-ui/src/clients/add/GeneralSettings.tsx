@@ -6,6 +6,7 @@ import { ClientDescription } from "../ClientDescription";
 import { getProtocolName } from "../utils";
 import { useFormContext } from "react-hook-form";
 import { FormGroup, Select, SelectOption } from "@patternfly/react-core";
+import { useState } from "react";
 
 // Predefined client templates
 const PRECONFIGURED_CLIENTS = [
@@ -246,6 +247,7 @@ export const GeneralSettings = () => {
   const providers = useLoginProviders();
   const { setValue, watch } = useFormContext();
   const protocol = watch("protocol");
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleTemplateChange = (value: string) => {
     const template = PRECONFIGURED_CLIENTS.find(t => t.name === value);
@@ -275,7 +277,6 @@ export const GeneralSettings = () => {
       >
         <Select
             id="preconfigured-clients"
-            variant="single"
             onToggle={() => setIsOpen(!isOpen)}
             onSelect={(_, value) => {
               handleTemplateChange(value as string);
