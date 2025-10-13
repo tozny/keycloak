@@ -5,8 +5,8 @@ import { useLoginProviders } from "../../context/server-info/ServerInfoProvider"
 import { ClientDescription } from "../ClientDescription";
 import { getProtocolName } from "../utils";
 import { useFormContext } from "react-hook-form";
-import { FormGroup, Select, SelectOption, SelectToggle } from "@patternfly/react-core";
-import { useState } from "react";
+import { FormGroup, Select, SelectOption, MenuToggle, SelectList } from "@patternfly/react-core";
+import React, { useState } from "react";
 
 // Predefined client templates
 const PRECONFIGURED_CLIENTS = [
@@ -248,6 +248,7 @@ export const GeneralSettings = () => {
   const { setValue, watch } = useFormContext();
   const protocol = watch("protocol");
   const [isOpen, setIsOpen] = useState(false);
+  const [selected, setSelected] = useState<string | undefined>(undefined);
 
   const handleTemplateChange = (value: string) => {
     const template = PRECONFIGURED_CLIENTS.find(t => t.name === value);
@@ -257,7 +258,24 @@ export const GeneralSettings = () => {
           setValue(key, val);
         }
       });
+      setSelected(template.name);
     }
+  };
+
+  const onToggle = () => setIsOpen(!isOpen);
+
+  const toggle = (toggleRef: React.Ref<HTMLButtonElement>) => (
+    <MenuToggle ref={toggleRef} onClick={onToggle} isExpanded={isOpen}>
+      {selected || t("selectClientTemplate")}
+    </MenuToggle>
+  );
+
+  const onSelect = (
+    _event: React.MouseEvent<Element, MouseEvent> | undefined,
+    value: string | number | undefined
+  ) => {
+    handleTemplateChange(value as string);
+    setIsOpen(false);
   };
 
   return (
@@ -273,23 +291,12 @@ export const GeneralSettings = () => {
         fieldId="preconfigured-clients"
       >
         <Select
-            id="preconfigured-clients"
-            toggle={(toggleRef) => (
-              <SelectToggle
-                ref={toggleRef}
-                onToggle={() => setIsOpen(!isOpen)}
-                aria-label={t("selectClientTemplate")}
-              >
-                {t("selectClientTemplate")}
-              </SelectToggle>
-            )}
-            onSelect={(_, value) => {
-              handleTemplateChange(value as string);
-              setIsOpen(false);
-            }}
-            isOpen={isOpen}
-            placeholderText={t("selectClientTemplate")}
-          >
+          id="preconfigured-clients"
+          toggle={toggle}
+          isOpen={isOpen}
+          onSelect={onSelect}
+        >
+          <SelectList>
             {PRECONFIGURED_CLIENTS.map((client) => (
               <SelectOption
                 key={client.name}
@@ -299,7 +306,8 @@ export const GeneralSettings = () => {
                 {client.name}
               </SelectOption>
             ))}
-          </Select>
+          </SelectList>
+        </Select>
       </FormGroup>
       
       <SelectControl
@@ -311,9 +319,7 @@ export const GeneralSettings = () => {
             fieldLabelId="clientType"
           />
         }
-        controller={{
-          defaultValue: "",
-        }}
+        controller={{ defaultValue: protocol || "" }}
         options={providers.map((option) => ({
           key: option,
           value: getProtocolName(t, option),
