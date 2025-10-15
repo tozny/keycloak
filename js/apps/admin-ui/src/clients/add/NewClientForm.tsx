@@ -56,6 +56,7 @@ export default function NewClientForm() {
   const { realm } = useRealm();
   const navigate = useNavigate();
   const [saving, setSaving] = useState<boolean>(false);
+  const [selectedClientTemplate, setSelectedClientTemplate] = useState<string>();
 
   const { addAlert, addError } = useAlerts();
   const form = useForm<FormFields>({
@@ -97,6 +98,20 @@ export default function NewClientForm() {
     }
   };
 
+  const handleTemplateChange = (templateName: string) => {
+    setSelectedClientTemplate(templateName);
+    //Update protocol based on template name
+    const samlTemplates = [
+      'Custom SAML',
+      'Google SAML', 
+      'Slack SAML',
+      'Jira (Atlassian) SAML',
+      'Dropbox SAML',
+      'Office 365 SAML'
+    ];
+    form.setValue('protocol', samlTemplates.includes(templateName) ? 'saml' : 'openid-connect');
+  };
+
   const title = t("createClient");
   return (
     <>
@@ -114,7 +129,9 @@ export default function NewClientForm() {
               id="generalSettings"
               key="generalSettings"
             >
-              <GeneralSettings />
+              <GeneralSettings 
+                onTemplateChange={handleTemplateChange}
+              />
             </WizardStep>
             <WizardStep
               name={t("capabilityConfig")}
@@ -135,7 +152,7 @@ export default function NewClientForm() {
               }}
             >
               <FormAccess isHorizontal role="manage-clients">
-                <LoginSettings protocol={protocol} />
+                <LoginSettings protocol={protocol} selectedClientTemplate={selectedClientTemplate} />
               </FormAccess>
             </WizardStep>
           </Wizard>

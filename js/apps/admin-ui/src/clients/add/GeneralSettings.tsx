@@ -242,7 +242,11 @@ const PRECONFIGURED_CLIENTS = [
   }
 ];
 
-export const GeneralSettings = () => {
+type GeneralSettingsProps = {
+  onTemplateChange?: (templateName: string) => void;
+};
+
+export const GeneralSettings = ({ onTemplateChange }: GeneralSettingsProps) => {
   const { t } = useTranslation();
   const providers = useLoginProviders();
   const { setValue, watch } = useFormContext();
@@ -258,6 +262,16 @@ export const GeneralSettings = () => {
           setValue(key, val);
         }
       });
+      // Only update these fields for custom templates
+      if (["Custom OpenID-Connect", "Custom SAML", "Freshdesk OpenID-Connect"].includes(template.name)) {
+        setValue("clientId", template.clientId || "");
+        setValue("name", template.name || "");
+        setValue("description", template.description || "");
+      }
+      // Notify parent component of the selected template
+      if (onTemplateChange) {
+        onTemplateChange(template.name);
+      }
       setSelected(template.name);
     }
   };
@@ -310,7 +324,7 @@ export const GeneralSettings = () => {
         </Select>
       </FormGroup>
       
-      <SelectControl
+      {/* <SelectControl
         name="protocol"
         label={t("clientType")}
         labelIcon={t("clientTypeHelp")}
@@ -319,8 +333,8 @@ export const GeneralSettings = () => {
           key: option,
           value: getProtocolName(t, option),
         }))}
-      />
-      <ClientDescription hasConfigureAccess />
+      /> */}
+      <ClientDescription hasConfigureAccess selectedTemplate={selected}/>
     </FormAccess>
   );
 };
