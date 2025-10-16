@@ -6,7 +6,7 @@ import { ClientDescription } from "../ClientDescription";
 import { getProtocolName } from "../utils";
 import { useFormContext } from "react-hook-form";
 import { FormGroup, Select, SelectOption, MenuToggle, SelectList } from "@patternfly/react-core";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 // Predefined client templates
 const PRECONFIGURED_CLIENTS = [
@@ -252,7 +252,22 @@ export const GeneralSettings = ({ onTemplateChange }: GeneralSettingsProps) => {
   const { setValue, watch } = useFormContext();
   const protocol = watch("protocol");
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState<string | undefined>(undefined);
+  const [selected, setSelected] = useState<string>("Custom OpenID-Connect");
+
+  // Set initial values when component mounts
+  useEffect(() => {
+    const defaultTemplate = PRECONFIGURED_CLIENTS.find(t => t.name === "Custom OpenID-Connect");
+    if (defaultTemplate) {
+      Object.entries(defaultTemplate).forEach(([key, val]) => {
+        if (typeof val !== "object" && val !== undefined) {
+          setValue(key, val);
+        }
+      });
+      if (onTemplateChange) {
+        onTemplateChange(defaultTemplate.name);
+      }
+    }
+  }, [setValue, onTemplateChange]);
 
   const handleTemplateChange = (value: string) => {
     const template = PRECONFIGURED_CLIENTS.find(t => t.name === value);

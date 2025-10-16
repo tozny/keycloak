@@ -12,6 +12,60 @@ type LoginSettingsProps = {
   selectedClientTemplate?: string;
 };
 
+const getThirdPartyInstructions = (template?: string) => {
+  if (!template) return { helpText: "", link: "", linkText: "" };
+
+  const instructionsMap: Record<string, { helpText: string; link: string; linkText: string }> = {
+    "Google SAML": {
+      helpText: "gSuiteThirdPartyInstructionsHelp",
+      link: "gSuiteThirdPartyInstructionsLink",
+      linkText: "gSuiteThirdPartyInstructionsLinkText",
+    },
+    "Slack SAML": {
+      helpText: "slackThirdPartyInstructionsHelp",
+      link: "slackThirdPartyInstructionsLink",
+      linkText: "slackThirdPartyInstructionsLinkText",
+    },
+    "Jira (Atlassian) SAML": {
+      helpText: "atlassianThirdPartyInstructionsHelp",
+      link: "atlassianThirdPartyInstructionsLink",
+      linkText: "atlassianThirdPartyInstructionsLinkText",
+    },
+    "Freshdesk OpenID-Connect": {
+      helpText: "freshdeskThirdPartyInstructionsHelp",
+      link: "freshdeskThirdPartyInstructionsLink",
+      linkText: "freshdeskThirdPartyInstructionsLinkText",
+    },
+    "Dropbox SAML": {
+      helpText: "dropboxThirdPartyInstructionsHelp",
+      link: "dropboxThirdPartyInstructionsLink",
+      linkText: "dropboxThirdPartyInstructionsLinkText",
+    },
+    "Office 365 SAML": {
+      helpText: "office365ThirdPartyInstructionsHelp",
+      link: "office365ThirdPartyInstructionsLink",
+      linkText: "office365ThirdPartyInstructionsLinkText",
+    },
+  };
+
+  return instructionsMap[template] || { helpText: "", link: "", linkText: "" };
+};
+
+const getBaseUrlInstructions = (template?: string) => {
+  if (!template) return { baseUrlhelpText: "" };
+
+  const instructionsMap: Record<string, { baseUrlhelpText: string}> = {
+    "Freshdesk OpenID-Connect": {
+      baseUrlhelpText: "freshdeskBaseUrlHelp"
+    },
+    "Dropbox SAML": {
+      baseUrlhelpText: "dropboxBaseUrlHelp"
+    }
+  };
+
+  return instructionsMap[template] || { helpText: ""};
+};
+
 export const LoginSettings = ({
   protocol = "openid-connect",
   selectedClientTemplate
@@ -21,6 +75,8 @@ export const LoginSettings = ({
 
   const standardFlowEnabled = watch("standardFlowEnabled");
   const implicitFlowEnabled = watch("implicitFlowEnabled");
+  const { helpText, link, linkText } = getThirdPartyInstructions(selectedClientTemplate);
+  const { baseUrlhelpText } = getBaseUrlInstructions(selectedClientTemplate);
 
   const showRootUrl = protocol === "openid-connect" && selectedClientTemplate === "Custom OpenID-Connect";
   const showBaseUrl = protocol === "openid-connect" || protocol === "saml" 
@@ -48,7 +104,8 @@ export const LoginSettings = ({
           type="url"
           name="baseUrl"
           label={t("baseUrl")}
-          labelIcon={t("baseUrlHelp")}
+          labelIcon={t(baseUrlhelpText)}
+          rules={{ required: t("required") }}
         />
       )}
 
@@ -62,28 +119,46 @@ export const LoginSettings = ({
       )}
 
       {showGSuiteDomain && (
-        <TextControl
-          name="gSuiteDomain"
-          label={t("gSuiteDomain")}
-          labelIcon={t("gSuiteDomainHelp")}
-        />
+        <>
+          <TextControl
+            name="gSuiteDomain"
+            label={t("gSuiteDomain")}
+            labelIcon={t("gSuiteDomainHelp")}
+            rules={{ required: t("required") }}
+          />
+          <div className="pf-c-form__helper-text" aria-live="polite">
+            {t("gSuiteDomainHint")}
+          </div>
+        </>
       )}
 
       {showSlackDomain && (
-        <TextControl
-          name="slackDomain"
-          label={t("slackDomain")}
-          labelIcon={t("slackDomainHelp")}
-        />
+        <>
+          <TextControl
+            name="slackDomain"
+            label={t("slackDomain")}
+            labelIcon={t("slackDomainHelp")}
+            rules={{ required: t("required") }}
+          />
+          <div className="pf-c-form__helper-text" aria-live="polite">
+              {t("slackDomainHint")}
+          </div>
+        </>
       )}
 
       {showJiraUrl && (
-        <TextControl
-          type="url"
-          name="jiraUrl"
-          label={t("jiraUrl")}
-          labelIcon={t("jiraUrlHelp")}
-        />
+        <>
+          <TextControl
+            type="url"
+            name="jiraUrl"
+            label={t("atlassianId")}
+            labelIcon={t("atlassianIdHelp")}
+            rules={{ required: t("required") }}
+          />
+          <div className="pf-c-form__helper-text" aria-live="polite">
+            {t("atlassianIdHint")}
+          </div>
+        </>
       )}
 
       {showFreshdeskRedirectUrl && (
@@ -92,6 +167,7 @@ export const LoginSettings = ({
           name="freshdeskRedirectUri"
           label={t("freshdeskRedirectUri")}
           labelIcon={t("freshdeskRedirectUriHelp")}
+          rules={{ required: t("required") }}
         />
       )}
 
@@ -99,7 +175,28 @@ export const LoginSettings = ({
         <TextControl
           name="thirdPartyInstructions"
           label={t("thirdPartyInstructions")}
-          labelIcon={t("thirdPartyInstructionsHelp")}
+          labelIcon={t(helpText)}
+          readOnly
+          value={
+            <a
+              href={t(link)}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ 
+                color: 'var(--pf-global--link--Color)',
+                textDecoration: 'none',
+                cursor: 'pointer'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.textDecoration = 'underline';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.textDecoration = 'none';
+              }}
+            >
+              {t(linkText)}
+            </a>
+          }
         />
       )}
 
