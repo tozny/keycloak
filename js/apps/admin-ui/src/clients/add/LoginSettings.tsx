@@ -172,32 +172,27 @@ export const LoginSettings = ({
       )}
 
       {showThirdPartyInstructions && (
-        <TextControl
-          name="thirdPartyInstructions"
+        <FormGroup
           label={t("thirdPartyInstructions")}
-          labelIcon={t(helpText)}
-          readOnly
-          value={
+          fieldId="third-party-instructions"
+          labelIcon={
+            <HelpItem
+              helpText={t(helpText)}
+              fieldLabelId="third-party-instructions"
+            />
+          }
+        >
+          <div className="pf-c-form-control" style={{ padding: '0.375rem 0.5rem' }}>
             <a
               href={t(link)}
               target="_blank"
               rel="noopener noreferrer"
-              style={{ 
-                color: 'var(--pf-global--link--Color)',
-                textDecoration: 'none',
-                cursor: 'pointer'
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.textDecoration = 'underline';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.textDecoration = 'none';
-              }}
+              className="pf-c-button pf-m-link pf-m-inline"
             >
               {t(linkText)}
             </a>
-          }
-        />
+          </div>
+        </FormGroup>
       )}
 
       {(standardFlowEnabled || implicitFlowEnabled) && (
