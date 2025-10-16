@@ -358,7 +358,7 @@ export const GeneralSettings = ({ onTemplateChange }: GeneralSettingsProps) => {
           toggle={toggle}
           isOpen={isOpen}
           onSelect={onSelect}
-          selections={selected}
+          selected={selected}
           aria-label={t("preconfiguredClients")}
         >
           <SelectList>
