@@ -163,7 +163,6 @@ function RealmSettingsGeneralTabForm({
             <Controller
               name="realm"
               control={control}
-              disabled={true}
               rules={{
                 required: { value: true, message: t("required") },
               }}
@@ -171,6 +170,7 @@ function RealmSettingsGeneralTabForm({
               render={({ field }) => (
                 <ClipboardCopy
                   data-testid="realmName"
+                  isReadOnly={true}
                   onChange={field.onChange}
                 >
                   {field.value}
