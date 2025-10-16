@@ -249,25 +249,53 @@ type GeneralSettingsProps = {
 export const GeneralSettings = ({ onTemplateChange }: GeneralSettingsProps) => {
   const { t } = useTranslation();
   const providers = useLoginProviders();
-  const { setValue, watch } = useFormContext();
+  const { setValue, watch, getValues } = useFormContext();
   const protocol = watch("protocol");
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState<string>("Custom OpenID-Connect");
+  const currentTemplate = watch("template") || "Custom OpenID-Connect";
+  const [selected, setSelected] = useState<string>(currentTemplate);
 
-  // Set initial values when component mounts
+  // Ensure default template exists in form on first render (if nothing set)
   useEffect(() => {
-    const defaultTemplate = PRECONFIGURED_CLIENTS.find(t => t.name === "Custom OpenID-Connect");
-    if (defaultTemplate) {
-      Object.entries(defaultTemplate).forEach(([key, val]) => {
-        if (typeof val !== "object" && val !== undefined) {
-          setValue(key, val);
+    if (!getValues("template")) {
+      setValue("template", "Custom OpenID-Connect", { shouldDirty: false });
+    }
+  }, [setValue]);
+
+  // Keep local selected synchronized when form template value changes
+  useEffect(() => {
+    if (currentTemplate && currentTemplate !== selected) {
+      setSelected(currentTemplate);
+    }
+  }, [currentTemplate, selected]);
+
+  // When component mounts or template changes, set form fields to template defaults
+  useEffect(() => {
+    const template = PRECONFIGURED_CLIENTS.find(t => t.name === currentTemplate) || 
+                    PRECONFIGURED_CLIENTS[0]; // Fallback to first template
+    
+    if (template) {
+      // Only update if the template is different from current form values
+      const currentFormValues = getValues();
+      const needsUpdate = Object.entries(template).some(([key, val]) => 
+        typeof val !== "object" && currentFormValues[key] !== val
+      );
+
+      if (needsUpdate) {
+        Object.entries(template).forEach(([key, val]) => {
+          if (typeof val !== "object" && val !== undefined) {
+            setValue(key, val, { shouldDirty: false });
+          }
+        });
+        setValue("template", template.name, { shouldDirty: false });
+        
+        if (onTemplateChange) {
+          onTemplateChange(template.name);
         }
-      });
-      if (onTemplateChange) {
-        onTemplateChange(defaultTemplate.name);
       }
     }
-  }, [setValue, onTemplateChange]);
+  }, [setValue, onTemplateChange, currentTemplate, getValues]);
+
 
   const handleTemplateChange = (value: string) => {
     const template = PRECONFIGURED_CLIENTS.find(t => t.name === value);
@@ -283,10 +311,16 @@ export const GeneralSettings = ({ onTemplateChange }: GeneralSettingsProps) => {
         setValue("name", template.name || "");
         setValue("description", template.description || "");
       }
+
+      // Update template field
+      setValue("template", template.name, { shouldDirty: false });
+
       // Notify parent component of the selected template
       if (onTemplateChange) {
         onTemplateChange(template.name);
       }
+      
+      // Update local state
       setSelected(template.name);
     }
   };
@@ -324,6 +358,8 @@ export const GeneralSettings = ({ onTemplateChange }: GeneralSettingsProps) => {
           toggle={toggle}
           isOpen={isOpen}
           onSelect={onSelect}
+          selections={selected}
+          aria-label={t("preconfiguredClients")}
         >
           <SelectList>
             {PRECONFIGURED_CLIENTS.map((client) => (
