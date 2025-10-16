@@ -338,7 +338,7 @@ export const RealmSettingsTabs = () => {
             <RealmSettingsGeneralTab realm={realm!} save={save} />
           </Tab>
           <Tab
-            isDisabled={true}
+            isHidden={true}
             title={<TabTitleText>{t("login")}</TabTitleText>}
             data-testid="rs-login-tab"
             {...loginTab}
@@ -392,7 +392,6 @@ export const RealmSettingsTabs = () => {
             />
           </Tab>
           <Tab
-            isDisabled={true}
             title={<TabTitleText>{t("securityDefences")}</TabTitleText>}
             data-testid="rs-security-defenses-tab"
             {...securityDefensesTab}
