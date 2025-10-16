@@ -163,6 +163,7 @@ function RealmSettingsGeneralTabForm({
             <Controller
               name="realm"
               control={control}
+              disabled={true}
               rules={{
                 required: { value: true, message: t("required") },
               }}

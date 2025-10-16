@@ -338,6 +338,7 @@ export const RealmSettingsTabs = () => {
             <RealmSettingsGeneralTab realm={realm!} save={save} />
           </Tab>
           <Tab
+            isDisabled={true}
             title={<TabTitleText>{t("login")}</TabTitleText>}
             data-testid="rs-login-tab"
             {...loginTab}
@@ -345,6 +346,7 @@ export const RealmSettingsTabs = () => {
             <RealmSettingsLoginTab refresh={refresh} realm={realm!} />
           </Tab>
           <Tab
+            isDisabled={true}
             title={<TabTitleText>{t("email")}</TabTitleText>}
             data-testid="rs-email-tab"
             {...emailTab}
@@ -352,6 +354,7 @@ export const RealmSettingsTabs = () => {
             <RealmSettingsEmailTab realm={realm!} save={save} />
           </Tab>
           <Tab
+            isDisabled={true}
             title={<TabTitleText>{t("themes")}</TabTitleText>}
             data-testid="rs-themes-tab"
             {...themesTab}
@@ -367,6 +370,7 @@ export const RealmSettingsTabs = () => {
           </Tab>
           {canViewOrManageEvents && (
             <Tab
+              isDisabled={true}
               title={<TabTitleText>{t("events")}</TabTitleText>}
               data-testid="rs-realm-events-tab"
               {...eventsTab}
@@ -375,6 +379,7 @@ export const RealmSettingsTabs = () => {
             </Tab>
           )}
           <Tab
+            isDisabled={true}
             title={<TabTitleText>{t("localization")}</TabTitleText>}
             data-testid="rs-localization-tab"
             {...localizationTab}
@@ -387,6 +392,7 @@ export const RealmSettingsTabs = () => {
             />
           </Tab>
           <Tab
+            isDisabled={true}
             title={<TabTitleText>{t("securityDefences")}</TabTitleText>}
             data-testid="rs-security-defenses-tab"
             {...securityDefensesTab}
