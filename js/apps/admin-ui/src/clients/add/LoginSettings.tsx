@@ -48,7 +48,14 @@ const getThirdPartyInstructions = (template?: string) => {
     },
   };
 
-  return instructionsMap[template] || { helpText: "", link: "", linkText: "" };
+  const instructions = instructionsMap[template] || { helpText: "", link: "", linkText: "" };
+  
+  // Clean up the URL by removing any surrounding quotes
+  if (instructions.link) {
+    instructions.link = instructions.link.replace(/^"|"$/g, '');
+  }
+
+  return instructions;
 };
 
 const getBaseUrlInstructions = (template?: string) => {
@@ -164,9 +171,9 @@ export const LoginSettings = ({
       {showFreshdeskRedirectUrl && (
         <TextControl
           type="url"
-          name="freshdeskRedirectUri"
-          label={t("freshdeskRedirectUri")}
-          labelIcon={t("freshdeskRedirectUriHelp")}
+          name="freshdeskRedirectUrl"
+          label={t("freshdeskRedirectUrl")}
+          labelIcon={t("freshdeskRedirectUrlHelp")}
           rules={{ required: t("required") }}
         />
       )}
@@ -184,7 +191,7 @@ export const LoginSettings = ({
         >
           <div className="pf-c-form-control" style={{ padding: '0.375rem 0.5rem' }}>
             <a
-              href={t(link)}
+              href={t(link).replace(/^"|"$/g, '')}
               target="_blank"
               rel="noopener noreferrer"
               className="pf-c-button pf-m-link pf-m-inline"

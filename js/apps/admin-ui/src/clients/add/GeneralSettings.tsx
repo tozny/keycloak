@@ -196,7 +196,7 @@ const PRECONFIGURED_CLIENTS = [
   // 8. Freshdesk OpenID-Connect
   {
     name: "Freshdesk OpenID-Connect",
-    clientId: "{{freshdeskSubdomain}}",
+    clientId: "",
     nameValue: "Freshdesk",
     description: "Integration with Freshdesk using OpenID Connect",
     protocol: "openid-connect",
