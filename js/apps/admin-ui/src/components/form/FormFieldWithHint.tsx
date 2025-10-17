@@ -28,18 +28,6 @@ export const FormFieldWithHint = ({
   
   return (
     <FormGroup
-      label={
-        <div className="form-field-label">
-          {t(label)}
-          {required && <span className="pf-c-form__label-required" aria-hidden="true">*</span>}
-          <span className="form-field-help-icon">
-            <HelpItem
-              helpText={t(helpText)}
-              fieldLabelId={name}
-            />
-          </span>
-        </div>
-      }
       fieldId={name}
       className={`form-field-with-hint pf-m-inline ${className}`}
     >
@@ -47,6 +35,7 @@ export const FormFieldWithHint = ({
         <TextControl
           name={name}
           label={t(label)}
+          labelIcon={t(helpText)}
           type={type as any}
           aria-label={t(label)}
           rules={{ 
