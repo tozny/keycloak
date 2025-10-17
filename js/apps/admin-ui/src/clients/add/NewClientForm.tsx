@@ -75,8 +75,7 @@ export default function NewClientForm() {
       frontchannelLogout: true,
       attributes: {
         saml_idp_initiated_sso_url_name: "",
-      },
-      template: "Custom OpenID-Connect",
+      }
     },
   });
   const { getValues, watch } = form;
