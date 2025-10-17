@@ -4,7 +4,7 @@ import { FormAccess } from "../../components/form/FormAccess";
 import { useLoginProviders } from "../../context/server-info/ServerInfoProvider";
 import { ClientDescription } from "../ClientDescription";
 import { getProtocolName } from "../utils";
-import { useFormContext } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 import { FormGroup, Select, SelectOption, MenuToggle, SelectList } from "@patternfly/react-core";
 import React, { useState, useEffect, useRef } from "react";
 
@@ -249,7 +249,7 @@ type GeneralSettingsProps = {
 export const GeneralSettings = ({ onTemplateChange }: GeneralSettingsProps) => {
   const { t } = useTranslation();
   const providers = useLoginProviders();
-  const { setValue, watch, getValues } = useFormContext();
+  const { setValue, watch, getValues, control } = useFormContext();
   const protocol = watch("protocol");
   const [isOpen, setIsOpen] = useState(false);
   const currentTemplate = watch("template") || "Custom OpenID-Connect";
@@ -355,41 +355,51 @@ export const GeneralSettings = ({ onTemplateChange }: GeneralSettingsProps) => {
 
   return (
     <FormAccess isHorizontal role="manage-clients">
-      <FormGroup
-        label={t("preconfiguredClients")}
-        labelIcon={
-          <HelpItem
-            helpText={t("preconfiguredClientsHelp")}
-            fieldLabelId="preconfigured-clients"
-          />
-        }
-        fieldId="preconfigured-clients"
-        className="pf-m-inline"
-      >
-        <div ref={selectRef}>
-          <Select
-            id="preconfigured-clients"
-            name="template"
-            toggle={toggle}
-            isOpen={isOpen}
-            onSelect={onSelect}
-            selected={selected}
-            aria-label={t("preconfiguredClients")}
+      <Controller
+        name="template"
+        control={control}
+        defaultValue="Custom OpenID-Connect"
+        render={({ field: { value, onChange } }) => (
+          <FormGroup
+            label={t("preconfiguredClients")}
+            labelIcon={
+              <HelpItem
+                helpText={t("preconfiguredClientsHelp")}
+                fieldLabelId="preconfigured-clients"
+              />
+            }
+            fieldId="preconfigured-clients"
+            className="pf-m-inline"
           >
-            <SelectList>
-              {PRECONFIGURED_CLIENTS.map((client) => (
-                <SelectOption
-                  key={client.name}
-                  value={client.name}
-                  description={client.description}
-                >
-                  {client.name}
-                </SelectOption>
-              ))}
-            </SelectList>
-          </Select>
-        </div>
-      </FormGroup>
+            <div ref={selectRef}>
+              <Select
+                id="preconfigured-clients"
+                toggle={toggle}
+                isOpen={isOpen}
+                onSelect={(_, val) => {
+                  onChange(val as string);
+                  handleTemplateChange(val as string);
+                  setIsOpen(false);
+                }}
+                selected={value}
+                aria-label={t("preconfiguredClients")}
+              >
+                <SelectList>
+                  {PRECONFIGURED_CLIENTS.map((client) => (
+                    <SelectOption
+                      key={client.name}
+                      value={client.name}
+                      description={client.description}
+                    >
+                      {client.name}
+                    </SelectOption>
+                  ))}
+                </SelectList>
+              </Select>
+            </div>
+          </FormGroup>
+        )}
+      />
       
       {/* <SelectControl
         name="protocol"
