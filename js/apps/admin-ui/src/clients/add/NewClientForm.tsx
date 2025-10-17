@@ -57,6 +57,7 @@ export default function NewClientForm() {
   const navigate = useNavigate();
   const [saving, setSaving] = useState<boolean>(false);
   const [selectedClientTemplate, setSelectedClientTemplate] = useState<string>();
+  const [debugInfo, setDebugInfo] = useState('');
 
   const { addAlert, addError } = useAlerts();
   const form = useForm<FormFields>({
@@ -75,6 +76,7 @@ export default function NewClientForm() {
       attributes: {
         saml_idp_initiated_sso_url_name: "",
       },
+      template: "Custom OpenID-Connect",
     },
   });
   const { getValues, watch } = form;
@@ -85,7 +87,8 @@ export default function NewClientForm() {
     setSaving(true);
     const client = convertFormValuesToObject(getValues());
     console.log('Client data before API call:', JSON.stringify(client, null, 2));
-    delete client.template;
+    // delete client.template;
+    setDebugInfo(prev => prev + '\n' + JSON.stringify(client, null, 2));
     try {
       const newClient = await adminClient.clients.create({
         ...client,
@@ -160,6 +163,25 @@ export default function NewClientForm() {
           </Wizard>
         </FormProvider>
       </PageSection>
+      <>
+        {process.env.NODE_ENV === 'development' && (
+          <div style={{ 
+            position: 'fixed', 
+            bottom: 0, 
+            right: 0, 
+            width: '500px', 
+            maxHeight: '300px', 
+            overflow: 'auto', 
+            background: '#f5f5f5', 
+            padding: '10px', 
+            border: '1px solid #ccc',
+            zIndex: 1000 
+          }}>
+            <h4>Debug Info:</h4>
+            <pre style={{ fontSize: '12px' }}>{debugInfo}</pre>
+          </div>
+        )}
+      </>
     </>
   );
 }
