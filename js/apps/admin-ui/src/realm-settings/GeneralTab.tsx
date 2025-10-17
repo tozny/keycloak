@@ -184,13 +184,22 @@ function RealmSettingsGeneralTabForm({
               />
             )}
           </FormGroup>
-          <TextControl name="displayName" label={t("displayName")} />
-          <TextControl name="displayNameHtml" label={t("htmlDisplayName")} />
+          <TextControl
+            name="displayName"
+            label={t("displayName")}
+            isDisabled={true}
+          />
+          <TextControl
+            name="displayNameHtml"
+            label={t("htmlDisplayName")}
+            isDisabled={true}
+          />
           <TextControl
             name={convertAttributeNameToForm("attributes.frontendUrl")}
             type="url"
             label={t("frontendUrl")}
             labelIcon={t("frontendUrlHelp")}
+            isDisabled={true}
           />
           <SelectControl
             name="sslRequired"
