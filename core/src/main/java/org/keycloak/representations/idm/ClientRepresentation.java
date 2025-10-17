@@ -82,6 +82,15 @@ public class ClientRepresentation {
     protected String origin;
 
     private String template;
+    private String nameValue;
+
+    public String getNameValue() {
+        return nameValue;
+    }
+
+    public void setNameValue(String nameValue) {
+        this.nameValue = nameValue;
+    }
 
     public String getTemplate() {
         return template;
