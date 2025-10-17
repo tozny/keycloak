@@ -1,0 +1,36 @@
+/* src/components/form/FormFieldWithHint.css */
+.form-field-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-field-help-icon {
+  margin-left: auto; /* Pushes the icon to the right */
+  display: flex;
+  align-items: center;
+}
+
+/* Ensure the form group has proper spacing */
+.form-field-with-hint {
+  --pf-c-form--m-horizontal__group-label--md--GridColumnWidth: 12rem;
+  --pf-c-form--m-horizontal__group-label--md--PaddingRight: 1rem;
+}
+
+/* Make sure the help icon is properly aligned */
+.form-field-with-hint .pf-c-form__group-label {
+  display: flex;
+  align-items: center;
+}
+
+/* Style for required field indicator */
+.pf-c-form__label-required {
+  color: var(--pf-global--danger-color--100);
+  margin-left: 0.25rem;
+}
+
+/* Make sure the helper text is properly aligned */
+.pf-c-form__helper-text {
+  margin-top: 0.25rem;
+  color: var(--pf-global--Color--200);
+}
