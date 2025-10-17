@@ -7,8 +7,6 @@ import { MultiLineInput } from "../../components/multi-line-input/MultiLineInput
 import { convertAttributeNameToForm } from "../../util";
 import { FormFields } from "../ClientDetails";
 
-import { FormFieldWithHint } from '../../components/form/FormFieldWithHint';
-
 
 type LoginSettingsProps = {
   protocol?: string;
