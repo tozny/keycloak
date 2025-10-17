@@ -81,6 +81,15 @@ public class ClientRepresentation {
     private Map<String, Boolean> access;
     protected String origin;
 
+    private String template;
+
+    public String getTemplate() {
+        return template;
+    }
+
+    public void setTemplate(String template) {
+        this.template = template;
+    }
 
     public String getId() {
         return id;
