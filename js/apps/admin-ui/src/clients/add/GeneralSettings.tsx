@@ -364,7 +364,6 @@ export const GeneralSettings = ({ onTemplateChange }: GeneralSettingsProps) => {
           />
         }
         fieldId="preconfigured-clients"
-        labelIconPosition="right"
         className="pf-m-inline"
       >
         <div ref={selectRef}>

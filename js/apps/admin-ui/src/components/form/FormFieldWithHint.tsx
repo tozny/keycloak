@@ -46,6 +46,7 @@ export const FormFieldWithHint = ({
       <div>
         <TextControl
           name={name}
+          label={t(label)}
           type={type as any}
           aria-label={t(label)}
           rules={{ 
