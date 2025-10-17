@@ -1,5 +1,5 @@
-import { FormGroup, HelpItem } from '@patternfly/react-core';
-import { TextControl } from '@keycloak/keycloak-ui-shared';
+import { FormGroup } from '@patternfly/react-core';
+import { HelpItem, TextControl } from '@keycloak/keycloak-ui-shared';
 import { useTranslation } from 'react-i18next';
 
 type FormFieldWithHintProps = {
