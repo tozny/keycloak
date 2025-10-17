@@ -6,7 +6,7 @@ import { ClientDescription } from "../ClientDescription";
 import { getProtocolName } from "../utils";
 import { useFormContext } from "react-hook-form";
 import { FormGroup, Select, SelectOption, MenuToggle, SelectList } from "@patternfly/react-core";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 // Predefined client templates
 const PRECONFIGURED_CLIENTS = [
@@ -254,6 +254,18 @@ export const GeneralSettings = ({ onTemplateChange }: GeneralSettingsProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const currentTemplate = watch("template") || "Custom OpenID-Connect";
   const [selected, setSelected] = useState<string>(currentTemplate);
+  const selectRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Ensure default template exists in form on first render (if nothing set)
   useEffect(() => {
@@ -352,27 +364,31 @@ export const GeneralSettings = ({ onTemplateChange }: GeneralSettingsProps) => {
           />
         }
         fieldId="preconfigured-clients"
+        labelIconPosition="right"
+        className="pf-m-inline"
       >
-        <Select
-          id="preconfigured-clients"
-          toggle={toggle}
-          isOpen={isOpen}
-          onSelect={onSelect}
-          selected={selected}
-          aria-label={t("preconfiguredClients")}
-        >
-          <SelectList>
-            {PRECONFIGURED_CLIENTS.map((client) => (
-              <SelectOption
-                key={client.name}
-                value={client.name}
-                description={client.description}
-              >
-                {client.name}
-              </SelectOption>
-            ))}
-          </SelectList>
-        </Select>
+        <div ref={selectRef}>
+          <Select
+            id="preconfigured-clients"
+            toggle={toggle}
+            isOpen={isOpen}
+            onSelect={onSelect}
+            selected={selected}
+            aria-label={t("preconfiguredClients")}
+          >
+            <SelectList>
+              {PRECONFIGURED_CLIENTS.map((client) => (
+                <SelectOption
+                  key={client.name}
+                  value={client.name}
+                  description={client.description}
+                >
+                  {client.name}
+                </SelectOption>
+              ))}
+            </SelectList>
+          </Select>
+        </div>
       </FormGroup>
       
       {/* <SelectControl

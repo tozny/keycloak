@@ -7,6 +7,9 @@ import { MultiLineInput } from "../../components/multi-line-input/MultiLineInput
 import { convertAttributeNameToForm } from "../../util";
 import { FormFields } from "../ClientDetails";
 
+import { FormFieldWithHint } from '../../components/form/FormFieldWithHint';
+
+
 type LoginSettingsProps = {
   protocol?: string;
   selectedClientTemplate?: string;
@@ -126,46 +129,34 @@ export const LoginSettings = ({
       )}
 
       {showGSuiteDomain && (
-        <>
-          <TextControl
-            name="gSuiteDomain"
-            label={t("gSuiteDomain")}
-            labelIcon={t("gSuiteDomainHelp")}
-            rules={{ required: t("required") }}
-          />
-          <div className="pf-c-form__helper-text" aria-live="polite">
-            {t("gSuiteDomainHint")}
-          </div>
-        </>
+        <FormFieldWithHint
+          name="gSuiteDomain"
+          label="gSuiteDomain"
+          helpText="gSuiteDomainHelp"
+          hintText="gSuiteDomainHint"
+          required
+        />
       )}
 
       {showSlackDomain && (
-        <>
-          <TextControl
-            name="slackDomain"
-            label={t("slackDomain")}
-            labelIcon={t("slackDomainHelp")}
-            rules={{ required: t("required") }}
-          />
-          <div className="pf-c-form__helper-text" aria-live="polite">
-              {t("slackDomainHint")}
-          </div>
-        </>
+        <FormFieldWithHint
+          name="slackDomain"
+          label="slackDomain"
+          helpText="slackDomainHelp"
+          hintText="slackDomainHint"
+          required
+        />
       )}
 
       {showJiraUrl && (
-        <>
-          <TextControl
-            type="url"
-            name="jiraUrl"
-            label={t("atlassianId")}
-            labelIcon={t("atlassianIdHelp")}
-            rules={{ required: t("required") }}
-          />
-          <div className="pf-c-form__helper-text" aria-live="polite">
-            {t("atlassianIdHint")}
-          </div>
-        </>
+        <FormFieldWithHint
+          name="jiraUrl"
+          type="url"
+          label="atlassianId"
+          helpText="atlassianIdHelp"
+          hintText="atlassianIdHint"
+          required
+        />
       )}
 
       {showFreshdeskRedirectUrl && (
