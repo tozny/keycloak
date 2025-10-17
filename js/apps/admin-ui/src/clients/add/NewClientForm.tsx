@@ -83,12 +83,13 @@ export default function NewClientForm() {
   const save = async () => {
     if (saving) return;
     setSaving(true);
-    const formValues = getValues();
-    const { template, ...clientData } = convertFormValuesToObject(formValues);
+    const client = convertFormValuesToObject(getValues());
+    console.log('Client data before API call:', JSON.stringify(client, null, 2));
+    delete client.template;
     try {
       const newClient = await adminClient.clients.create({
-        ...clientData,
-        clientId: clientData.clientId?.trim(),
+        ...client,
+        clientId: client.clientId?.trim(),
       });
       addAlert(t("createClientSuccess"), AlertVariant.success);
       navigate(toClient({ realm, clientId: newClient.id, tab: "settings" }));
