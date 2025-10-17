@@ -129,34 +129,46 @@ export const LoginSettings = ({
       )}
 
       {showGSuiteDomain && (
-        <FormFieldWithHint
-          name="gSuiteDomain"
-          label="gSuiteDomain"
-          helpText="gSuiteDomainHelp"
-          hintText="gSuiteDomainHint"
-          required
-        />
+        <>
+          <TextControl
+            name="gSuiteDomain"
+            label={t("gSuiteDomain")}
+            labelIcon={t("gSuiteDomainHelp")}
+            rules={{ required: t("required") }}
+          />
+          <div className="pf-c-form__helper-text" aria-live="polite" style={{marginLeft: '1rem'}}>
+            {t("gSuiteDomainHint")}
+          </div>
+        </>
       )}
 
       {showSlackDomain && (
-        <FormFieldWithHint
-          name="slackDomain"
-          label="slackDomain"
-          helpText="slackDomainHelp"
-          hintText="slackDomainHint"
-          required
-        />
+        <>
+          <TextControl
+            name="slackDomain"
+            label={t("slackDomain")}
+            labelIcon={t("slackDomainHelp")}
+            rules={{ required: t("required") }}
+          />
+          <div className="pf-c-form__helper-text" aria-live="polite">
+              {t("slackDomainHint")}
+          </div>
+        </>
       )}
 
       {showJiraUrl && (
-        <FormFieldWithHint
-          name="jiraUrl"
-          type="url"
-          label="atlassianId"
-          helpText="atlassianIdHelp"
-          hintText="atlassianIdHint"
-          required
-        />
+        <>
+          <TextControl
+            type="url"
+            name="jiraUrl"
+            label={t("atlassianId")}
+            labelIcon={t("atlassianIdHelp")}
+            rules={{ required: t("required") }}
+          />
+          <div className="pf-c-form__helper-text" aria-live="polite">
+            {t("atlassianIdHint")}
+          </div>
+        </>
       )}
 
       {showFreshdeskRedirectUrl && (
