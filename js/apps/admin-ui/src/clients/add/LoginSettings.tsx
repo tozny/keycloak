@@ -134,7 +134,7 @@ export const LoginSettings = ({
             labelIcon={t("gSuiteDomainHelp")}
             rules={{ required: t("required") }}
           />
-          <div className="pf-c-form__helper-text" aria-live="polite" style={{marginLeft: '1rem'}}>
+          <div className="pf-c-form__helper-text" aria-live="polite" style={{marginLeft: '16%'}}>
             {t("gSuiteDomainHint")}
           </div>
         </>
@@ -148,7 +148,7 @@ export const LoginSettings = ({
             labelIcon={t("slackDomainHelp")}
             rules={{ required: t("required") }}
           />
-          <div className="pf-c-form__helper-text" aria-live="polite">
+          <div className="pf-c-form__helper-text" aria-live="polite" style={{marginLeft: '16%'}}>
               {t("slackDomainHint")}
           </div>
         </>
@@ -163,7 +163,7 @@ export const LoginSettings = ({
             labelIcon={t("atlassianIdHelp")}
             rules={{ required: t("required") }}
           />
-          <div className="pf-c-form__helper-text" aria-live="polite">
+          <div className="pf-c-form__helper-text" aria-live="polite" style={{marginLeft: '16%'}}>
             {t("atlassianIdHint")}
           </div>
         </>
