@@ -369,6 +369,7 @@ export const GeneralSettings = ({ onTemplateChange }: GeneralSettingsProps) => {
         <div ref={selectRef}>
           <Select
             id="preconfigured-clients"
+            name="template"
             toggle={toggle}
             isOpen={isOpen}
             onSelect={onSelect}
