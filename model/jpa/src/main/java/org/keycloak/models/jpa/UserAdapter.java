@@ -87,7 +87,7 @@ public class UserAdapter implements UserModel.Streams, JpaModel<UserEntity> {
 
     @Override
     public void setUsername(String username) {
-        username = KeycloakModelUtils.toLowerCaseSafe(username);
+//        username = KeycloakModelUtils.toLowerCaseSafe(username);
         user.setUsername(username);
     }
 
@@ -324,7 +324,7 @@ public class UserAdapter implements UserModel.Streams, JpaModel<UserEntity> {
         if (ObjectUtil.isBlank(email)) {
             email = null;
         }
-        email = KeycloakModelUtils.toLowerCaseSafe(email);
+//        email = KeycloakModelUtils.toLowerCaseSafe(email);
         user.setEmail(email, realm.isDuplicateEmailsAllowed());
     }
 
