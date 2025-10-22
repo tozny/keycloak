@@ -83,6 +83,15 @@ public class ClientRepresentation {
 
     private String template;
     private String nameValue;
+    private String customSamlEndpoint;
+
+    public void setCustomSamlEndpoint(String customSamlEndpoint) {
+        this.customSamlEndpoint = customSamlEndpoint;
+    }
+
+    public String getCustomSamlEndpoint() {
+        return customSamlEndpoint;
+    }
 
     public String getNameValue() {
         return nameValue;
