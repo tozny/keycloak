@@ -81,9 +81,9 @@ public class ClientRepresentation {
     private Map<String, Boolean> access;
     protected String origin;
 
-    private String template;
-    private String nameValue;
-    private String customSamlEndpoint;
+    protected String template;
+    protected String nameValue;
+    protected String customSamlEndpoint;
 
     public void setCustomSamlEndpoint(String customSamlEndpoint) {
         this.customSamlEndpoint = customSamlEndpoint;
