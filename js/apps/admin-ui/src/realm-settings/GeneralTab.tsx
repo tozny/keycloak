@@ -266,6 +266,10 @@ function RealmSettingsGeneralTabForm({
               value: t(`unmanagedAttributePolicy.${policy}`),
             }))}
           />
+          <TextControl
+            name="registrationToken"
+            label={t("registrationToken")}
+          />
           <FormGroup
             label={t("endpoints")}
             labelIcon={
