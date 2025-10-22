@@ -81,8 +81,8 @@ public class ClientRepresentation {
     private Map<String, Boolean> access;
     protected String origin;
 
-    protected String template;
-    protected String nameValue;
+    // protected String template;
+    // protected String nameValue;
     protected String customSamlEndpoint;
 
     public void setCustomSamlEndpoint(String customSamlEndpoint) {
@@ -93,21 +93,21 @@ public class ClientRepresentation {
         return customSamlEndpoint;
     }
 
-    public String getNameValue() {
-        return nameValue;
-    }
+    // public String getNameValue() {
+    //     return nameValue;
+    // }
 
-    public void setNameValue(String nameValue) {
-        this.nameValue = nameValue;
-    }
+    // public void setNameValue(String nameValue) {
+    //     this.nameValue = nameValue;
+    // }
 
-    public String getTemplate() {
-        return template;
-    }
+    // public String getTemplate() {
+    //     return template;
+    // }
 
-    public void setTemplate(String template) {
-        this.template = template;
-    }
+    // public void setTemplate(String template) {
+    //     this.template = template;
+    // }
 
     public String getId() {
         return id;
