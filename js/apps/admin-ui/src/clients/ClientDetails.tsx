@@ -646,7 +646,8 @@ export default function ClientDetails() {
                   </RoutableTabs>
                 </Tab>
               )}
-            {client!.serviceAccountsEnabled && hasViewUsers && (
+            {/* Tozny Update - Make it visible only for OpenID-Connect clients */}
+            {client.protocol === "openid-connect" && client!.serviceAccountsEnabled && hasViewUsers && (
               <Tab
                 id="serviceAccount"
                 data-testid="serviceAccountTab"
@@ -656,6 +657,7 @@ export default function ClientDetails() {
                 <ServiceAccount client={client} />
               </Tab>
             )}
+            {/* End of Tozny Update */}
             <Tab
               id="sessions"
               data-testid="sessionsTab"
