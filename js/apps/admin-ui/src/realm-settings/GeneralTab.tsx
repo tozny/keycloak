@@ -267,8 +267,9 @@ function RealmSettingsGeneralTabForm({
             }))}
           />
           <TextControl
-            name="registrationToken"
+            name={convertAttributeNameToForm("attributes.registrationToken")}
             label={t("registrationToken")}
+            labelIcon={t("registrationTokenHelp")}
           />
           <FormGroup
             label={t("endpoints")}
