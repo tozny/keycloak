@@ -401,7 +401,7 @@ export const GeneralSettings = ({ onTemplateChange }: GeneralSettingsProps) => {
         )}
       />
       
-      {/* <SelectControl
+      <SelectControl
         name="protocol"
         label={t("clientType")}
         labelIcon={t("clientTypeHelp")}
@@ -410,7 +410,7 @@ export const GeneralSettings = ({ onTemplateChange }: GeneralSettingsProps) => {
           key: option,
           value: getProtocolName(t, option),
         }))}
-      /> */}
+      /> 
       <ClientDescription hasConfigureAccess selectedTemplate={selected}/>
     </FormAccess>
   );
