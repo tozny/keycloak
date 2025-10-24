@@ -472,7 +472,7 @@ export default function ClientDetails() {
                 )}
               </Tab>
             )}
-            {!client.publicClient &&
+            {
               !isRealmClient(client) &&
               (hasViewClients ||
                 client.access?.configure ||
