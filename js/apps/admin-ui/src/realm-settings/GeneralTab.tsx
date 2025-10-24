@@ -266,11 +266,13 @@ function RealmSettingsGeneralTabForm({
               value: t(`unmanagedAttributePolicy.${policy}`),
             }))}
           />
+          {/* Toz update start  */}
           <TextControl
             name={convertAttributeNameToForm("attributes.registrationToken")}
             label={t("registrationToken")}
             labelIcon={t("registrationTokenHelp")}
           />
+          {/* Toz update end  */}
           <FormGroup
             label={t("endpoints")}
             labelIcon={
