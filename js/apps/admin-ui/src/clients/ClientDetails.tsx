@@ -555,7 +555,8 @@ export default function ClientDetails() {
                 </RoutableTabs>
               </Tab>
             )}
-            {client!.authorizationServicesEnabled &&
+            {/* Tozny Update - Make it visible for openid-connect protocol */}
+            {client.protocol === "openid-connect" &&
               !isAdminPermissionsClient &&
               (hasManageAuthorization || hasViewAuthorization) && (
                 <Tab
