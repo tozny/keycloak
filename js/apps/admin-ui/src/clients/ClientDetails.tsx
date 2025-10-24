@@ -472,7 +472,7 @@ export default function ClientDetails() {
                 )}
               </Tab>
             )}
-            {
+            { client.protocol === "openid-connect" && 
               !isRealmClient(client) &&
               (hasViewClients ||
                 client.access?.configure ||
