@@ -4,7 +4,7 @@ import {
   SelectControl,
   SelectVariant,
 } from "@keycloak/keycloak-ui-shared";
-import { DefaultSwitchControl } from "../../../components/SwitchControl";
+import { DefaultSwitchControl } from "../../components/SwitchControl";
 import { FormGroup, NumberInput, SelectOption } from "@patternfly/react-core";
 import { isEqual } from "lodash-es";
 import { Controller, UseFormReturn, useWatch } from "react-hook-form";
