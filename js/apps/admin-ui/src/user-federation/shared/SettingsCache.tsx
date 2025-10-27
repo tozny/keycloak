@@ -3,8 +3,8 @@ import {
   KeycloakSelect,
   SelectControl,
   SelectVariant,
-  SwitchControl,
 } from "@keycloak/keycloak-ui-shared";
+import { DefaultSwitchControl } from "../../../components/SwitchControl";
 import { FormGroup, NumberInput, SelectOption } from "@patternfly/react-core";
 import { isEqual } from "lodash-es";
 import { Controller, UseFormReturn, useWatch } from "react-hook-form";
@@ -92,10 +92,15 @@ export const CacheFields = ({ form }: { form: UseFormReturn }): ReactElement => 
         }
         fieldId="kc-password-cache"
       >
-        <SwitchControl
+        <DefaultSwitchControl
           name="config.passwordCacheEnabled"
-          label={t("on")}
-          labelOff={t("off")}
+          label={t("passwordCache")}
+          labelIcon={
+            <HelpItem
+              helpText={t("passwordCacheHelp")}
+              fieldLabelId="passwordCache"
+            />
+          }
           aria-label={t("passwordCache")}
           data-testid="password-cache"
           defaultValue={["false"]}
