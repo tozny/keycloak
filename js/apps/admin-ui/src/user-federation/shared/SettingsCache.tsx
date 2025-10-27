@@ -3,10 +3,12 @@ import {
   KeycloakSelect,
   SelectControl,
   SelectVariant,
+  SwitchControl,
 } from "@keycloak/keycloak-ui-shared";
 import { FormGroup, NumberInput, SelectOption } from "@patternfly/react-core";
 import { isEqual } from "lodash-es";
 import { Controller, UseFormReturn, useWatch } from "react-hook-form";
+import { ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 import { FormAccess } from "../../components/form/FormAccess";
 import { WizardSectionHeader } from "../../components/wizard-section-header/WizardSectionHeader";
@@ -19,7 +21,7 @@ export type SettingsCacheProps = {
   unWrap?: boolean;
 };
 
-const CacheFields = ({ form }: { form: UseFormReturn }) => {
+export const CacheFields = ({ form }: { form: UseFormReturn }): ReactElement => {
   const { t } = useTranslation();
 
   const [isCachePolicyOpen, toggleCachePolicy] = useToggle();
@@ -71,6 +73,67 @@ const CacheFields = ({ form }: { form: UseFormReturn }) => {
 
   return (
     <>
+      {/* 
+        Tozny Customization: Password Cache Settings
+        
+        These fields enable caching of password verification results to reduce LDAP server load.
+        - passwordCacheEnabled: Toggles the password cache on/off
+        - passwordCacheTTL: Time-to-live in seconds for cached password verification results
+        
+        Note: This is a Tozny-specific optimization and not part of the standard Keycloak LDAP provider.
+      */}
+      <FormGroup
+        label={t("passwordCache")}
+        labelIcon={
+          <HelpItem
+            helpText={t("passwordCacheHelp")}
+            fieldLabelId="passwordCache"
+          />
+        }
+        fieldId="kc-password-cache"
+      >
+        <SwitchControl
+          name="config.passwordCacheEnabled"
+          label={t("on")}
+          labelOff={t("off")}
+          aria-label={t("passwordCache")}
+          data-testid="password-cache"
+          defaultValue={["false"]}
+        />
+      </FormGroup>
+      <FormGroup
+        label={t("passwordCacheTTL")}
+        labelIcon={
+          <HelpItem
+            helpText={t("passwordCacheTTLHelp")}
+            fieldLabelId="passwordCacheTTL"
+          />
+        }
+        fieldId="kc-password-cache-ttl"
+      >
+        <NumberInput
+          id="kc-password-cache-ttl"
+          value={form.getValues("config.passwordCacheTTL")?.[0] || 0}
+          min={0}
+          onPlus={() => {
+            const current = parseInt(form.getValues("config.passwordCacheTTL")?.[0] || "0");
+            form.setValue("config.passwordCacheTTL", [(current + 1).toString()]);
+          }}
+          onMinus={() => {
+            const current = parseInt(form.getValues("config.passwordCacheTTL")?.[0] || "0");
+            if (current > 0) {
+              form.setValue("config.passwordCacheTTL", [(current - 1).toString()]);
+            }
+          }}
+          onChange={(event: React.FormEvent<HTMLInputElement>) => {
+            const target = event.target as HTMLInputElement;
+            let value = Number(target.value);
+            value = isNaN(value) ? 0 : value < 0 ? 0 : value;
+            form.setValue("config.passwordCacheTTL", [value.toString()]);
+          }}
+          aria-label={t("passwordCacheTTL")}
+        />
+      </FormGroup>
       <FormGroup
         label={t("cachePolicy")}
         labelIcon={
