@@ -9,7 +9,7 @@ export type TozSettings = {
 };
 
 const endpoint = (baseUrl: string, realmName: string) =>
-  joinPath(baseUrl, "admin/realms", encodeURIComponent(realmName), "ui-ext", "custom-settings");
+  joinPath(baseUrl, "admin/realms", encodeURIComponent(realmName), "general", "settings");
 
 export async function getTozSettings(adminClient: KeycloakAdminClient): Promise<TozSettings> {
   const accessToken = await adminClient.getAccessToken();

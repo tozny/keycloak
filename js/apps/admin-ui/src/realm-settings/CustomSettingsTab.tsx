@@ -47,11 +47,13 @@ export const CustomSettingsTab = ({ realm: _realm, save: _save }: CustomSettings
         <FormAccess isHorizontal role="manage-realm" className="pf-u-mt-lg" onSubmit={onSubmit}>
           <TextControl
             name="forgot_password_custom_link"
-            label={t("customPasswordLink")}
+            label={t("forgotPasswordCustomLink")}
+            labelIcon={t("forgotPasswordCustomLinkHelp")}
           />
           <TextControl
             name="forgot_password_custom_text"
-            label={t("customTextLink")}
+            label={t("forgotPasswordCustomText")}
+            labelIcon={t("forgotPasswordCustomTextHelp")}
           />
           <FixedButtonsGroup name="customSettingsTab" reset={setupForm} isSubmit />
         </FormAccess>
