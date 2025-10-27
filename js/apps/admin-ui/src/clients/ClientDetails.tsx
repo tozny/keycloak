@@ -647,7 +647,7 @@ export default function ClientDetails() {
                 </Tab>
               )}
             {/* Tozny Update - Make it visible only for OpenID-Connect clients */}
-            {client.protocol === "openid-connect" && client!.serviceAccountsEnabled && hasViewUsers && (
+            {client.protocol === "openid-connect" && hasViewUsers && (
               <Tab
                 id="serviceAccount"
                 data-testid="serviceAccountTab"
