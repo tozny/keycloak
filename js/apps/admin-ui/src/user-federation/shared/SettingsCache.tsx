@@ -104,27 +104,46 @@ export const CacheFields = ({ form }: { form: UseFormReturn }): ReactElement => 
     }
   }, [form]);
 
+  // Initialize form with default values if not set
+  React.useEffect(() => {
+    const currentValues = form.getValues();
+    if (!currentValues.config?.passwordCacheEnabled) {
+      form.setValue("config.passwordCacheEnabled", ["false"], { shouldDirty: false });
+    }
+    if (!currentValues.config?.passwordCacheTTL) {
+      form.setValue("config.passwordCacheTTL", ["0"], { shouldDirty: false });
+    }
+  }, [form]);
+
   // Watch for password cache enabled state changes
   const isPasswordCacheEnabled = useWatch({
     control: form.control,
     name: "config.passwordCacheEnabled",
-    defaultValue: ["false"],
+    defaultValue: form.getValues("config.passwordCacheEnabled") || ["false"],
   });
 
   // Watch for password cache TTL value
   const passwordCacheTTL = useWatch({
     control: form.control,
     name: "config.passwordCacheTTL",
-    defaultValue: ["0"],
+    defaultValue: form.getValues("config.passwordCacheTTL") || ["0"],
   });
 
   // Handle password cache toggle
   const handlePasswordCacheToggle = (checked: boolean) => {
+    const newValue = checked ? "true" : "false";
+    form.setValue("config.passwordCacheEnabled", [newValue], { 
+      shouldDirty: true,
+      shouldValidate: true 
+    });
+    
     if (!checked) {
       // When disabling, set TTL to 0
-      form.setValue("config.passwordCacheTTL", ["0"], { shouldDirty: true });
+      form.setValue("config.passwordCacheTTL", ["0"], { 
+        shouldDirty: true,
+        shouldValidate: true 
+      });
     }
-    form.setValue("config.passwordCacheEnabled", [checked ? "true" : "false"], { shouldDirty: true });
   };
 
   const handleNumberInputBlur = (event: React.FocusEvent<HTMLInputElement>) => {
@@ -237,6 +256,7 @@ export const CacheFields = ({ form }: { form: UseFormReturn }): ReactElement => 
             id="kc-password-cache-ttl"
             value={parseInt(passwordCacheTTL?.[0] || "0")}
             min={0}
+            isDisabled={isPasswordCacheEnabled?.[0] !== "true"}
             onPlus={() => {
               const current = parseInt(passwordCacheTTL?.[0] || "0");
               form.setValue("config.passwordCacheTTL", [(current + 1).toString()], { 
