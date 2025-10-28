@@ -1,12 +1,13 @@
 import type RealmRepresentation from "@keycloak/keycloak-admin-client/lib/defs/realmRepresentation";
 import { TextControl } from "@keycloak/keycloak-ui-shared";
-import { PageSection } from "@patternfly/react-core";
+import { PageSection, AlertVariant } from "@patternfly/react-core";
 import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { FixedButtonsGroup } from "../components/form/FixedButtonGroup";
 import { FormAccess } from "../components/form/FormAccess";
 import { useAdminClient } from "../admin-client";
+import { useAlerts } from "@keycloak/keycloak-ui-shared";
 import { getTozSettings, saveTozSettings, TozSettings } from "../utils/TozSettings";
 
 export type UICustomSettingsRealm = RealmRepresentation;
@@ -19,6 +20,7 @@ export type CustomSettingsTabProps = {
 export const CustomSettingsTab = ({ realm: _realm, save: _save }: CustomSettingsTabProps) => {
   const { t } = useTranslation();
   const { adminClient } = useAdminClient();
+  const { addAlert, addError } = useAlerts();
   const form = useForm<TozSettings>({
     defaultValues: {
       forgot_password_custom_link: "",
@@ -38,7 +40,12 @@ export const CustomSettingsTab = ({ realm: _realm, save: _save }: CustomSettings
   }, []);
 
   const onSubmit = handleSubmit(async (data) => {
-    await saveTozSettings(adminClient, data);
+    try {
+      await saveTozSettings(adminClient, data);
+      addAlert(t("realmSaveSuccess"), AlertVariant.success);
+    } catch (error) {
+      addError("realmSaveError", error as Error);
+    }
   });
 
   return (
