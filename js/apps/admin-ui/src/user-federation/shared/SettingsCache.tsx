@@ -72,14 +72,36 @@ export const CacheFields = ({ form }: { form: UseFormReturn }): ReactElement => 
     );
   }
 
-  const passwordCacheEnabled = useWatch({
+  // Watch for password cache TTL value
+  const passwordCacheTTL = useWatch({
     control: form.control,
-    name: "config.passwordCacheEnabled",
-    defaultValue: ["false"],
+    name: "config.passwordCacheTTL",
+    defaultValue: form.getValues("config.passwordCacheTTL") || ["0"],
   });
-  
-  // Ensure passwordCacheTTL has a default value
+
+  // Derive password cache enabled state from TTL value
+  const isPasswordCacheEnabled = (parseInt(passwordCacheTTL?.[0] || "0") > 0) ? ["true"] : ["false"];
+
+  // Update the form state when the component receives new props
   React.useEffect(() => {
+    if (form && form.formState.isSubmitSuccessful) {
+      // This will ensure the form values are in sync with the server
+      form.reset(form.getValues());
+    }
+  }, [form, form.formState.isSubmitSuccessful]);
+  
+  // Initialize form with default values if not set
+  React.useEffect(() => {
+    const ttlValue = form.getValues("config.passwordCacheTTL")?.[0] || "0";
+    const isEnabled = parseInt(ttlValue) > 0;
+    
+    // Set the enabled state based on TTL
+    form.setValue("config.passwordCacheEnabled", [isEnabled.toString()], { 
+      shouldDirty: false,
+      shouldValidate: true 
+    });
+    
+    // Ensure TTL has a default value
     if (!form.getValues("config.passwordCacheTTL")) {
       form.setValue("config.passwordCacheTTL", ["0"], { shouldDirty: false });
     }
@@ -93,57 +115,43 @@ export const CacheFields = ({ form }: { form: UseFormReturn }): ReactElement => 
     }
     const numValue = parseInt(value);
     if (!isNaN(numValue) && numValue >= 0) {
-      form.setValue("config.passwordCacheTTL", [numValue.toString()], { shouldDirty: true });
+      form.setValue("config.passwordCacheTTL", [numValue.toString()], { 
+        shouldDirty: true,
+        shouldValidate: true 
+      });
+      
+      // Update the enabled state based on the new TTL value
+      form.setValue("config.passwordCacheEnabled", [(numValue > 0).toString()], {
+        shouldDirty: true,
+        shouldValidate: true
+      });
     }
   };
 
-  // Ensure passwordCacheTTL has a default value
-  React.useEffect(() => {
-    if (!form.getValues("config.passwordCacheTTL")) {
-      form.setValue("config.passwordCacheTTL", ["0"], { shouldDirty: false });
-    }
-  }, [form]);
-
-  // Initialize form with default values if not set
-  React.useEffect(() => {
-    const currentValues = form.getValues();
-    if (!currentValues.config?.passwordCacheEnabled) {
-      form.setValue("config.passwordCacheEnabled", ["false"], { shouldDirty: false });
-    }
-    if (!currentValues.config?.passwordCacheTTL) {
-      form.setValue("config.passwordCacheTTL", ["0"], { shouldDirty: false });
-    }
-  }, [form]);
-
-  // Watch for password cache enabled state changes
-  const isPasswordCacheEnabled = useWatch({
-    control: form.control,
-    name: "config.passwordCacheEnabled",
-    defaultValue: form.getValues("config.passwordCacheEnabled") || ["false"],
-  });
-
-  // Watch for password cache TTL value
-  const passwordCacheTTL = useWatch({
-    control: form.control,
-    name: "config.passwordCacheTTL",
-    defaultValue: form.getValues("config.passwordCacheTTL") || ["0"],
-  });
-
   // Handle password cache toggle
   const handlePasswordCacheToggle = (checked: boolean) => {
-    const newValue = checked ? "true" : "false";
-    form.setValue("config.passwordCacheEnabled", [newValue], { 
-      shouldDirty: true,
-      shouldValidate: true 
-    });
-    
-    if (!checked) {
+    if (checked) {
+      // When enabling, set a default TTL if not already set
+      const currentTTL = parseInt(form.getValues("config.passwordCacheTTL")?.[0] || "0");
+      if (currentTTL <= 0) {
+        form.setValue("config.passwordCacheTTL", ["300"], { 
+          shouldDirty: true,
+          shouldValidate: true 
+        });
+      }
+    } else {
       // When disabling, set TTL to 0
       form.setValue("config.passwordCacheTTL", ["0"], { 
         shouldDirty: true,
         shouldValidate: true 
       });
     }
+    
+    // Always update the enabled state to match the switch
+    form.setValue("config.passwordCacheEnabled", [checked.toString()], { 
+      shouldDirty: true,
+      shouldValidate: true 
+    });
   };
 
   const handleNumberInputBlur = (event: React.FocusEvent<HTMLInputElement>) => {
@@ -233,7 +241,7 @@ export const CacheFields = ({ form }: { form: UseFormReturn }): ReactElement => 
               data-testid="password-cache-switch"
               isDisabled={false}
               onChange={(_event, value) => handlePasswordCacheToggle(value)}
-              isChecked={field.value?.[0] === "true"}
+              isChecked={isPasswordCacheEnabled[0] === "true"}
               label={t("on")}
               labelOff={t("off")}
               aria-label={t("passwordCache")}
