@@ -3,6 +3,7 @@ import {
   KeycloakSelect,
   SelectControl,
   SelectVariant,
+  Switch,
 } from "@keycloak/keycloak-ui-shared";
 import { DefaultSwitchControl } from "../../components/SwitchControl";
 import { FormGroup, NumberInput, SelectOption } from "@patternfly/react-core";
@@ -77,6 +78,13 @@ export const CacheFields = ({ form }: { form: UseFormReturn }): ReactElement => 
     name: "config.passwordCacheEnabled",
     defaultValue: ["false"],
   });
+  
+  // Ensure passwordCacheTTL has a default value
+  React.useEffect(() => {
+    if (!form.getValues("config.passwordCacheTTL")) {
+      form.setValue("config.passwordCacheTTL", ["0"], { shouldDirty: false });
+    }
+  }, [form]);
 
   const handleNumberInputChange = (event: React.FormEvent<HTMLInputElement>) => {
     const value = (event.target as HTMLInputElement).value;
@@ -89,6 +97,20 @@ export const CacheFields = ({ form }: { form: UseFormReturn }): ReactElement => 
       form.setValue("config.passwordCacheTTL", [numValue.toString()], { shouldDirty: true });
     }
   };
+
+  // Ensure passwordCacheTTL has a default value
+  React.useEffect(() => {
+    if (!form.getValues("config.passwordCacheTTL")) {
+      form.setValue("config.passwordCacheTTL", ["0"], { shouldDirty: false });
+    }
+  }, [form]);
+
+  // Watch for password cache enabled state changes
+  const isPasswordCacheEnabled = useWatch({
+    control: form.control,
+    name: "config.passwordCacheEnabled",
+    defaultValue: ["false"],
+  });
 
   const handleNumberInputBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -156,17 +178,36 @@ export const CacheFields = ({ form }: { form: UseFormReturn }): ReactElement => 
         
         Note: This is a Tozny-specific optimization and not part of the standard Keycloak LDAP provider.
       */}
-      <FormGroup fieldId="kc-password-cache">
-        <DefaultSwitchControl
+      <FormGroup 
+        fieldId="kc-password-cache"
+        label={t("passwordCache")}
+        labelIcon={
+          <HelpItem
+            helpText={t("passwordCacheHelp")}
+            fieldLabelId="passwordCache"
+          />
+        }
+      >
+        <Controller
           name="config.passwordCacheEnabled"
-          label={t("passwordCache")}
-          labelIcon={t("passwordCacheHelp")}
-          aria-label={t("passwordCache")}
-          data-testid="password-cache"
+          control={form.control}
           defaultValue={["false"]}
+          render={({ field: { value, onChange } }) => (
+            <Switch
+              id="kc-password-cache-switch"
+              label={t("on")}
+              labelOff={t("off")}
+              isChecked={value?.[0] === "true"}
+              onChange={(checked: boolean) => {
+                onChange([checked ? "true" : "false"]);
+              }}
+              aria-label={t("passwordCache")}
+              data-testid="password-cache-switch"
+            />
+          )}
         />
       </FormGroup>
-      {passwordCacheEnabled?.[0] === "true" && (
+      {isPasswordCacheEnabled?.[0] === "true" && (
         <FormGroup
           label={t("passwordCacheTTL")}
           labelIcon={
