@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import { FormAccess } from "../../components/form/FormAccess";
 import { WizardSectionHeader } from "../../components/wizard-section-header/WizardSectionHeader";
 import useToggle from "../../utils/useToggle";
+import React from "react";
 
 export type SettingsCacheProps = {
   form: UseFormReturn;
@@ -71,69 +72,33 @@ export const CacheFields = ({ form }: { form: UseFormReturn }): ReactElement => 
     );
   }
 
+  const passwordCacheEnabled = useWatch({
+    control: form.control,
+    name: "config.passwordCacheEnabled",
+    defaultValue: ["false"],
+  });
+
+  const handleNumberInputChange = (event: React.FormEvent<HTMLInputElement>) => {
+    const value = (event.target as HTMLInputElement).value;
+    if (value === '') {
+      form.setValue("config.passwordCacheTTL", ["0"], { shouldDirty: true });
+      return;
+    }
+    const numValue = parseInt(value);
+    if (!isNaN(numValue) && numValue >= 0) {
+      form.setValue("config.passwordCacheTTL", [numValue.toString()], { shouldDirty: true });
+    }
+  };
+
+  const handleNumberInputBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    if (value === '') {
+      form.setValue("config.passwordCacheTTL", ["0"], { shouldDirty: true });
+    }
+  };
+
   return (
     <>
-      {/* 
-        Tozny Customization: Password Cache Settings
-        
-        These fields enable caching of password verification results to reduce LDAP server load.
-        - passwordCacheEnabled: Toggles the password cache on/off
-        - passwordCacheTTL: Time-to-live in seconds for cached password verification results
-        
-        Note: This is a Tozny-specific optimization and not part of the standard Keycloak LDAP provider.
-      */}
-      <FormGroup
-        label={t("passwordCache")}
-        labelIcon={
-          <HelpItem
-            helpText={t("passwordCacheHelp")}
-            fieldLabelId="passwordCache"
-          />
-        }
-        fieldId="kc-password-cache"
-      >
-        <DefaultSwitchControl
-          name="config.passwordCacheEnabled"
-          label={t("passwordCache")}
-          labelIcon={t("passwordCacheHelp")}
-          aria-label={t("passwordCache")}
-          data-testid="password-cache"
-          defaultValue={["false"]}
-        />
-      </FormGroup>
-      <FormGroup
-        label={t("passwordCacheTTL")}
-        labelIcon={
-          <HelpItem
-            helpText={t("passwordCacheTTLHelp")}
-            fieldLabelId="passwordCacheTTL"
-          />
-        }
-        fieldId="kc-password-cache-ttl"
-      >
-        <NumberInput
-          id="kc-password-cache-ttl"
-          value={form.getValues("config.passwordCacheTTL")?.[0] || 0}
-          min={0}
-          onPlus={() => {
-            const current = parseInt(form.getValues("config.passwordCacheTTL")?.[0] || "0");
-            form.setValue("config.passwordCacheTTL", [(current + 1).toString()]);
-          }}
-          onMinus={() => {
-            const current = parseInt(form.getValues("config.passwordCacheTTL")?.[0] || "0");
-            if (current > 0) {
-              form.setValue("config.passwordCacheTTL", [(current - 1).toString()]);
-            }
-          }}
-          onChange={(event: React.FormEvent<HTMLInputElement>) => {
-            const target = event.target as HTMLInputElement;
-            let value = Number(target.value);
-            value = isNaN(value) ? 0 : value < 0 ? 0 : value;
-            form.setValue("config.passwordCacheTTL", [value.toString()]);
-          }}
-          aria-label={t("passwordCacheTTL")}
-        />
-      </FormGroup>
       <FormGroup
         label={t("cachePolicy")}
         labelIcon={
@@ -181,6 +146,58 @@ export const CacheFields = ({ form }: { form: UseFormReturn }): ReactElement => 
           )}
         />
       </FormGroup>
+      
+      {/* 
+        Tozny Customization: Password Cache Settings
+        
+        These fields enable caching of password verification results to reduce LDAP server load.
+        - passwordCacheEnabled: Toggles the password cache on/off
+        - passwordCacheTTL: Time-to-live in seconds for cached password verification results
+        
+        Note: This is a Tozny-specific optimization and not part of the standard Keycloak LDAP provider.
+      */}
+      <FormGroup fieldId="kc-password-cache">
+        <DefaultSwitchControl
+          name="config.passwordCacheEnabled"
+          label={t("passwordCache")}
+          labelIcon={t("passwordCacheHelp")}
+          aria-label={t("passwordCache")}
+          data-testid="password-cache"
+          defaultValue={["false"]}
+        />
+      </FormGroup>
+      {passwordCacheEnabled?.[0] === "true" && (
+        <FormGroup
+          label={t("passwordCacheTTL")}
+          labelIcon={
+            <HelpItem
+              helpText={t("passwordCacheTTLHelp")}
+              fieldLabelId="passwordCacheTTL"
+            />
+          }
+          fieldId="kc-password-cache-ttl"
+        >
+          <NumberInput
+            id="kc-password-cache-ttl"
+            value={parseInt(form.getValues("config.passwordCacheTTL")?.[0] || "0")}
+            min={0}
+            onPlus={() => {
+              const current = parseInt(form.getValues("config.passwordCacheTTL")?.[0] || "0");
+              form.setValue("config.passwordCacheTTL", [(current + 1).toString()], { shouldDirty: true });
+            }}
+            onMinus={() => {
+              const current = parseInt(form.getValues("config.passwordCacheTTL")?.[0] || "0");
+              if (current > 0) {
+                form.setValue("config.passwordCacheTTL", [(current - 1).toString()], { shouldDirty: true });
+              }
+            }}
+            onChange={handleNumberInputChange}
+            onBlur={handleNumberInputBlur}
+            inputName="passwordCacheTTL"
+            inputAriaLabel={t("passwordCacheTTL")}
+          />
+        </FormGroup>
+      )}
       {isEqual(cachePolicyType, ["EVICT_WEEKLY"]) ? (
         <SelectControl
           id="kc-eviction-day"
