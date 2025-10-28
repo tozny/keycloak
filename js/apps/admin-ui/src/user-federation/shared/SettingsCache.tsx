@@ -111,6 +111,22 @@ export const CacheFields = ({ form }: { form: UseFormReturn }): ReactElement => 
     defaultValue: ["false"],
   });
 
+  // Watch for password cache TTL value
+  const passwordCacheTTL = useWatch({
+    control: form.control,
+    name: "config.passwordCacheTTL",
+    defaultValue: ["0"],
+  });
+
+  // Handle password cache toggle
+  const handlePasswordCacheToggle = (checked: boolean) => {
+    if (!checked) {
+      // When disabling, set TTL to 0
+      form.setValue("config.passwordCacheTTL", ["0"], { shouldDirty: true });
+    }
+    form.setValue("config.passwordCacheEnabled", [checked ? "true" : "false"], { shouldDirty: true });
+  };
+
   const handleNumberInputBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     const value = event.target.value;
     if (value === '') {
@@ -197,8 +213,8 @@ export const CacheFields = ({ form }: { form: UseFormReturn }): ReactElement => 
               id="kc-password-cache-switch"
               data-testid="password-cache-switch"
               isDisabled={false}
-              onChange={(_event, value) => field.onChange([`${value}`])}
-              isChecked={field.value[0] === "true"}
+              onChange={(_event, value) => handlePasswordCacheToggle(value)}
+              isChecked={field.value?.[0] === "true"}
               label={t("on")}
               labelOff={t("off")}
               aria-label={t("passwordCache")}
@@ -219,16 +235,22 @@ export const CacheFields = ({ form }: { form: UseFormReturn }): ReactElement => 
         >
           <NumberInput
             id="kc-password-cache-ttl"
-            value={parseInt(form.getValues("config.passwordCacheTTL")?.[0] || "0")}
+            value={parseInt(passwordCacheTTL?.[0] || "0")}
             min={0}
             onPlus={() => {
-              const current = parseInt(form.getValues("config.passwordCacheTTL")?.[0] || "0");
-              form.setValue("config.passwordCacheTTL", [(current + 1).toString()], { shouldDirty: true });
+              const current = parseInt(passwordCacheTTL?.[0] || "0");
+              form.setValue("config.passwordCacheTTL", [(current + 1).toString()], { 
+                shouldDirty: true,
+                shouldValidate: true 
+              });
             }}
             onMinus={() => {
-              const current = parseInt(form.getValues("config.passwordCacheTTL")?.[0] || "0");
+              const current = parseInt(passwordCacheTTL?.[0] || "0");
               if (current > 0) {
-                form.setValue("config.passwordCacheTTL", [(current - 1).toString()], { shouldDirty: true });
+                form.setValue("config.passwordCacheTTL", [(current - 1).toString()], { 
+                  shouldDirty: true,
+                  shouldValidate: true 
+                });
               }
             }}
             onChange={handleNumberInputChange}
