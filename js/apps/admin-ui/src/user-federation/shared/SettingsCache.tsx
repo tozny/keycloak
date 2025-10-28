@@ -95,12 +95,7 @@ export const CacheFields = ({ form }: { form: UseFormReturn }): ReactElement => 
         <DefaultSwitchControl
           name="config.passwordCacheEnabled"
           label={t("passwordCache")}
-          labelIcon={
-            <HelpItem
-              helpText={t("passwordCacheHelp")}
-              fieldLabelId="passwordCache"
-            />
-          }
+          labelIcon={t("passwordCacheHelp")}
           aria-label={t("passwordCache")}
           data-testid="password-cache"
           defaultValue={["false"]}
