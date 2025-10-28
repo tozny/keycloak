@@ -282,6 +282,7 @@ export const CacheFields = ({ form }: { form: UseFormReturn }): ReactElement => 
           />
         </FormGroup>
       )}
+      {/* End of Tozny Customization */}
       {isEqual(cachePolicyType, ["EVICT_WEEKLY"]) ? (
         <SelectControl
           id="kc-eviction-day"
