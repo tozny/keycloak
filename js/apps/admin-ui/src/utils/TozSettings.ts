@@ -36,7 +36,7 @@ export async function saveTozSettings(
   const accessToken = await adminClient.getAccessToken();
   const url = endpoint(adminClient.baseUrl, adminClient.realmName!);
   const res = await fetchWithError(url, {
-    method: "PUT",
+    method: "POST",
     body: JSON.stringify(settings),
     headers: {
       "Content-Type": "application/json",
