@@ -300,6 +300,12 @@ function RealmSettingsGeneralTabForm({
                   title={t("samlIdentityProviderMetadata")}
                 />
               </StackItem>
+              <StackItem>
+                <FormattedLink
+                  href={`${addTrailingSlash(serverBaseUrl)}realms/${realmName}/general/key-download`}
+                  title={t("downloadX509Certificate")}
+                />
+              </StackItem>
               {isOpenid4vciEnabled && realm.verifiableCredentialsEnabled && (
                 <StackItem>
                   <FormattedLink
