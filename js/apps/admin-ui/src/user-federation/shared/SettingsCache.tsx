@@ -3,9 +3,8 @@ import {
   KeycloakSelect,
   SelectControl,
   SelectVariant,
-  Switch,
 } from "@keycloak/keycloak-ui-shared";
-import { DefaultSwitchControl } from "../../components/SwitchControl";
+import { Switch } from "@patternfly/react-core";
 import { FormGroup, NumberInput, SelectOption } from "@patternfly/react-core";
 import { isEqual } from "lodash-es";
 import { Controller, UseFormReturn, useWatch } from "react-hook-form";
@@ -179,7 +178,6 @@ export const CacheFields = ({ form }: { form: UseFormReturn }): ReactElement => 
         Note: This is a Tozny-specific optimization and not part of the standard Keycloak LDAP provider.
       */}
       <FormGroup 
-        fieldId="kc-password-cache"
         label={t("passwordCache")}
         labelIcon={
           <HelpItem
@@ -187,22 +185,23 @@ export const CacheFields = ({ form }: { form: UseFormReturn }): ReactElement => 
             fieldLabelId="passwordCache"
           />
         }
+        fieldId="kc-password-cache"
+        hasNoPaddingTop
       >
         <Controller
           name="config.passwordCacheEnabled"
-          control={form.control}
           defaultValue={["false"]}
-          render={({ field: { value, onChange } }) => (
+          control={form.control}
+          render={({ field }) => (
             <Switch
               id="kc-password-cache-switch"
+              data-testid="password-cache-switch"
+              isDisabled={false}
+              onChange={(_event, value) => field.onChange([`${value}`])}
+              isChecked={field.value[0] === "true"}
               label={t("on")}
               labelOff={t("off")}
-              isChecked={value?.[0] === "true"}
-              onChange={(checked: boolean) => {
-                onChange([checked ? "true" : "false"]);
-              }}
               aria-label={t("passwordCache")}
-              data-testid="password-cache-switch"
             />
           )}
         />
