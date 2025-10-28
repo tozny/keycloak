@@ -35,9 +35,13 @@ export async function saveTozSettings(
 ): Promise<void> {
   const accessToken = await adminClient.getAccessToken();
   const url = endpoint(adminClient.baseUrl, adminClient.realmName!);
+  const data = {
+    forgotPasswordCustomLink: settings.forgot_password_custom_link,
+    forgotPasswordCustomText: settings.forgot_password_custom_text,
+  };
   const res = await fetchWithError(url, {
     method: "POST",
-    body: JSON.stringify(settings),
+    body: JSON.stringify(data),
     headers: {
       "Content-Type": "application/json",
       ...getAuthorizationHeaders(accessToken),
