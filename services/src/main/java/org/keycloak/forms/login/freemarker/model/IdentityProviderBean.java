@@ -235,10 +235,17 @@ public class IdentityProviderBean {
      * @return a {@link List} containing the constructed {@link IdentityProvider}s.
      */
     protected List<IdentityProvider> searchForIdentityProviders(String existingIDP) {
-        return session.identityProviders().getForLogin(IdentityProviderStorageProvider.FetchMode.REALM_ONLY, null)
-                .filter(idp -> !Objects.equals(existingIDP, idp.getAlias()))
-                .map(idp -> createIdentityProvider(this.realm, this.baseURI, idp))
-                .sorted(IDP_COMPARATOR_INSTANCE).toList();
+        // Collect results to list first to ensure all data is loaded
+        List<IdentityProviderModel> models = session.identityProviders()
+            .getForLogin(IdentityProviderStorageProvider.FetchMode.REALM_ONLY, null)
+            .collect(Collectors.toList());
+        
+        // Now process the in-memory list
+        return models.stream()
+            .filter(idp -> !Objects.equals(existingIDP, idp.getAlias()))
+            .map(idp -> createIdentityProvider(this.realm, this.baseURI, idp))
+            .sorted(IDP_COMPARATOR_INSTANCE)
+            .collect(Collectors.toList());
     }
 
     private static boolean organizationsDisabled(RealmModel realm) {

@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.keycloak.common.Profile;
@@ -224,9 +225,13 @@ public class InfinispanIdentityProviderStorageProvider implements IdentityProvid
         Set<String> cached;
 
         if (query == null) {
-            // not cached yet
+            // not cached yet - collect to list first
             Long loaded = cache.getCurrentRevision(cacheKey);
-            cached = idpDelegate.getForLogin(mode, organizationId).map(IdentityProviderModel::getInternalId).collect(Collectors.toSet());
+            List<IdentityProviderModel> idps = idpDelegate.getForLogin(mode, organizationId)
+                .collect(Collectors.toList());
+            cached = idps.stream()
+                .map(IdentityProviderModel::getInternalId)
+                .collect(Collectors.toSet());
             query = new IdentityProviderListQuery(loaded, cacheKey, getRealm(), searchKey, cached);
             cache.addRevisioned(query, startupRevision);
         } else {
@@ -235,7 +240,12 @@ public class InfinispanIdentityProviderStorageProvider implements IdentityProvid
                 // there is a cache entry, but the current search is not yet cached
                 cache.invalidateObject(cacheKey);
                 Long loaded = cache.getCurrentRevision(cacheKey);
-                cached = idpDelegate.getForLogin(mode, organizationId).map(IdentityProviderModel::getInternalId).collect(Collectors.toSet());
+                // collect to list first
+                List<IdentityProviderModel> idps = idpDelegate.getForLogin(mode, organizationId)
+                    .collect(Collectors.toList());
+                cached = idps.stream()
+                    .map(IdentityProviderModel::getInternalId)
+                    .collect(Collectors.toSet());
                 query = new IdentityProviderListQuery(loaded, cacheKey, getRealm(), searchKey, cached, query);
                 cache.addRevisioned(query, cache.getCurrentCounter());
             }
@@ -246,7 +256,10 @@ public class InfinispanIdentityProviderStorageProvider implements IdentityProvid
             IdentityProviderModel idp = session.identityProviders().getById(id);
             if (idp == null) {
                 realmCache.registerInvalidation(cacheKey);
-                return idpDelegate.getForLogin(mode, organizationId).map(this::createOrganizationAwareIdentityProviderModel);
+                // collect to list first
+                List<IdentityProviderModel> results = idpDelegate.getForLogin(mode, organizationId)
+                    .collect(Collectors.toList());
+                return results.stream().map(this::createOrganizationAwareIdentityProviderModel);
             }
             identityProviders.add(idp);
         }
