@@ -16,12 +16,14 @@
  */
 package org.keycloak.models;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.List;
 
 import org.keycloak.provider.Provider;
 
@@ -163,25 +165,30 @@ public interface IdentityProviderStorageProvider extends Provider {
      * @return a non-null stream of {@link IdentityProviderModel}s that are suitable for being displayed in the login pages.
      */
     default Stream<IdentityProviderModel> getForLogin(FetchMode mode, String organizationId) {
-        Stream<IdentityProviderModel> result = Stream.of();
+        List<IdentityProviderModel> resultList = new ArrayList<>();
+
         if (mode == FetchMode.REALM_ONLY || mode == FetchMode.ALL) {
-            // fetch all realm-only IDPs - i.e. those not associated with orgs.
             Map<String, String> searchOptions = LoginFilter.getLoginSearchOptions();
             searchOptions.put(IdentityProviderModel.ORGANIZATION_ID, null);
-            result = Stream.concat(result, getAllStream(searchOptions, null, null));
+            try (Stream<IdentityProviderModel> stream = getAllStream(searchOptions, null, null)) {
+                resultList.addAll(stream.collect(Collectors.toList()));
+            }
         }
+
         if (mode == FetchMode.ORG_ONLY || mode == FetchMode.ALL) {
-            // fetch IDPs associated with organizations.
             Map<String, String> searchOptions = LoginFilter.getLoginSearchOptions();
             if (organizationId != null) {
-                // we want the IDPs associated with a specific org.
                 searchOptions.put(IdentityProviderModel.ORGANIZATION_ID, organizationId);
             } else {
                 searchOptions.put(IdentityProviderModel.ORGANIZATION_ID_NOT_NULL, "");
             }
-            result = Stream.concat(result, getAllStream(searchOptions, null, null));
+            try (Stream<IdentityProviderModel> stream = getAllStream(searchOptions, null, null)) {
+                resultList.addAll(stream.collect(Collectors.toList()));
+            }
         }
-        return result;
+
+        // Return a safe, already-collected stream
+        return resultList.stream();
     }
 
     /**
