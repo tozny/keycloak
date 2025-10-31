@@ -293,7 +293,8 @@ public class JpaIdentityProviderStorageProvider implements IdentityProviderStora
 
         query.orderBy(builder.asc(idp.get(ALIAS)));
         TypedQuery<IdentityProviderEntity> typedQuery = em.createQuery(query.select(idp).where(predicates.toArray(Predicate[]::new)));
-        return closing(paginateQuery(typedQuery, first, max).getResultStream()).map(this::toModel);
+        List<IdentityProviderEntity> results = paginateQuery(typedQuery, first, max).getResultList();
+        return results.stream().map(this::toModel);
     }
 
     @Override
