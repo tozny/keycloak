@@ -37,6 +37,8 @@ import {
 import useIsFeatureEnabled, { Feature } from "../utils/useIsFeatureEnabled";
 import { UIRealmRepresentation } from "./RealmSettingsTabs";
 
+
+// Toz customized this file.
 type RealmSettingsGeneralTabProps = {
   realm: UIRealmRepresentation;
   save: (realm: UIRealmRepresentation) => Promise<void>;

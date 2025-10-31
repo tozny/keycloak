@@ -10,6 +10,8 @@ import { useAdminClient } from "../admin-client";
 import { useAlerts } from "@keycloak/keycloak-ui-shared";
 import { getTozSettings, saveTozSettings, TozSettings } from "../utils/TozSettings";
 
+
+// Toz added this file.
 export type UICustomSettingsRealm = RealmRepresentation;
 
 export type CustomSettingsTabProps = {

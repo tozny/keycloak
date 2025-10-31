@@ -54,6 +54,7 @@ import { SecurityDefenses } from "./security-defences/SecurityDefenses";
 import { UserProfileTab } from "./user-profile/UserProfileTab";
 import { CustomSettingsTab } from "./CustomSettingsTab";
 
+// Toz customized this file.
 export interface UIRealmRepresentation extends RealmRepresentation {
   upConfig?: UserProfileConfig;
 }
