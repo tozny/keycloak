@@ -43,6 +43,8 @@ import { CopyToClipboardButton } from "../components/copy-to-clipboard-button/Co
 import { ToznyPasswordBrokerFields } from "./ToznyPasswordBrokerFields";
 import { TozUser } from "./utils/TozUser";
 
+// Toz customized this file.
+
 export type BruteForced = {
   isBruteForceProtected?: boolean;
   isLocked?: boolean;

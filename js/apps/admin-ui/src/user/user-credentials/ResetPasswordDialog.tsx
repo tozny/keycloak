@@ -24,6 +24,7 @@ import { TozUser } from "../utils/TozUser";
 import { useRealm } from "../../context/realm-context/RealmContext";
 import { useState } from "react";
 
+// Toz customized this file.
 
 type ResetPasswordDialogProps = {
   user: UserRepresentation;

@@ -47,6 +47,8 @@ import { UserDataTableToolbarItems } from "./UserDataTableToolbarItems";
 import { NetworkError } from "@keycloak/keycloak-admin-client";
 import { TozUser } from "../../user/utils/TozUser";
 
+// Toz customized this file.
+
 export type UserFilter = {
   exact: boolean;
   userAttribute: UserAttribute[];

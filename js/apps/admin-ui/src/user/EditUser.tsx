@@ -63,6 +63,8 @@ import { isLightweightUser } from "./utils";
 import "./user-section.css";
 import { AdminEvents } from "../events/AdminEvents";
 
+// Toz customized this file.
+
 export default function EditUser() {
   const { adminClient } = useAdminClient();
 
@@ -311,13 +313,7 @@ export default function EditUser() {
             : []
         }
         dropdownItems={[
-          // <DropdownItem
-          //   key="impersonate"
-          //   isDisabled={!user.access?.impersonate}
-          //   onClick={() => toggleImpersonateDialog()}
-          // >
-          //   {t("impersonate")}
-          // </DropdownItem>,
+          // Toz removed "impersonation" option.
           <DropdownItem
             key="delete"
             isDisabled={!user.access?.manage}
@@ -407,13 +403,7 @@ export default function EditUser() {
                   <Organizations user={user} />
                 </Tab>
               )}
-              {/* <Tab
-                data-testid="user-consents-tab"
-                title={<TabTitleText>{t("consents")}</TabTitleText>}
-                {...consentsTab}
-              >
-                <UserConsents />
-              </Tab> */}
+              {/* Toz removed consents tab */}
               <Tab
                 data-testid="identity-provider-links-tab"
                 title={

@@ -22,6 +22,8 @@ import DropdownPanel from "../dropdown-panel/DropdownPanel";
 import { UserFilter } from "./UserDataTable";
 import { UserDataTableAttributeSearchForm } from "./UserDataTableAttributeSearchForm";
 
+// Toz customized this file.
+
 type UserDataTableToolbarItemsProps = {
   searchDropdownOpen: boolean;
   setSearchDropdownOpen: (open: boolean) => void;
