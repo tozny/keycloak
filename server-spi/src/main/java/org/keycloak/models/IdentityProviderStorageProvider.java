@@ -170,8 +170,11 @@ public interface IdentityProviderStorageProvider extends Provider {
         if (mode == FetchMode.REALM_ONLY || mode == FetchMode.ALL) {
             Map<String, String> searchOptions = LoginFilter.getLoginSearchOptions();
             searchOptions.put(IdentityProviderModel.ORGANIZATION_ID, null);
-            try (Stream<IdentityProviderModel> stream = getAllStream(searchOptions, null, null)) {
+            try {
+                Stream<IdentityProviderModel> stream = getAllStream(searchOptions, null, null);
                 resultList.addAll(stream.collect(Collectors.toList()));
+            } catch(Exception ex) {
+                ex.printStackTrace();
             }
         }
 
