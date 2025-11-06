@@ -174,7 +174,7 @@ public interface IdentityProviderStorageProvider extends Provider {
                 Stream<IdentityProviderModel> stream = getAllStream(searchOptions, null, null);
                 resultList.addAll(stream.collect(Collectors.toList()));
             } catch(Exception ex) {
-                ex.printStackTrace();
+                throw ex;   
             }
         }
 
