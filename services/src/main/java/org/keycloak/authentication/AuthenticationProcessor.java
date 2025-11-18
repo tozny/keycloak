@@ -616,7 +616,7 @@ public class AuthenticationProcessor {
             // Toz custom code to use encoded auth session ID
             AuthenticationSessionModel authSession = AuthenticationProcessor.this.authenticationSession;
             String note = authSession.getAuthNote("ENCODED_AUTH_SESSION_ID");
-            String authSessionNote = note == null ? getAuthenticationSession().getAuthNote("ENCODED_AUTH_SESSION_ID"): note;
+            String authSessionNote = (note == null || note.isEmpty()) ? getAuthenticationSession().getAuthNote("ENCODED_AUTH_SESSION_ID"): note;
             if (getUriInfo().getQueryParameters().containsKey(LoginActionsService.AUTH_SESSION_ID)) {
                 uriBuilder.queryParam(LoginActionsService.AUTH_SESSION_ID, authSessionNote);
             }
