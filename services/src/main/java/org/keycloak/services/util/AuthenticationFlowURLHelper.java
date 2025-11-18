@@ -91,7 +91,22 @@ public class AuthenticationFlowURLHelper {
         }
 
         String clientData = AuthenticationProcessor.getClientData(session, authSession);
-        return getLastExecutionUrl(latestFlowPath, executionId, authSession.getClient().getClientId(), authSession.getTabId(), clientData);
+        UriBuilder uriBuilder = LoginActionsService.loginActionsBaseUrl(uriInfo)
+                .path(latestFlowPath);
+
+        if (executionId != null) {
+            uriBuilder.queryParam(Constants.EXECUTION, executionId);
+        }
+        uriBuilder.queryParam(Constants.CLIENT_ID, authSession.getClient().getClientId());
+        uriBuilder.queryParam(Constants.TAB_ID, authSession.getTabId());
+        uriBuilder.queryParam(Constants.CLIENT_DATA, clientData);
+
+        String encoded = authSession.getAuthNote("ENCODED_AUTH_SESSION_ID");
+        if (encoded != null && !encoded.isEmpty()) {
+            uriBuilder.queryParam(LoginActionsService.AUTH_SESSION_ID, encoded);
+        }
+
+        return uriBuilder.build(realm.getName());
     }
 
     private String getExecutionId(AuthenticationSessionModel authSession) {

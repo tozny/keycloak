@@ -319,7 +319,7 @@ public class AuthenticationProcessor {
         // Toz custom code to use encoded auth session ID
         AuthenticationSessionModel authSession = AuthenticationProcessor.this.authenticationSession;
         String authSessionNote = authSession.getAuthNote("ENCODED_AUTH_SESSION_ID");
-        if (getUriInfo().getQueryParameters().containsKey(LoginActionsService.AUTH_SESSION_ID)) {
+        if (getUriInfo().getQueryParameters().containsKey(LoginActionsService.AUTH_SESSION_ID) || (authSessionNote != null && !authSessionNote.isEmpty())) {
             uriBuilder.queryParam(LoginActionsService.AUTH_SESSION_ID, authSessionNote);
         }
         // End Toz custom code
@@ -616,8 +616,8 @@ public class AuthenticationProcessor {
             // Toz custom code to use encoded auth session ID
             AuthenticationSessionModel authSession = AuthenticationProcessor.this.authenticationSession;
             String note = authSession.getAuthNote("ENCODED_AUTH_SESSION_ID");
-            String authSessionNote = (note == null || note.isEmpty()) ? getAuthenticationSession().getAuthNote("ENCODED_AUTH_SESSION_ID"): note;
-            if (getUriInfo().getQueryParameters().containsKey(LoginActionsService.AUTH_SESSION_ID)) {
+            String authSessionNote = (note == null || note.isEmpty()) ? getAuthenticationSession().getAuthNote("ENCODED_AUTH_SESSION_ID") : note;
+            if (getUriInfo().getQueryParameters().containsKey(LoginActionsService.AUTH_SESSION_ID) || (authSessionNote != null && !authSessionNote.isEmpty())) {
                 uriBuilder.queryParam(LoginActionsService.AUTH_SESSION_ID, authSessionNote);
             }
             // End Toz custom code
@@ -636,7 +636,7 @@ public class AuthenticationProcessor {
             // Toz custom code to use encoded auth session ID
             AuthenticationSessionModel authSession = AuthenticationProcessor.this.authenticationSession;
             String authSessionNote = authSession.getAuthNote("ENCODED_AUTH_SESSION_ID");
-            if (getUriInfo().getQueryParameters().containsKey(LoginActionsService.AUTH_SESSION_ID)) {
+            if (getUriInfo().getQueryParameters().containsKey(LoginActionsService.AUTH_SESSION_ID) || (authSessionNote != null && !authSessionNote.isEmpty())) {
                 uriBuilder.queryParam(LoginActionsService.AUTH_SESSION_ID, authSessionNote);
             }
             // End Toz custom code
@@ -655,7 +655,7 @@ public class AuthenticationProcessor {
             // Toz custom code to use encoded auth session ID
             AuthenticationSessionModel authSession = AuthenticationProcessor.this.authenticationSession;
             String authSessionNote = authSession.getAuthNote("ENCODED_AUTH_SESSION_ID");
-            if (getUriInfo().getQueryParameters().containsKey(LoginActionsService.AUTH_SESSION_ID)) {
+            if (getUriInfo().getQueryParameters().containsKey(LoginActionsService.AUTH_SESSION_ID) || (authSessionNote != null && !authSessionNote.isEmpty())) {
                 uriBuilder.queryParam(LoginActionsService.AUTH_SESSION_ID, authSessionNote);
             }
             // End Toz custom code
@@ -1012,7 +1012,16 @@ public class AuthenticationProcessor {
         authSession.setAuthenticatedUser(null);
         authSession.clearExecutionStatus();
         authSession.clearUserSessionNotes();
+        // Preserve encoded auth session notes across flow resets
+        String preservedEncoded = authSession.getAuthNote("ENCODED_AUTH_SESSION_ID");
+        String preservedEncodedHash = authSession.getAuthNote("ENCODED_AUTH_SESSION_ID_HASH");
         authSession.clearAuthNotes();
+        if (preservedEncoded != null) {
+            authSession.setAuthNote("ENCODED_AUTH_SESSION_ID", preservedEncoded);
+        }
+        if (preservedEncodedHash != null) {
+            authSession.setAuthNote("ENCODED_AUTH_SESSION_ID_HASH", preservedEncodedHash);
+        }
 
         Set<String> requiredActions = authSession.getRequiredActions();
         for (String reqAction : requiredActions) {
