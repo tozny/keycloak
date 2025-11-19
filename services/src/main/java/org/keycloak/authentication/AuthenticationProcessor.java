@@ -622,9 +622,9 @@ public class AuthenticationProcessor {
             String authSessionNote = authSession.getAuthNote("ENCODED_AUTH_SESSION_ID");
             System.out.println("Get Action Url auth session note - " + authSessionNote);
             if (getUriInfo().getQueryParameters().containsKey(LoginActionsService.AUTH_SESSION_ID)) {
-                uriBuilder.queryParam(LoginActionsService.AUTH_SESSION_ID, getAuthenticationSession().getParentSession().getId());
                 String encodedParentAuthSessionId = signAndEncodeToBase64AuthSessionId(getAuthenticationSession().getParentSession().getId());
-                authSession.setAuthNote("ENCODED_AUTH_SESSION_ID", encodedParentAuthSessionId);
+                uriBuilder.queryParam(LoginActionsService.AUTH_SESSION_ID, encodedParentAuthSessionId);
+                //authSession.setAuthNote("ENCODED_AUTH_SESSION_ID", encodedParentAuthSessionId);
             }
             // End Toz custom code
             return uriBuilder
