@@ -19,6 +19,9 @@ package org.keycloak.authentication;
 
 import org.jboss.logging.Logger;
 import org.keycloak.OAuth2Constants;
+import org.keycloak.common.util.Base64Url;
+import org.keycloak.crypto.SignatureProvider;
+import org.keycloak.crypto.SignatureSignerContext;
 import org.keycloak.http.HttpRequest;
 import org.keycloak.authentication.authenticators.browser.AbstractUsernameFormAuthenticator;
 import org.keycloak.authentication.authenticators.client.ClientAuthUtil;
@@ -71,6 +74,7 @@ import jakarta.ws.rs.core.UriInfo;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -619,10 +623,26 @@ public class AuthenticationProcessor {
             System.out.println("Get Action Url auth session note - " + authSessionNote);
             if (getUriInfo().getQueryParameters().containsKey(LoginActionsService.AUTH_SESSION_ID)) {
                 uriBuilder.queryParam(LoginActionsService.AUTH_SESSION_ID, getAuthenticationSession().getParentSession().getId());
+                String encodedParentAuthSessionId = signAndEncodeToBase64AuthSessionId(getAuthenticationSession().getParentSession().getId());
+                authSession.setAuthNote("ENCODED_AUTH_SESSION_ID", encodedParentAuthSessionId);
             }
             // End Toz custom code
             return uriBuilder
                     .build(getRealm().getName());
+        }
+
+        private String signAndEncodeToBase64AuthSessionId(String authSessionId) {
+            SignatureProvider signatureProvider = session.getProvider(SignatureProvider.class,
+                    Constants.INTERNAL_SIGNATURE_ALGORITHM);
+            SignatureSignerContext signer = signatureProvider.signer();
+            StringBuilder buffer = new StringBuilder();
+            byte[] signature = signer.sign(authSessionId.getBytes(StandardCharsets.UTF_8));
+            buffer.append(authSessionId);
+            if (signature != null) {
+                buffer.append('.');
+                buffer.append(Base64Url.encode(signature));
+            }
+            return Base64Url.encode(buffer.toString().getBytes(StandardCharsets.UTF_8));
         }
 
         @Override
