@@ -1,6 +1,7 @@
-import { fetchWithError } from "@keycloak/keycloak-admin-client";
+import { fetchWithError, NetworkError, NetworkErrorOptions } from "@keycloak/keycloak-admin-client";
 import { environment } from "../../environment";
 import RealmRepresentation from "libs/keycloak-admin-client/lib/defs/realmRepresentation";
+import { getAuthorizationHeaders } from "../../utils/getAuthorizationHeaders";
 
 export class TozUser {
 
@@ -88,7 +89,7 @@ export class TozUser {
       return [resetLink, messages.filter(String).join("\n") , wasSuccessful]
   }
 
-  async CreateUser(username: string, email: string, firstName: string, lastName: string, emailRecoveryExpirationMinutes: number | undefined, adminRecoveryExpirationMinutes: number | undefined) : Promise<[any, string, string, boolean]>{
+  async CreateUser(username: string, email: string, firstName: string, lastName: string, emailRecoveryExpirationMinutes: number | undefined, adminRecoveryExpirationMinutes: number | undefined, groups: string[]) : Promise<[any, string, string, boolean]>{
     //Custom TozID Code
     const regToken = this.realm.attributes?.["registrationToken"]
     // instantiate tozID client
@@ -96,21 +97,38 @@ export class TozUser {
     const password = await Tozny.crypto.randomKey()
     //TODO: Add Attributes and Groups
     try{
-      const toznyUser = await this.tozIDRealm.register(username, password, regToken, email, firstName, lastName)
+      const toznyUser = await this.tozIDRealm.register(username, password, regToken, email, firstName, lastName, undefined, undefined, groups)
       const [resetLink, message, sendPasswordRecoverySuccess] = await this.sendPasswordRecovery(username, "provisioning an identity", "claim_account", emailRecoveryExpirationMinutes, adminRecoveryExpirationMinutes)
       return [toznyUser, resetLink, message, sendPasswordRecoverySuccess]
     }
     catch( error: any) {
+      let returnError: NetworkErrorOptions = {response: error.response, responseData: {errorMessage:"We were unable to create an account for your user, please try again later."}}
       if (error.response !== undefined) {
         let statusCode = error.response.status
         if (statusCode == 409) {
-          error.customMessage = "Sorry, the user " + email + " already exists."
+          returnError.responseData = {errorMessage: `Sorry, the user ${email} already exists.`}
         } else if (statusCode == 401) {
-          error.customMessage = "Please provide a valid registration token"
+          returnError.responseData = {errorMessage: "Please provide a valid registration token"}
+        } else {
+          try {
+              const bodyString = await error.response.text();
+              let bodyObj: any = JSON.parse(bodyString);
+              if (typeof bodyObj === "string") {
+                bodyObj = JSON.parse(bodyObj);
+              }
+              returnError.responseData = bodyObj;
+            } catch (ex) {
+              console.log(ex);
+            }
         }
       }
-      throw error
+      throw new NetworkError("", returnError)
     }
+  }
+
+  async CreateUserWithPassword(username: string, password: string, email: string, firstName: string, lastName: string) : Promise<[any, string, string, boolean]>{
+    const regToken = this.realm.attributes?.["registrationToken"]
+    return this.tozIDRealm.register(username, password, regToken, email, firstName, lastName, undefined, undefined, [])
   }
 
   async ResetPassword(username: string, emailRecoveryExpirationMinutes: number | undefined, adminRecoveryExpirationMinutes: number | undefined){
@@ -125,4 +143,58 @@ export class TozUser {
     return ["", "Unable to send password recovery"]
 }
 
+  async getUserAccountLockStatus(userId: string | undefined, accessToken: string | undefined): Promise<Boolean | Error> {
+     const reqURL = environment.authUrl + '/realms/' + this.realm?.realm + '/user/' + userId + '/account/status'
+     try {
+        const response: any = await fetchWithError(
+            reqURL,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                ...getAuthorizationHeaders(accessToken)
+              },
+            });
+        const data = await response.json()
+        return data;
+      } catch(err : any){
+        return err
+      }
+  }
+
+  async UnlockUserAccount(userId: string | undefined, accessToken: string | undefined): Promise<Boolean | Error> {
+    const reqURL = environment.authUrl + '/realms/' + this.realm?.realm + '/user/' + userId + '/account/unlock'
+    try {
+        const response: any = await fetchWithError(
+            reqURL,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                ...getAuthorizationHeaders(accessToken)
+              },
+            })
+        return await response.json()
+      } catch(err : any){
+        return err
+      }           
+  }
+
+  async DeleteUser(userId: string | undefined, accessToken: string | undefined) {
+    const reqURL = environment.authUrl + '/realms/' + this.realm?.realm + '/user/' + userId
+    try {
+        const response: any = await fetchWithError(
+            reqURL,
+            {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+                ...getAuthorizationHeaders(accessToken)
+              },
+            })
+        return response
+    } catch(err : any){
+       return err
+    }
+  }
 }

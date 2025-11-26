@@ -24,6 +24,7 @@ import { TozUser } from "../utils/TozUser";
 import { useRealm } from "../../context/realm-context/RealmContext";
 import { useState } from "react";
 
+// Toz customized this file.
 
 type ResetPasswordDialogProps = {
   user: UserRepresentation;
@@ -47,6 +48,7 @@ export const ResetPasswordDialog = ({
   const { realmRepresentation: realm } = useRealm();
   const tozUser = new TozUser(realm!)
   const [resetLink, setResetLink] = useState<string >(passedInResetLink);
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm<ToznyPasswordBrokerFieldsForm>({
     defaultValues: {
       authentication: {
@@ -82,21 +84,27 @@ export const ResetPasswordDialog = ({
     authentication
   }: ToznyPasswordBrokerFieldsForm) => {
     try {
+      setIsLoading(true);
       const [resetLink, message] = await tozUser.ResetPassword(user.username!, authentication?.emailRecoveryExpirationMinutes, authentication?.adminRecoveryExpirationMinutes)
-      setResetLink(resetLink)
-      addAlert(
-        isResetPassword
-          ? t("resetCredentialsSuccess")
-          : t("savePasswordSuccess"),
-        AlertVariant.success,
-      );
+      if(resetLink != ""){
+        setResetLink(resetLink)
+        addAlert(
+          isResetPassword
+            ? t("resetCredentialsSuccess")
+            : t("savePasswordSuccess"),
+          AlertVariant.success,
+        );
+      } else {
+        addError(message, new Error(message))
+      }
     } catch (error) {
       addError(
         isResetPassword ? "resetPasswordError" : "savePasswordError",
         error,
       );
+    } finally {
+      setIsLoading(false);
     }
-
   };
 
   return (
@@ -124,7 +132,8 @@ export const ResetPasswordDialog = ({
                 data-testid="submit"
                 key="submit"
                 type="submit"
-                isDisabled={!isValid}
+                isDisabled={!isValid || isLoading}
+                isLoading={isLoading}
                 variant={ButtonVariant.primary}
               >
                 {t("resetPassword")}

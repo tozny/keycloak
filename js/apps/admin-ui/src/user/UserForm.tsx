@@ -41,6 +41,9 @@ import { RequiredActionMultiSelect } from "./user-credentials/RequiredActionMult
 import { useNavigate } from "react-router-dom";
 import { CopyToClipboardButton } from "../components/copy-to-clipboard-button/CopyToClipboardButton";
 import { ToznyPasswordBrokerFields } from "./ToznyPasswordBrokerFields";
+import { TozUser } from "./utils/TozUser";
+
+// Toz customized this file.
 
 export type BruteForced = {
   isBruteForceProtected?: boolean;
@@ -91,10 +94,38 @@ export const UserForm = ({
   const [open, setOpen] = useState(false);
   const [locked, setLocked] = useState(isLocked);
   const navigate = useNavigate();
+  const tozUser = new TozUser(realm!);
+  const [isAccountLocked, setIsAccountLocked] = useState(false);
 
   useEffect(() => {
     setValue("requiredActions", user?.requiredActions || []);
   }, [user, setValue]);
+
+  useEffect(() => {
+    if (!user?.id) return;
+      const checkLockStatus = async () => {
+        try {
+        const accessToken = await adminClient.getAccessToken();
+        const locked: any = await tozUser.getUserAccountLockStatus(user.id, accessToken);
+        setIsAccountLocked(locked);
+        } catch (err) {
+          setIsAccountLocked(false);
+        }
+      };
+
+    checkLockStatus();
+  }, [user?.id]);
+
+  const unLockUserAccount = async () => {
+    try {
+      const accessToken = await adminClient.getAccessToken();
+      await tozUser.UnlockUserAccount(user!.id!, accessToken);
+      addAlert(t("unlockSuccess"), AlertVariant.success);
+      setIsAccountLocked(false);
+    } catch(error){
+      addError("unlockError", error);
+    }
+  }
 
   const unLockUser = async () => {
     try {
@@ -217,11 +248,34 @@ export const UserForm = ({
             </FormGroup>
           </>
         )}
+        {user?.id && (
         <RequiredActionMultiSelect
           name="requiredActions"
           label="requiredUserActions"
           help="requiredUserActionsHelp"
         />
+        )}
+        {user?.id && isAccountLocked && (
+          <FormGroup
+            label={t("temporaryLocked")}
+            fieldId="temporaryLocked"
+            labelIcon={
+              <HelpItem
+                helpText={t("temporaryLockedHelp")}
+                fieldLabelId="temporaryLocked"
+              />
+            }
+          >
+            <Button
+              id="toz-unlock-account"
+              onClick={unLockUserAccount}
+              variant="secondary"
+              data-testid="toz-unlock-account-button"
+              >
+                Unlock Account
+            </Button>
+          </FormGroup>
+        )}
         {user?.federationLink && canViewFederationLink && (
           <FormGroup
             label={t("federationLink")}
@@ -253,7 +307,7 @@ export const UserForm = ({
                   t(key as string, params as any)) as TFunction
               }
             />
-            {!user?.id && (<ToznyPasswordBrokerFields realm={realm}/>)}
+            {!user?.id && <ToznyPasswordBrokerFields realm={realm} />}
           </>
         ) : (
           <>
@@ -290,7 +344,7 @@ export const UserForm = ({
               labelOff={t("no")}
             />
 
-            <ToznyPasswordBrokerFields realm={realm}/>
+            <ToznyPasswordBrokerFields realm={realm} />
             <TextControl name="firstName" label={t("firstName")} />
             <TextControl name="lastName" label={t("lastName")} />
           </>

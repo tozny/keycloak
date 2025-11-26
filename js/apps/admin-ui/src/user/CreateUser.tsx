@@ -24,6 +24,8 @@ import { toUser } from "./routes/User";
 import "./user-section.css";
 import { TozUser } from "./utils/TozUser";
 
+// Toz customized this file.
+
 export default function CreateUser() {
   const { adminClient } = useAdminClient();
 
@@ -58,7 +60,11 @@ export default function CreateUser() {
 
     // instantiate tozID client
     try{
-      const [toznyUser, resetLink, message, success] = await tozUser.CreateUser(username, data.email!, data.firstName!, data.lastName!, data.authentication?.emailRecoveryExpirationMinutes,data.authentication?.adminRecoveryExpirationMinutes)
+      let groups: string[] = []
+      addedGroups.map((group)=>{
+        groups.push(group.path!)
+      })
+      const [toznyUser, resetLink, message, success] = await tozUser.CreateUser(username, data.email!, data.firstName!, data.lastName!, data.authentication?.emailRecoveryExpirationMinutes,data.authentication?.adminRecoveryExpirationMinutes, groups)
       const encodedLink = encodeURIComponent(resetLink)
       if (success){
         addAlert(t("userCreated"), AlertVariant.success);
@@ -69,9 +75,13 @@ export default function CreateUser() {
       navigate(
         toUser({ id: toznyUser.config.keycloakUserId, realm: realmName, tab: "credentials" }, `reset_link=${encodedLink}`),
       );
-    } catch(err) {
-      addError("userCreateError", err);
-
+    } catch(error) {
+      if (isUserProfileError(error)) {
+        setUserProfileServerError(error, form.setError, ((key, param) =>
+          t(key as string, param as any)) as TFunction);
+      } else {
+        addError("userCreateError", error);
+      }
     };
     setLoading(false)
     //End Custom TozID Code
