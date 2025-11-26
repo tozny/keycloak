@@ -472,7 +472,8 @@ export default function ClientDetails() {
                 )}
               </Tab>
             )}
-            {!client.publicClient &&
+            {/* Tozny Update Removed publicClient condition & added openid-connect protocol condition */}
+            { client.protocol === "openid-connect" && 
               !isRealmClient(client) &&
               (hasViewClients ||
                 client.access?.configure ||
@@ -490,6 +491,7 @@ export default function ClientDetails() {
                   />
                 </Tab>
               )}
+            {/* End Tozny Update */}
             <Tab
               id="roles"
               data-testid="rolesTab"
