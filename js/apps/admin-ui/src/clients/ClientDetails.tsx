@@ -475,7 +475,7 @@ export default function ClientDetails() {
               </Tab>
             )}
             {/* Tozny Update Removed publicClient condition & added openid-connect protocol condition */}
-            { client.protocol === "openid-connect" && 
+            {client.protocol === "openid-connect" &&
               !isRealmClient(client) &&
               (hasViewClients ||
                 client.access?.configure ||
@@ -557,7 +557,6 @@ export default function ClientDetails() {
                 </RoutableTabs>
               </Tab>
             )}
-            {/* Tozny Update - Make it visible for openid-connect protocol */}
             <Tab
               id="accessControl"
               data-testid="accessControlTab"
@@ -566,6 +565,7 @@ export default function ClientDetails() {
             >
               <AccessControl />
             </Tab>
+            {/* Tozny Update - Make it visible for openid-connect protocol */}
             {client.protocol === "openid-connect" &&
               !isAdminPermissionsClient &&
               (hasManageAuthorization || hasViewAuthorization) && (
