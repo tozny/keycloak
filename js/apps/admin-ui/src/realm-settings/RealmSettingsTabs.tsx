@@ -52,7 +52,9 @@ import { ClientPoliciesTab, toClientPolicies } from "./routes/ClientPolicies";
 import { RealmSettingsTab, toRealmSettings } from "./routes/RealmSettings";
 import { SecurityDefenses } from "./security-defences/SecurityDefenses";
 import { UserProfileTab } from "./user-profile/UserProfileTab";
+import { CustomSettingsTab } from "./CustomSettingsTab";
 
+// Toz customized this file.
 export interface UIRealmRepresentation extends RealmRepresentation {
   upConfig?: UserProfileConfig;
 }
@@ -287,6 +289,7 @@ export const RealmSettingsTabs = () => {
   const clientPoliciesTab = useTab("client-policies");
   const userProfileTab = useTab("user-profile");
   const userRegistrationTab = useTab("user-registration");
+  const customSettingsTab = useTab("custom-settings");
   const { hasAccess, hasSomeAccess } = useAccess();
   const canViewOrManageEvents =
     hasAccess("view-realm") && hasSomeAccess("view-events", "manage-events");
@@ -338,6 +341,7 @@ export const RealmSettingsTabs = () => {
             <RealmSettingsGeneralTab realm={realm!} save={save} />
           </Tab>
           <Tab
+            isDisabled={true}
             title={<TabTitleText>{t("login")}</TabTitleText>}
             data-testid="rs-login-tab"
             {...loginTab}
@@ -345,6 +349,7 @@ export const RealmSettingsTabs = () => {
             <RealmSettingsLoginTab refresh={refresh} realm={realm!} />
           </Tab>
           <Tab
+            isDisabled={true}
             title={<TabTitleText>{t("email")}</TabTitleText>}
             data-testid="rs-email-tab"
             {...emailTab}
@@ -352,6 +357,7 @@ export const RealmSettingsTabs = () => {
             <RealmSettingsEmailTab realm={realm!} save={save} />
           </Tab>
           <Tab
+            isDisabled={true}
             title={<TabTitleText>{t("themes")}</TabTitleText>}
             data-testid="rs-themes-tab"
             {...themesTab}
@@ -367,6 +373,7 @@ export const RealmSettingsTabs = () => {
           </Tab>
           {canViewOrManageEvents && (
             <Tab
+              isDisabled={true}
               title={<TabTitleText>{t("events")}</TabTitleText>}
               data-testid="rs-realm-events-tab"
               {...eventsTab}
@@ -375,6 +382,7 @@ export const RealmSettingsTabs = () => {
             </Tab>
           )}
           <Tab
+            isDisabled={true}
             title={<TabTitleText>{t("localization")}</TabTitleText>}
             data-testid="rs-localization-tab"
             {...localizationTab}
@@ -447,6 +455,13 @@ export const RealmSettingsTabs = () => {
               </RoutableTabs>
             </Tab>
           )}
+          <Tab
+            title={<TabTitleText>{t("customSettings")}</TabTitleText>}
+            data-testid="rs-custom-settings-tab"
+            {...customSettingsTab}
+          >
+            <CustomSettingsTab realm={realm!} save={save} />
+          </Tab>
           <Tab
             title={<TabTitleText>{t("userProfile")}</TabTitleText>}
             data-testid="rs-user-profile-tab"

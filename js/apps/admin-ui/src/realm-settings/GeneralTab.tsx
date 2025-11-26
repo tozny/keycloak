@@ -37,6 +37,8 @@ import {
 import useIsFeatureEnabled, { Feature } from "../utils/useIsFeatureEnabled";
 import { UIRealmRepresentation } from "./RealmSettingsTabs";
 
+
+// Toz customized this file.
 type RealmSettingsGeneralTabProps = {
   realm: UIRealmRepresentation;
   save: (realm: UIRealmRepresentation) => Promise<void>;
@@ -170,6 +172,7 @@ function RealmSettingsGeneralTabForm({
               render={({ field }) => (
                 <ClipboardCopy
                   data-testid="realmName"
+                  isReadOnly={true}
                   onChange={field.onChange}
                 >
                   {field.value}
@@ -183,13 +186,22 @@ function RealmSettingsGeneralTabForm({
               />
             )}
           </FormGroup>
-          <TextControl name="displayName" label={t("displayName")} />
-          <TextControl name="displayNameHtml" label={t("htmlDisplayName")} />
+          <TextControl
+            name="displayName"
+            label={t("displayName")}
+            isDisabled={true}
+          />
+          <TextControl
+            name="displayNameHtml"
+            label={t("htmlDisplayName")}
+            isDisabled={true}
+          />
           <TextControl
             name={convertAttributeNameToForm("attributes.frontendUrl")}
             type="url"
             label={t("frontendUrl")}
             labelIcon={t("frontendUrlHelp")}
+            isDisabled={true}
           />
           <SelectControl
             name="sslRequired"
@@ -256,6 +268,13 @@ function RealmSettingsGeneralTabForm({
               value: t(`unmanagedAttributePolicy.${policy}`),
             }))}
           />
+          {/* Toz update start  */}
+          <TextControl
+            name={convertAttributeNameToForm("attributes.registrationToken")}
+            label={t("registrationToken")}
+            labelIcon={t("registrationTokenHelp")}
+          />
+          {/* Toz update end  */}
           <FormGroup
             label={t("endpoints")}
             labelIcon={
@@ -281,6 +300,12 @@ function RealmSettingsGeneralTabForm({
                     serverBaseUrl,
                   )}realms/${realmName}/protocol/saml/descriptor`}
                   title={t("samlIdentityProviderMetadata")}
+                />
+              </StackItem>
+              <StackItem>
+                <FormattedLink
+                  href={`${addTrailingSlash(serverBaseUrl)}realms/${realmName}/general/key-download`}
+                  title={t("downloadX509Certificate")}
                 />
               </StackItem>
               {isOpenid4vciEnabled && realm.verifiableCredentialsEnabled && (
