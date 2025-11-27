@@ -76,7 +76,7 @@ export const CacheFields = ({ form }: { form: UseFormReturn }): ReactElement => 
   const isPasswordCacheEnabled = useWatch({
     control: form.control,
     name: "config.passwordCacheEnabled",
-    defaultValue: [(form.getValues("config.passwordCacheTTL")?.[0] || "0") !== "0" ? "true" : "false"]
+    defaultValue: ["false"],
   });
 
   // Watch for password cache TTL value
