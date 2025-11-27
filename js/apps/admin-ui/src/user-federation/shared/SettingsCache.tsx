@@ -85,16 +85,8 @@ export const CacheFields = ({ form }: { form: UseFormReturn }): ReactElement => 
     name: "config.passwordCacheTTL",
     defaultValue: form.getValues("config.passwordCacheTTL") || ["0"],
   });
-  
-  // Add this effect to initialize passwordCacheEnabled based on passwordCacheTTL
-  React.useEffect(() => {
-    const ttl = form.getValues("config.passwordCacheTTL")?.[0] || "0";
-    const isEnabled = ttl !== "0";
-    form.setValue("config.passwordCacheEnabled", [isEnabled.toString()], {
-      shouldDirty: false,
-      shouldValidate: true
-    });
-  }, [form.watch("config.passwordCacheTTL")]);
+
+
 
   // Initialize form with default values if not set
   React.useEffect(() => {
@@ -111,16 +103,11 @@ export const CacheFields = ({ form }: { form: UseFormReturn }): ReactElement => 
     const value = (event.target as HTMLInputElement).value;
     if (value === '') {
       form.setValue("config.passwordCacheTTL", ["0"], { shouldDirty: true });
-      form.setValue("config.passwordCacheEnabled", ["false"], { shouldDirty: true });
       return;
     }
     const numValue = parseInt(value);
     if (!isNaN(numValue) && numValue >= 0) {
-      form.setValue("config.passwordCacheTTL", [numValue.toString()], { 
-        shouldDirty: true,
-        shouldValidate: true 
-      });
-      form.setValue("config.passwordCacheEnabled", [(numValue > 0).toString()], {
+      form.setValue("config.passwordCacheTTL", [numValue.toString()], {
         shouldDirty: true,
         shouldValidate: true
       });
@@ -133,7 +120,7 @@ export const CacheFields = ({ form }: { form: UseFormReturn }): ReactElement => 
       shouldDirty: true,
       shouldValidate: true
     });
-    
+
     if (!checked) {
       form.setValue("config.passwordCacheTTL", ["0"], {
         shouldDirty: true,
@@ -204,7 +191,7 @@ export const CacheFields = ({ form }: { form: UseFormReturn }): ReactElement => 
           )}
         />
       </FormGroup>
-      
+
       {/* 
         Tozny Customization: Password Cache Settings
         
@@ -214,7 +201,7 @@ export const CacheFields = ({ form }: { form: UseFormReturn }): ReactElement => 
         
         Note: This is a Tozny-specific optimization and not part of the standard Keycloak LDAP provider.
       */}
-      <FormGroup 
+      <FormGroup
         label={t("passwordCache")}
         labelIcon={
           <HelpItem
@@ -261,17 +248,17 @@ export const CacheFields = ({ form }: { form: UseFormReturn }): ReactElement => 
             isDisabled={isPasswordCacheEnabled?.[0] !== "true"}
             onPlus={() => {
               const current = parseInt(passwordCacheTTL?.[0] || "0");
-              form.setValue("config.passwordCacheTTL", [(current + 1).toString()], { 
+              form.setValue("config.passwordCacheTTL", [(current + 1).toString()], {
                 shouldDirty: true,
-                shouldValidate: true 
+                shouldValidate: true
               });
             }}
             onMinus={() => {
               const current = parseInt(passwordCacheTTL?.[0] || "0");
               if (current > 0) {
-                form.setValue("config.passwordCacheTTL", [(current - 1).toString()], { 
+                form.setValue("config.passwordCacheTTL", [(current - 1).toString()], {
                   shouldDirty: true,
-                  shouldValidate: true 
+                  shouldValidate: true
                 });
               }
             }}
@@ -305,7 +292,7 @@ export const CacheFields = ({ form }: { form: UseFormReturn }): ReactElement => 
         />
       ) : null}
       {isEqual(cachePolicyType, ["EVICT_DAILY"]) ||
-      isEqual(cachePolicyType, ["EVICT_WEEKLY"]) ? (
+        isEqual(cachePolicyType, ["EVICT_WEEKLY"]) ? (
         <>
           <FormGroup
             label={t("evictionHour")}
