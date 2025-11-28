@@ -30,20 +30,23 @@ import { usePreviewLogo } from "./realm-settings/themes/LogoContext";
 import { joinPath } from "./utils/joinPath";
 import useToggle from "./utils/useToggle";
 
-const ManageAccountDropdownItem = () => {
-  const { keycloak } = useEnvironment();
 
-  const { t } = useTranslation();
-  return (
-    <DropdownItem
-      key="manage account"
-      id="manage-account"
-      onClick={() => keycloak.accountManagement()}
-    >
-      {t("manageAccount")}
-    </DropdownItem>
-  );
-};
+
+// Tozny customization: removed ManageAccountDropdownItem
+// const ManageAccountDropdownItem = () => {
+//   const { keycloak } = useEnvironment();
+//
+//   const { t } = useTranslation();
+//   return (
+//     <DropdownItem
+//       key="manage account"
+//       id="manage-account"
+//       onClick={() => keycloak.accountManagement()}
+//     >
+//       {t("manageAccount")}
+//     </DropdownItem>
+//   );
+// };
 
 const SignOutDropdownItem = () => {
   const { keycloak } = useEnvironment();
@@ -102,7 +105,7 @@ const HelpDropdownItem = () => {
 };
 
 const kebabDropdownItems = (isMasterRealm: boolean, isManager: boolean) => [
-  <ManageAccountDropdownItem key="kebab Manage Account" />,
+  // <ManageAccountDropdownItem key="kebab Manage Account" />, // Tozny customization: removed
   <ServerInfoDropdownItem key="kebab Server Info" />,
   ...(isMasterRealm && isManager
     ? [<ClearCachesDropdownItem key="Clear Caches" />]
@@ -113,7 +116,7 @@ const kebabDropdownItems = (isMasterRealm: boolean, isManager: boolean) => [
 ];
 
 const userDropdownItems = (isMasterRealm: boolean, isManager: boolean) => [
-  <ManageAccountDropdownItem key="Manage Account" />,
+  // <ManageAccountDropdownItem key="Manage Account" />, // Tozny customization: removed
   <ServerInfoDropdownItem key="Server info" />,
   ...(isMasterRealm && isManager
     ? [<ClearCachesDropdownItem key="Clear Caches" />]
