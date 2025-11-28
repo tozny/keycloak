@@ -170,7 +170,8 @@ export function UserDataTable() {
       q: query!,
     };
 
-    const searchParam = search || searchUser || "";
+    // Tozny customization: default to * search
+    const searchParam = search || searchUser || "*";
     if (searchParam) {
       params.search = searchParam;
     }
@@ -188,7 +189,7 @@ export function UserDataTable() {
         briefRepresentation: true,
         ...params,
       });
-      
+
       // Filter out users with first name 'Sovereign'
       return users.filter(user => user.firstName !== 'Sovereign');
     } catch (error) {
