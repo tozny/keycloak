@@ -103,15 +103,15 @@ export const UserForm = ({
 
   useEffect(() => {
     if (!user?.id) return;
-      const checkLockStatus = async () => {
-        try {
+    const checkLockStatus = async () => {
+      try {
         const accessToken = await adminClient.getAccessToken();
         const locked: any = await tozUser.getUserAccountLockStatus(user.id, accessToken);
         setIsAccountLocked(locked);
-        } catch (err) {
-          setIsAccountLocked(false);
-        }
-      };
+      } catch (err) {
+        setIsAccountLocked(false);
+      }
+    };
 
     checkLockStatus();
   }, [user?.id]);
@@ -122,7 +122,7 @@ export const UserForm = ({
       await tozUser.UnlockUserAccount(user!.id!, accessToken);
       addAlert(t("unlockSuccess"), AlertVariant.success);
       setIsAccountLocked(false);
-    } catch(error){
+    } catch (error) {
       addError("unlockError", error);
     }
   }
@@ -249,11 +249,11 @@ export const UserForm = ({
           </>
         )}
         {user?.id && (
-        <RequiredActionMultiSelect
-          name="requiredActions"
-          label="requiredUserActions"
-          help="requiredUserActionsHelp"
-        />
+          <RequiredActionMultiSelect
+            name="requiredActions"
+            label="requiredUserActions"
+            help="requiredUserActionsHelp"
+          />
         )}
         {user?.id && isAccountLocked && (
           <FormGroup
@@ -271,8 +271,8 @@ export const UserForm = ({
               onClick={unLockUserAccount}
               variant="secondary"
               data-testid="toz-unlock-account-button"
-              >
-                Unlock Account
+            >
+              Unlock Account
             </Button>
           </FormGroup>
         )}
@@ -291,11 +291,13 @@ export const UserForm = ({
         )}
         {userProfileMetadata ? (
           <>
-            <DefaultSwitchControl
-              name="emailVerified"
-              label={t("emailVerified")}
-              labelIcon={t("emailVerifiedHelp")}
-            />
+            {user?.id && (
+              <DefaultSwitchControl
+                name="emailVerified"
+                label={t("emailVerified")}
+                labelIcon={t("emailVerifiedHelp")}
+              />
+            )}
             <UserProfileFields
               form={form}
               userProfileMetadata={userProfileMetadata}
@@ -336,13 +338,15 @@ export const UserForm = ({
                 },
               }}
             />
-            <SwitchControl
-              name="emailVerified"
-              label={t("emailVerified")}
-              labelIcon={t("emailVerifiedHelp")}
-              labelOn={t("yes")}
-              labelOff={t("no")}
-            />
+            {user?.id && (
+              <SwitchControl
+                name="emailVerified"
+                label={t("emailVerified")}
+                labelIcon={t("emailVerifiedHelp")}
+                labelOn={t("yes")}
+                labelOff={t("no")}
+              />
+            )}
 
             <ToznyPasswordBrokerFields realm={realm} />
             <TextControl name="firstName" label={t("firstName")} />
