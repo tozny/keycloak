@@ -291,6 +291,7 @@ export const UserForm = ({
         )}
         {userProfileMetadata ? (
           <>
+            {/* Tozny customization: start - hide email verified field for new users */}
             {user?.id && (
               <DefaultSwitchControl
                 name="emailVerified"
@@ -298,6 +299,7 @@ export const UserForm = ({
                 labelIcon={t("emailVerifiedHelp")}
               />
             )}
+            {/* Tozny customization: end */}
             <UserProfileFields
               form={form}
               userProfileMetadata={userProfileMetadata}
@@ -338,6 +340,7 @@ export const UserForm = ({
                 },
               }}
             />
+            {/* Tozny customization: start - hide email verified field for new users */}
             {user?.id && (
               <SwitchControl
                 name="emailVerified"
@@ -347,6 +350,7 @@ export const UserForm = ({
                 labelOff={t("no")}
               />
             )}
+            {/* Tozny customization: end */}
 
             <ToznyPasswordBrokerFields realm={realm} />
             <TextControl name="firstName" label={t("firstName")} />
