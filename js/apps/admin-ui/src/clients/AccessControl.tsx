@@ -11,7 +11,7 @@ import {
   Switch,
   AlertVariant,
 } from "@patternfly/react-core";
-import { useAlerts, useFetch } from "@keycloak/keycloak-ui-shared";
+import { HelpItem, useAlerts, useFetch } from "@keycloak/keycloak-ui-shared";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAdminClient } from "../admin-client";
@@ -273,6 +273,9 @@ export const AccessControl = () => {
             <FormGroup
               label={t("accessControlEnabled")}
               fieldId="access-control-enabled"
+              labelIcon={ 
+                          <HelpItem helpText={t("accessControlEnabledHelp")} fieldLabelId="access-control-enabled"/>
+                        }
             >
               <Switch
                 id="access-control-enabled"
@@ -297,7 +300,12 @@ export const AccessControl = () => {
           </StackItem>
 
           <StackItem>
-            <FormGroup label={t("allowedGroups")} fieldId="allowed-groups">
+            <FormGroup label={t("allowedGroups")} 
+              fieldId="allowed-groups"
+              labelIcon={ 
+                          <HelpItem helpText={t("allowedGroupsHelp")} fieldLabelId="allowed-groups"/>
+                        }
+            >
               {isGroupPickerOpen && (
                 <GroupPickerDialog
                   type="selectMany"
