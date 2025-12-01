@@ -40,7 +40,7 @@ import { SearchType } from "../../user/details/SearchFilter";
 import { toAddUser } from "../../user/routes/AddUser";
 import { toImportUsers } from "../../user/routes/ImportUsers";
 import { toUser } from "../../user/routes/User";
-import { emptyFormatter } from "../../util";
+import { emailRegexPattern, emptyFormatter } from "../../util";
 import { useConfirmDialog } from "../confirm-dialog/ConfirmDialog";
 import { BruteUser, findUsers } from "../role-mapping/resource";
 import { UserDataTableToolbarItems } from "./UserDataTableToolbarItems";
@@ -170,7 +170,8 @@ export function UserDataTable() {
       q: query!,
     };
 
-    const searchParam = search || searchUser || "";
+    // Tozny customization: default to * search
+    const searchParam = search || searchUser || "*";
     if (searchParam) {
       params.search = searchParam;
     }
@@ -188,9 +189,10 @@ export function UserDataTable() {
         briefRepresentation: true,
         ...params,
       });
-      
+
       // Filter out users with first name 'Sovereign'
-      return users.filter(user => user.firstName !== 'Sovereign');
+      // Tozny customization: also filter by username if it matches email regex
+      return users.filter(user => user.firstName !== 'Sovereign' && !emailRegexPattern.test(user.username!));
     } catch (error) {
       if (uiRealmInfo.userProfileProvidersEnabled) {
         addError("noUsersFoundErrorStorage", error);
