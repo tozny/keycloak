@@ -3,6 +3,8 @@ import type PolicyRepresentation from "@keycloak/keycloak-admin-client/lib/defs/
 import type ResourceRepresentation from "@keycloak/keycloak-admin-client/lib/defs/resourceRepresentation";
 import {
   Button,
+  Chip,
+  ChipGroup,
   Form,
   FormGroup,
   PageSection,
@@ -39,12 +41,13 @@ export const AccessControl = () => {
   const [uPolicy, setUPolicy] = useState<PolicyRepresentation | undefined>();
   const [gPolicy, setGPolicy] = useState<PolicyRepresentation | undefined>();
   const [permission, setPermission] = useState<PolicyRepresentation | undefined>();
+  const [dPolicy, setDPolicy] = useState<PolicyRepresentation | undefined>();
   const [isGroupPickerOpen, setGroupPickerOpen] = useState(false);
 
   const form = useForm<{ accessControlUsers: string[] }>({
     defaultValues: { accessControlUsers: [] },
   });
-  const { setValue, getValues } = form;
+  const { setValue, getValues, reset } = form;
 
   const toggleGroupPicker = useCallback(
     () => setGroupPickerOpen((v) => !v),
@@ -58,6 +61,7 @@ export const AccessControl = () => {
   const permName = "__ToznyInternalAuthzMap";
   const gPolicyName = "__ToznyInternalGroupPolicy";
   const uPolicyName = "__ToznyInternalUserPolicy";
+  const dPolicyName = "__ToznyInternalDenyPolicy";
 
   // Helpers
   const arraysEqualUnordered = (a: string[], b: string[]) => {
@@ -115,6 +119,16 @@ export const AccessControl = () => {
     groups,
   } as unknown as PolicyRepresentation);
 
+  const buildDenyPolicy = (): PolicyRepresentation => ({
+    name: dPolicyName,
+    type: "static" as any,
+    logic: "POSITIVE",
+    decisionStrategy: "UNANIMOUS",
+    // Keycloak stores extra fields under config for some policy types; allowOrDeny is used by static policy
+    allowOrDeny: "deny" as any,
+    config: { allowOrDeny: "deny" } as any,
+  } as unknown as PolicyRepresentation);
+
   const saveOrUpdatePolicy = async (
     existing: PolicyRepresentation | undefined,
     payload: PolicyRepresentation | undefined,
@@ -159,11 +173,12 @@ export const AccessControl = () => {
   useFetch(
     async () => {
       // Discover existing UMA artifacts by fixed names
-      const [res, perm, up, gp] = await Promise.all([
+      const [res, perm, up, gp, dp] = await Promise.all([
         findResourceByName(rsrcName),
         findPermissionByName(permName),
         findPolicyByName(uPolicyName),
         findPolicyByName(gPolicyName),
+        findPolicyByName(dPolicyName),
       ]);
 
       let selectedUserIds: string[] = [];
@@ -186,18 +201,21 @@ export const AccessControl = () => {
         perm,
         up,
         gp,
-        enabled: !!(res && perm),
+        dp,
+        enabled: !!(res && perm && dp),
         users: selectedUserIds,
         groups: selectedGroups,
       };
     },
-    ({ res, perm, up, gp, enabled, users, groups }) => {
+    ({ res, perm, up, gp, dp, enabled, users, groups }) => {
       setResource(res);
       setPermission(perm);
       setUPolicy(up as PolicyRepresentation | undefined);
       setGPolicy(gp as PolicyRepresentation | undefined);
+      setDPolicy(dp as PolicyRepresentation | undefined);
       setEnabled(enabled);
-      setValue("accessControlUsers", users, { shouldDirty: false });
+      // Populate form with fetched users so UserSelect can render chips
+      reset({ accessControlUsers: users });
       setGroupIds(groups.map((g) => g.id!));
       setSelectedGroups(groups);
       setLoading(false);
@@ -222,6 +240,7 @@ export const AccessControl = () => {
       // Determine next policy payloads
       const nextUPolicy = desiredUserIds.length > 0 ? buildUserPolicy(desiredUserIds) : undefined;
       const nextGPolicy = desiredGroupEntries.length > 0 ? buildGroupPolicy(desiredGroupEntries) : undefined;
+      const nextDPolicy = enabled ? buildDenyPolicy() : undefined;
 
       // Short-circuit: if disabled, delete all UMA artifacts
       if (!enabled) {
@@ -237,6 +256,10 @@ export const AccessControl = () => {
           await adminClient.clients.delPolicy({ id: clientId, policyId: gPolicy.id });
           setGPolicy(undefined);
         }
+        if (dPolicy?.id) {
+          await adminClient.clients.delPolicy({ id: clientId, policyId: dPolicy.id });
+          setDPolicy(undefined);
+        }
         if (resource?._id) {
           await adminClient.clients.delResource({ id: clientId, resourceId: resource._id });
           setResource(undefined);
@@ -246,13 +269,15 @@ export const AccessControl = () => {
       }
 
       // Save/update policies
+      const savedDPolicy = await saveOrUpdatePolicy(dPolicy, nextDPolicy);
       const savedUPolicy = await saveOrUpdatePolicy(uPolicy, nextUPolicy);
       const savedGPolicy = await saveOrUpdatePolicy(gPolicy, nextGPolicy);
+      setDPolicy(savedDPolicy);
       setUPolicy(savedUPolicy);
       setGPolicy(savedGPolicy);
 
       // Update permission mapping with present policies
-      const policyIds = [savedUPolicy?.id, savedGPolicy?.id].filter(Boolean) as string[];
+      const policyIds = [savedDPolicy?.id, savedUPolicy?.id, savedGPolicy?.id].filter(Boolean) as string[];
       if (!res) throw new Error("Resource missing after creation");
       const updatedPerm = await createOrUpdatePermission(res, policyIds, permission);
       setPermission(updatedPerm);
@@ -289,14 +314,16 @@ export const AccessControl = () => {
           </StackItem>
 
           <StackItem>
-            <FormProvider {...form}>
-              <UserSelect
-                name="accessControlUsers"
-                label="allowedUsers"
-                helpText="allowedUsersHelp"
-                defaultValue={[]}
-              />
-            </FormProvider>
+            {!loading && (
+              <FormProvider {...form}>
+                <UserSelect
+                  name="accessControlUsers"
+                  label="allowedUsers"
+                  helpText="allowedUsersHelp"
+                  defaultValue={[]}
+                />
+              </FormProvider>
+            )}
           </StackItem>
 
           <StackItem>
@@ -306,6 +333,22 @@ export const AccessControl = () => {
                           <HelpItem helpText={t("allowedGroupsHelp")} fieldLabelId="allowed-groups"/>
                         }
             >
+              {!!selectedGroups.length && (
+                <ChipGroup aria-label="Selected groups">
+                  {selectedGroups.map((g) => (
+                    <Chip
+                      key={g.id}
+                      onClick={(ev) => {
+                        ev.stopPropagation();
+                        setSelectedGroups((prev) => prev.filter((sg) => sg.id !== g.id));
+                        setGroupIds((prev) => prev.filter((id) => id !== g.id));
+                      }}
+                    >
+                      {g.name}
+                    </Chip>
+                  ))}
+                </ChipGroup>
+              )}
               {isGroupPickerOpen && (
                 <GroupPickerDialog
                   type="selectMany"
