@@ -202,7 +202,7 @@ export const AccessControl = () => {
         up,
         gp,
         dp,
-        enabled: !!(res && perm && dp),
+        enabled: !res && !perm && !dp ? true : !!(res && perm && dp),
         users: selectedUserIds,
         groups: selectedGroups,
       };
