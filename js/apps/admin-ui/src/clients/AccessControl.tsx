@@ -116,7 +116,6 @@ export const AccessControl = () => {
     decisionStrategy: "UNANIMOUS",
     // Keycloak stores extra fields under config for some policy types; allowOrDeny is used by static policy
     allowOrDeny: "deny" as any,
-    config: { allowOrDeny: "deny" } as any,
   } as unknown as PolicyRepresentation);
 
   const saveOrUpdatePolicy = async (
