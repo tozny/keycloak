@@ -27,7 +27,7 @@ export const AccessControl = () => {
   const { t } = useTranslation();
   const { addAlert, addError } = useAlerts();
   const { adminClient } = useAdminClient();
-  const { clientId } = useParams<ClientParams>();
+  const { clientId, tab } = useParams<ClientParams>();
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -62,16 +62,6 @@ export const AccessControl = () => {
   const gPolicyName = "__ToznyInternalGroupPolicy";
   const uPolicyName = "__ToznyInternalUserPolicy";
   const dPolicyName = "__ToznyInternalDenyPolicy";
-
-  // Helpers
-  const arraysEqualUnordered = (a: string[], b: string[]) => {
-    if (!a && !b) return true;
-    if (!a || !b) return false;
-    if (a.length !== b.length) return false;
-    const setA = new Set(a);
-    for (const x of b) if (!setA.has(x)) return false;
-    return true;
-  };
 
   const findResourceByName = async (name: string) => {
     const list = await adminClient.clients.listResources({ id: clientId, name });
@@ -220,7 +210,7 @@ export const AccessControl = () => {
       setSelectedGroups(groups);
       setLoading(false);
     },
-    [],
+    [clientId, tab],
   );
 
   const onSave = async () => {
