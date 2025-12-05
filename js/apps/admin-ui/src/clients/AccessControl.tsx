@@ -14,7 +14,7 @@ import {
   AlertVariant,
 } from "@patternfly/react-core";
 import { HelpItem, useAlerts, useFetch } from "@keycloak/keycloak-ui-shared";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAdminClient } from "../admin-client";
 import { useParams } from "../utils/useParams";
@@ -43,6 +43,15 @@ export const AccessControl = () => {
   const [permission, setPermission] = useState<PolicyRepresentation | undefined>();
   const [dPolicy, setDPolicy] = useState<PolicyRepresentation | undefined>();
   const [isGroupPickerOpen, setGroupPickerOpen] = useState(false);
+
+  // Only refetch when this tab is active or client changes
+  const isActive = tab === "accessControl";
+  const [refreshKey, setRefreshKey] = useState(0);
+  useEffect(() => {
+    if (isActive) {
+      setRefreshKey((k) => k + 1);
+    }
+  }, [isActive, clientId]);
 
   const form = useForm<{ accessControlUsers: string[] }>({
     defaultValues: { accessControlUsers: [] },
@@ -209,7 +218,7 @@ export const AccessControl = () => {
       setSelectedGroups(groups);
       setLoading(false);
     },
-    [clientId, tab],
+    [refreshKey],
   );
 
   const onSave = async () => {
