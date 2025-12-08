@@ -182,14 +182,39 @@ export const AccessControl = () => {
       let selectedUserIds: string[] = [];
       let selectedGroups: GroupRepresentation[] = [];
       if (up) {
-        // @ts-ignore users property present for user policies
-        selectedUserIds = (up.users as string[]) || [];
+        // Prefer top-level users; fallback to config.users JSON string
+        const topLevelUsers = (up as any).users as string[] | undefined;
+        if (Array.isArray(topLevelUsers)) {
+          selectedUserIds = topLevelUsers;
+        } else {
+          try {
+            const cfgUsers = (up as any).config?.users as string | undefined;
+            selectedUserIds = cfgUsers ? (JSON.parse(cfgUsers) as string[]) : [];
+          } catch {
+            selectedUserIds = [];
+          }
+        }
       }
       if (gp) {
-        // groups are stored as array of {id, extendChildren}
-        const groupEntries = (gp as any).groups || [];
+        // Prefer top-level groups; fallback to config.groups JSON string
+        let groupEntries: { id: string; extendChildren?: boolean }[] = [];
+        const topLevelGroups = (gp as any).groups as
+          | { id: string; extendChildren?: boolean }[]
+          | undefined;
+        if (Array.isArray(topLevelGroups)) {
+          groupEntries = topLevelGroups;
+        } else {
+          try {
+            const cfgGroups = (gp as any).config?.groups as string | undefined;
+            groupEntries = cfgGroups
+              ? (JSON.parse(cfgGroups) as { id: string; extendChildren?: boolean }[])
+              : [];
+          } catch {
+            groupEntries = [];
+          }
+        }
         const groups = await Promise.all(
-          groupEntries.map((g: { id: string }) => adminClient.groups.findOne({ id: g.id })),
+          groupEntries.map((g) => adminClient.groups.findOne({ id: g.id })),
         );
         selectedGroups = groups.filter(Boolean) as GroupRepresentation[];
       }
