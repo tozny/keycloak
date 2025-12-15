@@ -208,17 +208,10 @@ export function UserDataTable() {
       return users.filter(user => {
         // Skip current user
         if (currentUser && user.username === currentUser) return false;
-        
-        // Skip Sovereign users
-        if (user.firstName === 'Sovereign') return false;
-        
-        // Skip email-pattern usernames
-        if (emailRegexPattern.test(user.username || '')) return false;
-        
-        return true;
+           return true;
       });
     } catch (error) {
-      if (uiRealmInfo.userProfileProvidersEnabled) {
+      if (uiRealmInfo.userProfileProvidersEnabled) {  
         addError("noUsersFoundErrorStorage", error);
       } else {
         addError("noUsersFoundError", error);
