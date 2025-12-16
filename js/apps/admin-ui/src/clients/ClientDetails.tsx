@@ -50,6 +50,7 @@ import useToggle from "../utils/useToggle";
 import { AdvancedTab } from "./AdvancedTab";
 import { ClientSessions } from "./ClientSessions";
 import { ClientSettings } from "./ClientSettings";
+import { AccessControl } from "./AccessControl";
 import { AuthorizationEvaluate } from "./authorization/AuthorizationEvaluate";
 import { AuthorizationExport } from "./authorization/AuthorizationExport";
 import { AuthorizationPermissions } from "./authorization/Permissions";
@@ -243,6 +244,7 @@ export default function ClientDetails() {
   const credentialsTab = useRoutableTab(tab("credentials"));
   const rolesTab = useRoutableTab(tab("roles"));
   const clientScopesTab = useRoutableTab(tab("clientScopes"));
+  const accessControlTab = useRoutableTab(tab("accessControl"));
   const authorizationTab = useRoutableTab(tab("authorization"));
   const serviceAccountTab = useRoutableTab(tab("serviceAccount"));
   const sessionsTab = useRoutableTab(tab("sessions"));
@@ -473,7 +475,7 @@ export default function ClientDetails() {
               </Tab>
             )}
             {/* Tozny Update Removed publicClient condition & added openid-connect protocol condition */}
-            { client.protocol === "openid-connect" && 
+            {client.protocol === "openid-connect" &&
               !isRealmClient(client) &&
               (hasViewClients ||
                 client.access?.configure ||
@@ -555,6 +557,14 @@ export default function ClientDetails() {
                 </RoutableTabs>
               </Tab>
             )}
+            <Tab
+              id="accessControl"
+              data-testid="accessControlTab"
+              title={<TabTitleText>{t("accessControl")}</TabTitleText>}
+              {...accessControlTab}
+            >
+              <AccessControl />
+            </Tab>
             {/* Tozny Update - Make it visible for openid-connect protocol */}
             {client.protocol === "openid-connect" &&
               !isAdminPermissionsClient &&
