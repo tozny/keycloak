@@ -29,7 +29,7 @@ import {
   WarningTriangleIcon,
 } from "@patternfly/react-icons";
 import type { IRowData } from "@patternfly/react-table";
-import { JSX, useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import { useAdminClient } from "../../admin-client";
@@ -135,10 +135,24 @@ export function UserDataTable() {
   });
   const [profile, setProfile] = useState<UserProfileConfig>({});
   const [query, setQuery] = useState("");
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
 
   const [key, setKey] = useState(0);
   const refresh = () => setKey(key + 1);
   const tozUser = new TozUser(realm!);
+
+  // Fetch current user info
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      try {
+        const userInfo = await adminClient.users.getProfile();
+        setCurrentUser(userInfo.username || null);
+      } catch (error) {
+        console.error("Failed to fetch current user", error);
+      }
+    };
+    getCurrentUser();
+  }, [adminClient]);
 
   useFetch(
     async () => {
@@ -186,15 +200,18 @@ export function UserDataTable() {
 
     try {
       const users = await findUsers(adminClient, {
-        briefRepresentation: true,
+        briefRepresentation: false, // Need full user details
         ...params,
       });
 
-      // Filter out users with first name 'Sovereign'
-      // Tozny customization: also filter by username if it matches email regex
-      return users.filter(user => user.firstName !== 'Sovereign' && !emailRegexPattern.test(user.username!));
+      // Filter users
+      return users.filter(user => {
+        // Skip current user
+        if (currentUser && user.username === currentUser) return false;
+           return true;
+      });
     } catch (error) {
-      if (uiRealmInfo.userProfileProvidersEnabled) {
+      if (uiRealmInfo.userProfileProvidersEnabled) {  
         addError("noUsersFoundErrorStorage", error);
       } else {
         addError("noUsersFoundError", error);
