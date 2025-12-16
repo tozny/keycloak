@@ -29,13 +29,14 @@ import {
   WarningTriangleIcon,
 } from "@patternfly/react-icons";
 import type { IRowData } from "@patternfly/react-table";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import { useAdminClient } from "../../admin-client";
 import { fetchRealmInfo } from "../../context/auth/admin-ui-endpoint";
 import { UiRealmInfo } from "../../context/auth/uiRealmInfo";
 import { useRealm } from "../../context/realm-context/RealmContext";
+import { useWhoAmI } from "../../context/whoami/WhoAmI";
 import { SearchType } from "../../user/details/SearchFilter";
 import { toAddUser } from "../../user/routes/AddUser";
 import { toImportUsers } from "../../user/routes/ImportUsers";
@@ -123,6 +124,7 @@ export function UserDataTable() {
   const { t } = useTranslation();
   const { addAlert, addError } = useAlerts();
   const { realm: realmName, realmRepresentation: realm } = useRealm();
+  const { whoAmI } = useWhoAmI();
   const navigate = useNavigate();
   const [uiRealmInfo, setUiRealmInfo] = useState<UiRealmInfo>({});
   const [searchUser, setSearchUser] = useState("");
@@ -135,24 +137,10 @@ export function UserDataTable() {
   });
   const [profile, setProfile] = useState<UserProfileConfig>({});
   const [query, setQuery] = useState("");
-  const [currentUser, setCurrentUser] = useState<string | null>(null);
 
   const [key, setKey] = useState(0);
   const refresh = () => setKey(key + 1);
   const tozUser = new TozUser(realm!);
-
-  // Fetch current user info
-  useEffect(() => {
-    const getCurrentUser = async () => {
-      try {
-        const userInfo = await adminClient.users.getProfile();
-        setCurrentUser(userInfo.username || null);
-      } catch (error) {
-        console.error("Failed to fetch current user", error);
-      }
-    };
-    getCurrentUser();
-  }, [adminClient]);
 
   useFetch(
     async () => {
@@ -206,8 +194,9 @@ export function UserDataTable() {
 
       // Filter users
       return users.filter(user => {
-        // Skip current user
-        if (currentUser && user.username === currentUser) return false;
+        // Skip current user (compare by user ID via WhoAmI)
+        const meId = whoAmI.getUserId();
+        if (meId && user.id === meId) return false;
            return true;
       });
     } catch (error) {
