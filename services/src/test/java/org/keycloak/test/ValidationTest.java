@@ -40,6 +40,12 @@ public class ValidationTest {
         Assert.assertFalse(Validation.isEmailValid("abc@.foo"));
         Assert.assertFalse(Validation.isEmailValid("abc@foo."));
         Assert.assertFalse(Validation.isEmailValid("abc@foo..bar"));
+
+        Assert.assertTrue(Validation.isEmailValid("사용자@예제.com"));
+        Assert.assertTrue(Validation.isEmailValid("user사용자@example.com"));
+        Assert.assertTrue(Validation.isEmailValid("한글@도메인.kr"));
+        Assert.assertTrue(Validation.isEmailValid("test한글@example.com"));
+        Assert.assertTrue(Validation.isEmailValid("user123@한글도메인.com"));
     }
     
     @Test

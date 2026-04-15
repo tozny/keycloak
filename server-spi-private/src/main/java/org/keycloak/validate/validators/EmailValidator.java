@@ -40,7 +40,11 @@ public class EmailValidator extends AbstractStringValidator implements Configure
     public static final String MESSAGE_INVALID_EMAIL = "error-invalid-email";
 
     // Actually allow same emails like angular. See ValidationTest.testEmailValidation()
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("[a-zA-Z0-9!#$%&'*+/=?^_`{|}~.-]+@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*");
+    // private static final Pattern EMAIL_PATTERN = Pattern.compile("[a-zA-Z0-9!#$%&'*+/=?^_`{|}~.-]+@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*");
+
+    // Allow existing ASCII characters plus Korean characters in email local part
+    // Korean Unicode range: \uAC00-\uD7AF (Hangul syllables), \u1100-\u11FF (Hangul Jamo), \u3130-\u318F (Hangul Compatibility Jamo)
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("[a-zA-Z0-9\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F!#$%&'*+/=?^_`{|}~.-]+@[a-zA-Z0-9\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F-]+(\\.[a-zA-Z0-9\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F-]+)*");
 
     @Override
     public String getId() {
