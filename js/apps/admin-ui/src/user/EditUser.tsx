@@ -150,7 +150,7 @@ export default function EditUser() {
             },
           );
         } catch {
-          // Non-critical: proceed with load even if eviction fails
+          addAlert(t("userCacheEvictionFailed"), AlertVariant.warning);
         }
       }
       return Promise.all([
