@@ -173,7 +173,7 @@
         <mssql.version>2022</mssql.version>
         <mssql.container>mcr.microsoft.com/mssql/server:${mssql.version}-latest</mssql.container>
         <!-- this is the mssql driver version also used in the Quarkus BOM -->
-        <mssql-jdbc.version>12.8.2.jre11</mssql-jdbc.version>
+        <mssql-jdbc.version>12.10.2.jre11</mssql-jdbc.version>
         <oracledb.version>23.5</oracledb.version>
         <oracledb.container>mirror.gcr.io/gvenzl/oracle-free:${oracledb.version}-slim-faststart</oracledb.container>
         <!-- this is the oracle driver version also used in the Quarkus BOM -->
@@ -334,7 +334,7 @@
                 <artifactId>postgresql</artifactId>
                 <version>${postgresql-jdbc.version}</version>
             </dependency>
-            <!-- Override quarkus-bom mssql-jdbc 12.8.1 for CVE-2025-59250 -->
+            <!-- Override quarkus-bom mssql-jdbc for CVE-2025-59250 -->
             <dependency>
                 <groupId>com.microsoft.sqlserver</groupId>
                 <artifactId>mssql-jdbc</artifactId>
