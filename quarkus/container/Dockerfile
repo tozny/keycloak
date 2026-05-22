@@ -16,16 +16,20 @@ RUN (cd /tmp/keycloak && \
 RUN mv /tmp/keycloak/keycloak-* /opt/keycloak && mkdir -p /opt/keycloak/data
 RUN chmod -R g+rwX /opt/keycloak
 
-ADD ubi-null.sh /tmp/
-RUN bash /tmp/ubi-null.sh java-21-openjdk-headless glibc-langpack-en findutils
+ADD install-temurin-jre.sh ubi-null.sh /tmp/
+RUN bash /tmp/install-temurin-jre.sh
+RUN bash /tmp/ubi-null.sh glibc-langpack-en findutils
 
 FROM registry.access.redhat.com/ubi9-micro
 ENV LANG en_US.UTF-8
+ENV JAVA_HOME=/opt/java
+ENV PATH="/opt/java/bin:${PATH}"
 
 # Flag for determining app is running in container
 ENV KC_RUN_IN_CONTAINER true
 
 COPY --from=ubi-micro-build /tmp/null/rootfs/ /
+COPY --from=ubi-micro-build /opt/java /opt/java
 COPY --from=ubi-micro-build --chown=1000:0 /opt/keycloak /opt/keycloak
 
 RUN echo "keycloak:x:0:root" >> /etc/group && \

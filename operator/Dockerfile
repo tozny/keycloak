@@ -1,12 +1,16 @@
 FROM registry.access.redhat.com/ubi9 AS ubi-micro-build
 
-ADD target/ubi-null.sh /tmp/
-RUN bash /tmp/ubi-null.sh java-21-openjdk-headless glibc-langpack-en
+ADD target/install-temurin-jre.sh target/ubi-null.sh /tmp/
+RUN bash /tmp/install-temurin-jre.sh
+RUN bash /tmp/ubi-null.sh glibc-langpack-en
 
 FROM registry.access.redhat.com/ubi9-micro
 ENV LANG en_US.UTF-8
+ENV JAVA_HOME=/opt/java
+ENV PATH="/opt/java/bin:${PATH}"
 
 COPY --from=ubi-micro-build /tmp/null/rootfs/ /
+COPY --from=ubi-micro-build /opt/java /opt/java
 
 ADD --chown=1000:0 target/quarkus-app/ /opt/keycloak
 

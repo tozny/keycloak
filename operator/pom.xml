@@ -210,6 +210,7 @@
                                     <directory>${basedir}/../quarkus/container/</directory>
                                     <includes>
                                         <include>**/ubi-null.sh</include>
+                                        <include>**/install-temurin-jre.sh</include>
                                     </includes>
                                 </resource>
                             </resources>

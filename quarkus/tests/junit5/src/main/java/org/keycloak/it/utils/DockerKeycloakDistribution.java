@@ -57,6 +57,7 @@ public final class DockerKeycloakDistribution implements KeycloakDistribution {
     private String stderr = "";
     private BackupConsumer backupConsumer = new BackupConsumer();
     private final File dockerScriptFile = new File("../../container/ubi-null.sh");
+    private final File installTemurinScriptFile = new File("../../container/install-temurin-jre.sh");
 
     private GenericContainer<?> keycloakContainer = null;
     private String containerId = null;
@@ -93,6 +94,7 @@ public final class DockerKeycloakDistribution implements KeycloakDistribution {
         if (dockerFile.exists()) {
             image = new ImageFromDockerfile("keycloak-under-test", false)
                     .withFileFromFile("keycloak.tar.gz", distributionFile)
+                    .withFileFromFile("install-temurin-jre.sh", installTemurinScriptFile)
                     .withFileFromFile("ubi-null.sh", dockerScriptFile)
                     .withFileFromFile("Dockerfile", dockerFile)
                     .withBuildArg("KEYCLOAK_DIST", "keycloak.tar.gz");
