@@ -20,6 +20,11 @@ export interface ClientRepresentation {
   logoUri: string;
   policyUri: string;
   tosUri: string;
+  /** KC 19 Applications columns, filled by Tozny /applications enrichment. */
+  availableRoles?: string[];
+  grantedPermissions?: string[];
+  additionalGrants?: string[];
+  canRevoke?: boolean;
 }
 
 export interface ConsentRepresentation {

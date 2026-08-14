@@ -40,6 +40,13 @@ type Application = ClientRepresentation & {
   open: boolean;
 };
 
+function joinList(items: string[] | undefined) {
+  if (!items || items.length === 0) {
+    return null;
+  }
+  return items.join(", ");
+}
+
 export const Applications = () => {
   const { t } = useTranslation();
   const context = useEnvironment();
@@ -208,6 +215,30 @@ export const Applications = () => {
                     </DescriptionListDescription>
                   </DescriptionListGroup>
                 )}
+                <DescriptionListGroup>
+                  <DescriptionListTerm>
+                    {t("availableRoles")}
+                  </DescriptionListTerm>
+                  <DescriptionListDescription>
+                    {joinList(application.availableRoles) || "—"}
+                  </DescriptionListDescription>
+                </DescriptionListGroup>
+                <DescriptionListGroup>
+                  <DescriptionListTerm>
+                    {t("grantedPermissions")}
+                  </DescriptionListTerm>
+                  <DescriptionListDescription>
+                    {joinList(application.grantedPermissions) || "—"}
+                  </DescriptionListDescription>
+                </DescriptionListGroup>
+                <DescriptionListGroup>
+                  <DescriptionListTerm>
+                    {t("additionalGrants")}
+                  </DescriptionListTerm>
+                  <DescriptionListDescription>
+                    {joinList(application.additionalGrants) || "—"}
+                  </DescriptionListDescription>
+                </DescriptionListGroup>
                 {application.consent && (
                   <>
                     <DescriptionListGroup>
@@ -259,7 +290,9 @@ export const Applications = () => {
                   </>
                 )}
               </DescriptionList>
-              {(application.consent || application.offlineAccess) && (
+              {(application.canRevoke ||
+                application.consent ||
+                application.offlineAccess) && (
                 <Grid hasGutter>
                   <hr />
                   <GridItem>
