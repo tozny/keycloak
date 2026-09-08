@@ -1061,9 +1061,15 @@ public class AuthenticationManager {
         uriBuilder.queryParam(Constants.TAB_ID, authSession.getTabId());
         uriBuilder.queryParam(Constants.CLIENT_DATA, AuthenticationProcessor.getClientData(session, authSession));
 
+        // Tozny: upstream signs auth_session_id in AuthenticationProcessor#getSignedAuthSessionId
+        // (keycloak/keycloak#36861) but missed this call site. SessionCodeChecks resolves the
+        // param via getAuthenticationSessionByEncodedIdAndClient, which verifies the signature,
+        // so an unsigned id is rejected with INVALID_CODE. Required for the Tozny portal flow,
+        // which carries the auth session on the query param instead of the cookie.
         if (uriInfo.getQueryParameters().containsKey(LoginActionsService.AUTH_SESSION_ID)) {
-            uriBuilder.queryParam(LoginActionsService.AUTH_SESSION_ID, authSession.getParentSession().getId());
-
+            uriBuilder.queryParam(LoginActionsService.AUTH_SESSION_ID,
+                    new AuthenticationSessionManager(session)
+                            .signAndEncodeToBase64AuthSessionId(authSession.getParentSession().getId()));
         }
 
         URI redirect = uriBuilder.build(realm.getName());
