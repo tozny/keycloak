@@ -1,22 +1,30 @@
 import { RequiredActionAlias } from "@keycloak/keycloak-admin-client/lib/defs/requiredActionProviderRepresentation";
 import type UserRepresentation from "@keycloak/keycloak-admin-client/lib/defs/userRepresentation";
 import {
+  ActionGroup,
   AlertVariant,
+  Button,
   ButtonVariant,
+  ClipboardCopy,
   Form,
   FormGroup,
+  Modal,
+  ModalVariant,
 } from "@patternfly/react-core";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { FormErrorText, PasswordInput } from "@keycloak/keycloak-ui-shared";
 import { useAdminClient } from "../../admin-client";
-import { DefaultSwitchControl } from "../../components/SwitchControl";
 import { useAlerts } from "@keycloak/keycloak-ui-shared";
 import {
-  ConfirmDialogModal,
   useConfirmDialog,
 } from "../../components/confirm-dialog/ConfirmDialog";
 import useToggle from "../../utils/useToggle";
+import { ToznyPasswordBrokerFields, ToznyPasswordBrokerFieldsForm } from "../ToznyPasswordBrokerFields";
+import { TozUser } from "../utils/TozUser";
+import { useRealm } from "../../context/realm-context/RealmContext";
+import { useState } from "react";
+
+// Toz customized this file.
 
 type ResetPasswordDialogProps = {
   user: UserRepresentation;
@@ -24,46 +32,41 @@ type ResetPasswordDialogProps = {
   onAddRequiredActions?: (requiredActions: string[]) => void;
   refresh: () => void;
   onClose: () => void;
-};
-
-export type CredentialsForm = {
-  password: string;
-  passwordConfirmation: string;
-  temporaryPassword: boolean;
-};
-
-const credFormDefaultValues: CredentialsForm = {
-  password: "",
-  passwordConfirmation: "",
-  temporaryPassword: true,
+  passedInResetLink?: string
 };
 
 export const ResetPasswordDialog = ({
   user,
   isResetPassword,
-  onAddRequiredActions,
   refresh,
   onClose,
+  passedInResetLink = "",
 }: ResetPasswordDialogProps) => {
   const { adminClient } = useAdminClient();
 
   const { t } = useTranslation();
-  const form = useForm<CredentialsForm>({
-    defaultValues: credFormDefaultValues,
+  const { realmRepresentation: realm } = useRealm();
+  const tozUser = new TozUser(realm!)
+  const [resetLink, setResetLink] = useState<string >(passedInResetLink);
+  const [isLoading, setIsLoading] = useState(false);
+  const form = useForm<ToznyPasswordBrokerFieldsForm>({
+    defaultValues: {
+      authentication: {
+        adminRecoveryExpirationMinutes: 60,
+        emailRecoveryExpirationMinutes: 15
+      },
+      brokerUrl: realm?.attributes?.["recoverUri"]
+    },
     mode: "onChange",
   });
   const {
-    register,
     formState: { isValid, errors },
-    watch,
     handleSubmit,
     clearErrors,
     setError,
   } = form;
 
   const [confirm, toggle] = useToggle(true);
-  const password = watch("password", "");
-  const passwordConfirmation = watch("passwordConfirmation", "");
 
   const { addAlert, addError } = useAlerts();
 
@@ -78,135 +81,79 @@ export const ResetPasswordDialog = ({
   });
 
   const saveUserPassword = async ({
-    password,
-    temporaryPassword,
-  }: CredentialsForm) => {
+    authentication
+  }: ToznyPasswordBrokerFieldsForm) => {
     try {
-      await adminClient.users.resetPassword({
-        id: user.id!,
-        credential: {
-          temporary: temporaryPassword,
-          type: "password",
-          value: password,
-        },
-      });
-      if (temporaryPassword) {
-        onAddRequiredActions?.([RequiredActionAlias.UPDATE_PASSWORD]);
-      }
-      const credentials = await adminClient.users.getCredentials({
-        id: user.id!,
-      });
-      const credentialLabel = credentials.find((c) => c.type === "password");
-      const isLocalCredential =
-        credentialLabel && credentialLabel.federationLink === undefined;
-
-      if (isLocalCredential) {
-        await adminClient.users.updateCredentialLabel(
-          {
-            id: user.id!,
-            credentialId: credentialLabel.id!,
-          },
-          t("defaultPasswordLabel"),
+      setIsLoading(true);
+      const [resetLink, message] = await tozUser.ResetPassword(user.username!, authentication?.emailRecoveryExpirationMinutes, authentication?.adminRecoveryExpirationMinutes)
+      if(resetLink != ""){
+        setResetLink(resetLink)
+        addAlert(
+          isResetPassword
+            ? t("resetCredentialsSuccess")
+            : t("savePasswordSuccess"),
+          AlertVariant.success,
         );
+      } else {
+        addError(message, new Error(message))
       }
-      addAlert(
-        isResetPassword
-          ? t("resetCredentialsSuccess")
-          : t("savePasswordSuccess"),
-        AlertVariant.success,
-      );
-      refresh();
     } catch (error) {
       addError(
         isResetPassword ? "resetPasswordError" : "savePasswordError",
         error,
       );
+    } finally {
+      setIsLoading(false);
     }
-
-    onClose();
   };
 
-  const { onChange, ...rest } = register("password", { required: true });
   return (
     <>
-      <ConfirmSaveModal />
-      <ConfirmDialogModal
-        titleKey={
-          isResetPassword
-            ? t("resetPasswordFor", { username: user.username })
-            : t("setPasswordFor", { username: user.username })
-        }
-        open={confirm}
-        onCancel={onClose}
-        toggleDialog={toggle}
-        onConfirm={toggleConfirmSaveModal}
-        confirmButtonDisabled={!isValid}
-        continueButtonLabel="save"
-      >
-        <Form
-          id="userCredentials-form"
-          isHorizontal
-          className="keycloak__user-credentials__reset-form"
+      <FormProvider {...form} >
+        <Modal
+          title={t("resetPasswordFor", { username: user.username })}
+          isOpen={confirm}
+          onClose={onClose}
+          variant={ModalVariant.small}
         >
-          <FormGroup
-            name="password"
-            label={t("password")}
-            fieldId="password"
-            isRequired
-          >
-            <PasswordInput
-              data-testid="passwordField"
-              id="password"
-              onChange={async (e) => {
-                await onChange(e);
-                if (passwordConfirmation !== e.currentTarget.value) {
-                  setError("passwordConfirmation", {
-                    message: t("confirmPasswordDoesNotMatch"),
-                  });
-                } else {
-                  clearErrors("passwordConfirmation");
-                }
-              }}
-              {...rest}
-            />
-            {errors.password && <FormErrorText message={t("required")} />}
-          </FormGroup>
-          <FormGroup
-            name="passwordConfirmation"
-            label={
-              isResetPassword
-                ? t("resetPasswordConfirmation")
-                : t("passwordConfirmation")
-            }
-            fieldId="passwordConfirmation"
-            isRequired
-          >
-            <PasswordInput
-              data-testid="passwordConfirmationField"
-              id="passwordConfirmation"
-              {...register("passwordConfirmation", {
-                required: true,
-                validate: (value) =>
-                  value === password || t("confirmPasswordDoesNotMatch"),
-              })}
-            />
-            {errors.passwordConfirmation && (
-              <FormErrorText
-                message={errors.passwordConfirmation.message as string}
-              />
-            )}
-          </FormGroup>
-          <FormProvider {...form}>
-            <DefaultSwitchControl
-              name="temporaryPassword"
-              label={t("temporaryPassword")}
-              labelIcon={t("temporaryPasswordHelpText")}
-              className="pf-v5-u-mb-md"
-              defaultValue="true"
-            />
-          </FormProvider>
-        </Form>
-      </ConfirmDialogModal>
+          <Form onSubmit={form.handleSubmit(saveUserPassword)}>
+            <ToznyPasswordBrokerFields realm={realm!} />
+            <FormGroup
+              label={t("resetPasswordLink")}
+              fieldId="kc-reset-password-uri"
+            >
+              <ClipboardCopy
+                isReadOnly
+              >{resetLink}</ClipboardCopy>
+            </FormGroup>
+            <ActionGroup>
+              <Button
+                id="reset-submit"
+                data-testid="submit"
+                key="submit"
+                type="submit"
+                isDisabled={!isValid || isLoading}
+                isLoading={isLoading}
+                variant={ButtonVariant.primary}
+              >
+                {t("resetPassword")}
+              </Button>,
+              <Button
+                id="modal-cancel"
+                data-testid="cancel"
+                key="cancel"
+                variant={ButtonVariant.link}
+                onClick={() => {
+                  if (onClose) onClose();
+                  toggle();
+                }}
+              >
+                {t("cancel")}
+              </Button>
+            </ActionGroup>
+          </Form>
+        </Modal>
+      </FormProvider>
     </>
   );
 };

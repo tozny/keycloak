@@ -21,10 +21,10 @@ import {
 } from "@patternfly/react-core";
 import { InfoCircleIcon } from "@patternfly/react-icons";
 import { TFunction } from "i18next";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAdminClient } from "../admin-client";
 import { useConfirmDialog } from "../components/confirm-dialog/ConfirmDialog";
 import { KeyValueType } from "../components/key-value-form/key-value-convert";
@@ -38,6 +38,7 @@ import { useAccess } from "../context/access/Access";
 import { useRealm } from "../context/realm-context/RealmContext";
 import { UserProfileProvider } from "../realm-settings/user-profile/UserProfileContext";
 import useIsFeatureEnabled, { Feature } from "../utils/useIsFeatureEnabled";
+import { environment } from "../environment";
 import { useParams } from "../utils/useParams";
 import { Organizations } from "./Organizations";
 import { UserAttributes } from "./UserAttributes";
@@ -66,8 +67,10 @@ import { extractUserProfileErrorMessages } from "./utils/user-profile";
 import "./user-section.css";
 import { AdminEvents } from "../events/AdminEvents";
 
+// Toz customized this file.
+
 export default function EditUser() {
-  const { adminClient } = useAdminClient();
+  const { adminClient, keycloak } = useAdminClient();
 
   const { t } = useTranslation();
   const { addAlert, addError } = useAlerts();
@@ -93,6 +96,21 @@ export default function EditUser() {
   const [refreshCount, setRefreshCount] = useState(0);
   const refresh = () => setRefreshCount((count) => count + 1);
   const lightweightUser = isLightweightUser(user?.id);
+
+  const location = useLocation();
+  const isOnAttributesTab = location.pathname.endsWith("/attributes");
+  const isInitialMount = useRef(true);
+
+  // When navigating TO the attributes tab, trigger a fresh load (useFetch will evict first).
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    if (isOnAttributesTab) {
+      refresh();
+    }
+  }, [isOnAttributesTab]);
   const [upConfig, setUpConfig] = useState<UserProfileConfig>();
 
   const [realmHasOrganizations, setRealmHasOrganizations] = useState(false);
@@ -129,8 +147,22 @@ export default function EditUser() {
   );
 
   useFetch(
-    async () =>
-      Promise.all([
+    async () => {
+      if (isOnAttributesTab) {
+        try {
+          await keycloak.updateToken(5);
+          await fetch(
+            `${environment.authServerUrl}/realms/${realmName}/keycloak-usercache/evict-user/${id}`,
+            {
+              method: "PATCH",
+              headers: { Authorization: `Bearer ${keycloak.token}` },
+            },
+          );
+        } catch {
+          addAlert(t("userCacheEvictionFailed"), AlertVariant.warning);
+        }
+      }
+      return Promise.all([
         adminClient.users.findOne({
           id: id!,
           userProfileMetadata: true,
@@ -141,7 +173,8 @@ export default function EditUser() {
         showOrganizations
           ? adminClient.organizations.find({ first: 0, max: 1 })
           : [],
-      ]),
+      ]);
+    },
     ([
       userData,
       attackDetection,
@@ -328,13 +361,7 @@ export default function EditUser() {
             : []
         }
         dropdownItems={[
-          <DropdownItem
-            key="impersonate"
-            isDisabled={!user.access?.impersonate}
-            onClick={() => toggleImpersonateDialog()}
-          >
-            {t("impersonate")}
-          </DropdownItem>,
+          // Toz removed "impersonation" option.
           <DropdownItem
             key="delete"
             isDisabled={!user.access?.manage}
@@ -435,13 +462,7 @@ export default function EditUser() {
                   <Organizations user={user} />
                 </Tab>
               )}
-              <Tab
-                data-testid="user-consents-tab"
-                title={<TabTitleText>{t("consents")}</TabTitleText>}
-                {...consentsTab}
-              >
-                <UserConsents />
-              </Tab>
+              {/* Toz removed consents tab */}
               <Tab
                 data-testid="identity-provider-links-tab"
                 title={

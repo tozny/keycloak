@@ -46,6 +46,8 @@ import { RequiredActionMultiSelect } from "./user-credentials/RequiredActionMult
 import { useNavigate } from "react-router-dom";
 import { CopyToClipboardButton } from "../components/copy-to-clipboard-button/CopyToClipboardButton";
 import { GroupResourceContext } from "../context/group-resource/GroupResourceContext";
+import { ToznyPasswordBrokerFields } from "./ToznyPasswordBrokerFields";
+import { TozUser } from "./utils/TozUser";
 
 const TERMS_AND_CONDITIONS_ATTRIBUTE = "terms_and_conditions";
 
@@ -101,10 +103,38 @@ export const UserForm = ({
   const [open, setOpen] = useState(false);
   const [locked, setLocked] = useState(isLocked);
   const navigate = useNavigate();
+  const tozUser = new TozUser(realm!);
+  const [isAccountLocked, setIsAccountLocked] = useState(false);
 
   useEffect(() => {
     setValue("requiredActions", user?.requiredActions || []);
   }, [user, setValue]);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    const checkLockStatus = async () => {
+      try {
+        const accessToken = await adminClient.getAccessToken();
+        const locked: any = await tozUser.getUserAccountLockStatus(user.id, accessToken);
+        setIsAccountLocked(locked);
+      } catch (err) {
+        setIsAccountLocked(false);
+      }
+    };
+
+    checkLockStatus();
+  }, [user?.id]);
+
+  const unLockUserAccount = async () => {
+    try {
+      const accessToken = await adminClient.getAccessToken();
+      await tozUser.UnlockUserAccount(user!.id!, accessToken);
+      addAlert(t("unlockSuccess"), AlertVariant.success);
+      setIsAccountLocked(false);
+    } catch (error) {
+      addError("unlockError", error);
+    }
+  }
 
   const unLockUser = async () => {
     try {
@@ -251,11 +281,34 @@ export const UserForm = ({
             </FormGroup>
           </>
         )}
-        <RequiredActionMultiSelect
-          name="requiredActions"
-          label="requiredUserActions"
-          help="requiredUserActionsHelp"
-        />
+        {user?.id && (
+          <RequiredActionMultiSelect
+            name="requiredActions"
+            label="requiredUserActions"
+            help="requiredUserActionsHelp"
+          />
+        )}
+        {user?.id && isAccountLocked && (
+          <FormGroup
+            label={t("temporaryLocked")}
+            fieldId="temporaryLocked"
+            labelIcon={
+              <HelpItem
+                helpText={t("temporaryLockedHelp")}
+                fieldLabelId="temporaryLocked"
+              />
+            }
+          >
+            <Button
+              id="toz-unlock-account"
+              onClick={unLockUserAccount}
+              variant="secondary"
+              data-testid="toz-unlock-account-button"
+            >
+              Unlock Account
+            </Button>
+          </FormGroup>
+        )}
         {user?.federationLink && canViewFederationLink && (
           <FormGroup
             label={t("federationLink")}
@@ -271,11 +324,14 @@ export const UserForm = ({
         )}
         {userProfileMetadata ? (
           <>
-            <DefaultSwitchControl
-              name="emailVerified"
-              label={t("emailVerified")}
-              labelIcon={t("emailVerifiedHelp")}
-            />
+            {/* Tozny customization: hide "email verified" for new users */}
+            {user?.id && (
+              <DefaultSwitchControl
+                name="emailVerified"
+                label={t("emailVerified")}
+                labelIcon={t("emailVerifiedHelp")}
+              />
+            )}
             {termsAndConditionsAcceptedDate && (
               <FormGroup
                 label={t("termsAndConditionsUserAttribute")}
@@ -333,6 +389,7 @@ export const UserForm = ({
                   t(key as string, params as any)) as TFunction
               }
             />
+            {!user?.id && <ToznyPasswordBrokerFields realm={realm} />}
           </>
         ) : (
           <>
@@ -361,13 +418,19 @@ export const UserForm = ({
                 },
               }}
             />
-            <SwitchControl
-              name="emailVerified"
-              label={t("emailVerified")}
-              labelIcon={t("emailVerifiedHelp")}
-              labelOn={t("yes")}
-              labelOff={t("no")}
-            />
+            {/* Tozny customization: start - hide email verified field for new users */}
+            {user?.id && (
+              <SwitchControl
+                name="emailVerified"
+                label={t("emailVerified")}
+                labelIcon={t("emailVerifiedHelp")}
+                labelOn={t("yes")}
+                labelOff={t("no")}
+              />
+            )}
+            {/* Tozny customization: end */}
+
+            <ToznyPasswordBrokerFields realm={realm} />
             <TextControl name="firstName" label={t("firstName")} />
             <TextControl name="lastName" label={t("lastName")} />
           </>

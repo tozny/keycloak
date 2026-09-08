@@ -9,6 +9,7 @@ export type ClientTab =
   | "credentials"
   | "roles"
   | "clientScopes"
+  | "accessControl"
   | "advanced"
   | "mappers"
   | "authorization"

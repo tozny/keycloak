@@ -16,4 +16,9 @@ export type Environment = BaseEnvironment & {
   masterRealm: string;
   /** The version hash of the auth server. */
   resourceVersion: string;
+
+  // TozID custom code. Injected by the admin index.ftl; used by TozUser.ts and
+  // EditUser.tsx to reach the Tozny realm extension endpoints.
+  authUrl: string;
+  authServerUrl: string;
 };

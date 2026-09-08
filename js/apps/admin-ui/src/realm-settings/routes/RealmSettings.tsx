@@ -3,6 +3,8 @@ import type { Path } from "react-router-dom";
 import { generateEncodedPath } from "../../utils/generateEncodedPath";
 import type { AppRouteObject } from "../../routes";
 
+
+// Toz customized this file.
 export type RealmSettingsTab =
   | "general"
   | "login"
@@ -16,7 +18,8 @@ export type RealmSettingsTab =
   | "tokens"
   | "client-policies"
   | "user-profile"
-  | "user-registration";
+  | "user-registration"
+  | "custom-settings";
 
 export type RealmSettingsParams = {
   realm: string;

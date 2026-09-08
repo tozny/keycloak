@@ -94,7 +94,9 @@ export const UserFederationLdapForm = ({
 export function serializeFormData(
   formData: LdapComponentRepresentation,
 ): LdapComponentRepresentation {
-  const { config } = formData;
+  // Create a deep copy to avoid mutating the original object
+  const result = JSON.parse(JSON.stringify(formData));
+  const { config } = result;
 
   if (config?.periodicChangedUsersSync !== undefined) {
     if (config.periodicChangedUsersSync === false) {
@@ -110,5 +112,20 @@ export function serializeFormData(
     delete config.periodicFullSync;
   }
 
-  return formData;
+  // Ensure password cache fields are properly formatted
+  if (config?.passwordCacheEnabled !== undefined) {
+    // Convert to string array if it's not already
+    if (!Array.isArray(config.passwordCacheEnabled)) {
+      config.passwordCacheEnabled = [config.passwordCacheEnabled.toString()];
+    }
+  }
+
+  if (config?.passwordCacheTTL !== undefined) {
+    // Convert to string array if it's not already
+    if (!Array.isArray(config.passwordCacheTTL)) {
+      config.passwordCacheTTL = [config.passwordCacheTTL.toString()];
+    }
+  }
+
+  return result;
 }

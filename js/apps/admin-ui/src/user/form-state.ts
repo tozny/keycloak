@@ -5,11 +5,13 @@ import {
   keyValueToArray,
 } from "../components/key-value-form/key-value-convert";
 import { beerify, debeerify } from "../util";
+import { ToznyPasswordBrokerFieldsForm } from "./ToznyPasswordBrokerFields";
 
 export type UserFormFields = Omit<
   UIUserRepresentation,
   "attributes" | "userProfileMetadata" | "unmanagedAttributes"
-> & {
+> &
+  ToznyPasswordBrokerFieldsForm &{
   attributes?: KeyValueType[] | Record<string, string | string[]>;
   unmanagedAttributes?: KeyValueType[] | Record<string, string | string[]>;
 };
