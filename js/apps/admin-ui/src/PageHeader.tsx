@@ -18,25 +18,8 @@ import { joinPath } from "./utils/joinPath";
 import { useIsFeatureDisabled, Feature } from "./utils/useIsFeatureEnabled";
 import useToggle from "./utils/useToggle";
 
-const ManageAccountDropdownItem = () => {
-  const { keycloak } = useEnvironment();
-  const { t } = useTranslation();
-  const isFeatureDisabled = useIsFeatureDisabled();
-
-  if (isFeatureDisabled(Feature.AccountV3)) {
-    return null;
-  }
-
-  return (
-    <DropdownItem
-      key="manage account"
-      id="manage-account"
-      onClick={() => keycloak.accountManagement()}
-    >
-      {t("manageAccount")}
-    </DropdownItem>
-  );
-};
+// Tozny customization: the Manage Account item is intentionally not offered
+// in the admin console; account management lives in the Tozny portal.
 
 const ServerInfoDropdownItem = () => {
   const { realm } = useRealm();
@@ -81,7 +64,6 @@ const HelpDropdownItem = () => {
 };
 
 const kebabDropdownItems = (isMasterRealm: boolean, isManager: boolean) => [
-  <ManageAccountDropdownItem key="kebab Manage Account" />,
   <ServerInfoDropdownItem key="kebab Server Info" />,
   ...(isMasterRealm && isManager
     ? [<ClearCachesDropdownItem key="Clear Caches" />]
@@ -90,7 +72,6 @@ const kebabDropdownItems = (isMasterRealm: boolean, isManager: boolean) => [
 ];
 
 const userDropdownItems = (isMasterRealm: boolean, isManager: boolean) => [
-  <ManageAccountDropdownItem key="Manage Account" />,
   <ServerInfoDropdownItem key="Server info" />,
   ...(isMasterRealm && isManager
     ? [<ClearCachesDropdownItem key="Clear Caches" />]

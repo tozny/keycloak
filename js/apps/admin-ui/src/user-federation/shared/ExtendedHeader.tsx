@@ -33,13 +33,6 @@ export const ExtendedHeader = ({
     defaultValue: ["true"],
   })[0];
 
-  const [toggleUnlinkUsersDialog, UnlinkUsersDialog] = useConfirmDialog({
-    titleKey: "userFedUnlinkUsersConfirmTitle",
-    messageKey: "userFedUnlinkUsersConfirm",
-    continueButtonLabel: "unlinkUsers",
-    onConfirm: () => unlinkUsers(),
-  });
-
   const [toggleRemoveUsersDialog, RemoveUsersConfirm] = useConfirmDialog({
     titleKey: t("removeImportedUsers"),
     messageKey: t("removeImportedUsersMessage"),
@@ -106,20 +99,9 @@ export const ExtendedHeader = ({
     }
   };
 
-  const unlinkUsers = async () => {
-    try {
-      if (id) {
-        await adminClient.userStorageProvider.unlinkUsers({ id });
-      }
-      addAlert(t("unlinkUsersSuccess"), AlertVariant.success);
-    } catch (error) {
-      addError("unlinkUsersError", error);
-    }
-  };
-
   return (
     <>
-      <UnlinkUsersDialog />
+      {/* Tozny Update UnlinkUser functionality is removed like below option and related click handler<UnlinkUsersDialog /> */}
       <RemoveUsersConfirm />
       <Header
         provider={provider}
@@ -139,13 +121,6 @@ export const ExtendedHeader = ({
             isDisabled={hasImportUsers === "false"}
           >
             {t("syncAllUsers")}
-          </DropdownItem>,
-          <DropdownItem
-            key="unlink"
-            isDisabled={editMode ? editMode.includes("UNSYNCED") : false}
-            onClick={toggleUnlinkUsersDialog}
-          >
-            {t("unlinkUsers")}
           </DropdownItem>,
           <DropdownItem key="remove" onClick={toggleRemoveUsersDialog}>
             {t("removeImported")}

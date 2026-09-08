@@ -41,6 +41,7 @@ import { GroupTree } from "./components/GroupTree";
 import { getId, getLastId } from "./groupIdUtils";
 import { toGroups } from "./routes/Groups";
 import { GroupResourceContext } from "../context/group-resource/GroupResourceContext";
+import GroupMpcSettings from "./GroupMpcSettings";
 
 import "./GroupsSection.css";
 

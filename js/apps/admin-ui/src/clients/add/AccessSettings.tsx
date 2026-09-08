@@ -8,6 +8,8 @@ import { useAccess } from "../../context/access/Access";
 import { FormFields } from "../ClientDetails";
 import type { ClientSettingsProps } from "../ClientSettings";
 import { LoginSettings } from "./LoginSettings";
+import { DefaultSwitchControl } from "../../components/SwitchControl";
+import { convertAttributeNameToForm } from "../../util";
 
 export const AccessSettings = ({
   client,
@@ -29,6 +31,17 @@ export const AccessSettings = ({
       role="manage-clients"
     >
       {!client.bearerOnly && <LoginSettings protocol={protocol} />}
+      {protocol !== "saml" && (
+        <DefaultSwitchControl
+          name={convertAttributeNameToForm<FormFields>(
+            "attributes.api.access",
+          )}
+          defaultValue="false"
+          label={t("allowApiAccessUI")}
+          labelIcon={t("allowApiAccessHelp")}
+          stringify
+        />
+      )}
       {protocol !== "saml" && (
         <TextControl
           type="url"

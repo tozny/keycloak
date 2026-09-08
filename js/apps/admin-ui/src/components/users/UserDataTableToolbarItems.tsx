@@ -22,6 +22,8 @@ import DropdownPanel from "../dropdown-panel/DropdownPanel";
 import { UserFilter } from "./UserDataTable";
 import { UserDataTableAttributeSearchForm } from "./UserDataTableAttributeSearchForm";
 
+// Toz customized this file.
+
 type UserDataTableToolbarItemsProps = {
   searchDropdownOpen: boolean;
   setSearchDropdownOpen: (open: boolean) => void;
@@ -30,6 +32,7 @@ type UserDataTableToolbarItemsProps = {
   toggleDeleteDialog: () => void;
   toggleUnlockUsersDialog: () => void;
   goToCreate: () => void;
+  goToImport: () => void;
   searchType: SearchType;
   setSearchType: (searchType: SearchType) => void;
   searchUser: string;
@@ -51,6 +54,7 @@ export function UserDataTableToolbarItems({
   toggleDeleteDialog,
   toggleUnlockUsersDialog,
   goToCreate,
+  goToImport,
   searchType,
   setSearchType,
   searchUser,
@@ -215,6 +219,11 @@ export function UserDataTableToolbarItems({
 
   const actionItems = (
     <>
+      <ToolbarItem>
+        <Button data-testid="import-users" variant={ButtonVariant.secondary} onClick={goToImport}>
+          {t("importUsers")}
+        </Button>
+      </ToolbarItem>
       <ToolbarItem>
         <Button data-testid="add-user" onClick={goToCreate}>
           {t("addUser")}

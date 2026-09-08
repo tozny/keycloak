@@ -90,40 +90,44 @@ export const CredentialRow = ({
       ) : (
         <Td />
       )}
-      <Td isActionCell>
-        <Dropdown
-          popperProps={{
-            position: "right",
-          }}
-          onOpenChange={toggleKebab}
-          toggle={(ref) => (
-            <MenuToggle
-              ref={ref}
-              isExpanded={kebabOpen}
-              onClick={toggleKebab}
-              variant="plain"
-              aria-label="Kebab toggle"
-            >
-              <EllipsisVIcon />
-            </MenuToggle>
-          )}
-          isOpen={kebabOpen}
-        >
-          <DropdownList>
-            <DropdownItem
-              key={credential.id}
-              data-testid="deleteDropdownItem"
-              component="button"
-              onClick={() => {
-                toggleDelete();
-                toggleKebab();
-              }}
-            >
-              {t("deleteBtn")}
-            </DropdownItem>
-          </DropdownList>
-        </Dropdown>
-      </Td>
+      {credential.type !== "password" ? (
+        <Td isActionCell>
+          <Dropdown
+            popperProps={{
+              position: "right",
+            }}
+            onOpenChange={toggleKebab}
+            toggle={(ref) => (
+              <MenuToggle
+                ref={ref}
+                isExpanded={kebabOpen}
+                onClick={toggleKebab}
+                variant="plain"
+                aria-label="Kebab toggle"
+              >
+                <EllipsisVIcon />
+              </MenuToggle>
+            )}
+            isOpen={kebabOpen}
+          >
+            <DropdownList>
+              <DropdownItem
+                key={credential.id}
+                data-testid="deleteDropdownItem"
+                component="button"
+                onClick={() => {
+                  toggleDelete();
+                  toggleKebab();
+                }}
+              >
+                {t("deleteBtn")}
+              </DropdownItem>
+            </DropdownList>
+          </Dropdown>
+        </Td>
+      ) : (
+        <Td />
+      )}
     </>
   );
 };

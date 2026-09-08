@@ -14,6 +14,7 @@ import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
 import {
   Fragment,
   DragEvent as ReactDragEvent,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -32,6 +33,8 @@ import { ResetPasswordDialog } from "./user-credentials/ResetPasswordDialog";
 import useFormatDate from "../utils/useFormatDate";
 
 import "./user-credentials.css";
+import { useLocation } from "react-router-dom";
+import { AddMfaDialog } from "./user-credentials/AddMfaDialog";
 
 type UserCredentialsProps = {
   user: UserRepresentation;
@@ -104,6 +107,7 @@ export const UserCredentials = ({ user, setUser }: UserCredentialsProps) => {
   const refresh = () => setKey(key + 1);
   const [isOpen, setIsOpen] = useState(false);
   const [openCredentialReset, setOpenCredentialReset] = useState(false);
+  const [openAddMFA, setOpenAddMfa] = useState(false)
   const [userCredentials, setUserCredentials] = useState<
     CredentialRepresentation[]
   >([]);
@@ -158,11 +162,26 @@ export const UserCredentials = ({ user, setUser }: UserCredentialsProps) => {
     [key],
   );
 
+  const passwordTypeFinder = userCredentials.find(
+    (credential) => credential.type === "password",
+  );
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const resetLink = queryParams.get("reset_link");
+
   const toggleModal = () => setIsOpen(!isOpen);
 
   const toggleCredentialsResetModal = () => {
     setOpenCredentialReset(!openCredentialReset);
   };
+
+  useEffect(() => {
+    if (resetLink) {
+      setIsResetPassword(true);
+      setIsOpen(true);
+    }
+  }, [resetLink]);
 
   const resetPassword = () => {
     setIsResetPassword(true);
@@ -400,15 +419,22 @@ export const UserCredentials = ({ user, setUser }: UserCredentialsProps) => {
         <ResetPasswordDialog
           user={user}
           isResetPassword={isResetPassword}
-          onAddRequiredActions={onAddRequiredActions}
           refresh={refresh}
           onClose={() => setIsOpen(false)}
+          passedInResetLink={resetLink ?? ""}
         />
       )}
       {openCredentialReset && (
         <ResetCredentialDialog
           userId={user.id!}
           onClose={() => setOpenCredentialReset(false)}
+        />
+      )}
+      {openAddMFA && (
+        <AddMfaDialog
+          user={user}
+          refresh={refresh}
+          onClose={() => setOpenAddMfa(false)}
         />
       )}
       <DeleteConfirm />
@@ -422,6 +448,14 @@ export const UserCredentials = ({ user, setUser }: UserCredentialsProps) => {
           {t("credentialResetBtn")}
         </Button>
       )}
+      <Button
+        className="kc-resetCredentialBtn-header"
+        variant="primary"
+        data-testid="addMfaBtn"
+        onClick={() => setOpenAddMfa(true)}
+      >
+        Add MFA
+      </Button>
       {userCredentials.length !== 0 &&
         !userCredentials.find((credential) => credential.type === "password") &&
         !credentialTypes.find(
