@@ -167,24 +167,7 @@ public class SessionCodeChecks {
             authSession = authSessionManager.getAuthenticationSessionByEncodedIdAndClient(realm, authSessionId, client, tabId);
         AuthenticationSessionModel authSessionCookie = authSessionManager.getCurrentAuthenticationSession(realm, client, tabId);
 
-        // =====================================================================================
-        // TEMPORARY DIAGNOSTIC REVERT.
-        //
-        // Restores the Keycloak 26.1.4 condition, which tolerated a MISSING auth session
-        // cookie. Upstream tightened it in d791b270b9 to close CVE-2026-7507: without the
-        // cookie, `auth_session_id` alone is attacker-suppliable via a crafted link, letting
-        // an attacker drive a required action inside a victim's already-authenticated browser.
-        //
-        // Re-enabled ONLY to confirm that the cookieless TozID login flow is what this check
-        // rejects. Restore the upstream line before any deploy:
-        //
-        //   if (authSession != null && (authSessionCookie == null
-        //           || !authSession.getParentSession().getId().equals(authSessionCookie.getParentSession().getId()))) {
-        //
-        // The real fix is to relay Keycloak's Set-Cookie through IMS InitiateLoginHandler,
-        // mirroring InitiateIdPLoginHandler (identity-service/service/handlers.go:938-941).
-        // =====================================================================================
-        if (authSession != null && authSessionCookie != null && !authSession.getParentSession().getId().equals(authSessionCookie.getParentSession().getId())) {
+        if (authSession != null && (authSessionCookie == null || !authSession.getParentSession().getId().equals(authSessionCookie.getParentSession().getId()))) {
             event.detail(Details.REASON, "cookie does not match auth_session query parameter");
             event.error(Errors.INVALID_CODE);
             response = ErrorPage.error(session, null, Response.Status.BAD_REQUEST, Messages.INVALID_CODE);
