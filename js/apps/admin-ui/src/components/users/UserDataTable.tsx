@@ -36,6 +36,7 @@ import { useAdminClient } from "../../admin-client";
 import { fetchRealmInfo } from "../../context/auth/admin-ui-endpoint";
 import { UiRealmInfo } from "../../context/auth/uiRealmInfo";
 import { useRealm } from "../../context/realm-context/RealmContext";
+import { useWhoAmI } from "../../context/whoami/WhoAmI";
 import { SearchType } from "../../user/details/SearchFilter";
 import { toAddUser } from "../../user/routes/AddUser";
 import { toImportUsers } from "../../user/routes/ImportUsers";
@@ -45,6 +46,9 @@ import { useConfirmDialog } from "../confirm-dialog/ConfirmDialog";
 import { BruteUser, findUsers } from "../role-mapping/resource";
 import { UserDataTableToolbarItems } from "./UserDataTableToolbarItems";
 import { NetworkError } from "@keycloak/keycloak-admin-client";
+import { TozUser } from "../../user/utils/TozUser";
+
+// Toz customized this file.
 
 export type UserFilter = {
   exact: boolean;
@@ -120,6 +124,7 @@ export function UserDataTable() {
   const { t } = useTranslation();
   const { addAlert, addError } = useAlerts();
   const { realm: realmName, realmRepresentation: realm } = useRealm();
+  const { whoAmI } = useWhoAmI();
   const navigate = useNavigate();
   const [uiRealmInfo, setUiRealmInfo] = useState<UiRealmInfo>({});
   const [searchUser, setSearchUser] = useState("");
@@ -135,6 +140,7 @@ export function UserDataTable() {
 
   const [key, setKey] = useState(0);
   const refresh = () => setKey(key + 1);
+  const tozUser = new TozUser(realm!);
 
   useFetch(
     async () => {
@@ -166,7 +172,8 @@ export function UserDataTable() {
       q: query!,
     };
 
-    const searchParam = search || searchUser || "";
+    // Tozny customization: default to * search
+    const searchParam = search || searchUser || "*";
     if (searchParam) {
       params.search = searchParam;
     }
@@ -178,10 +185,13 @@ export function UserDataTable() {
     }
 
     try {
-      return await findUsers(adminClient, {
+      const users = await findUsers(adminClient, {
         briefRepresentation: true,
         ...params,
       });
+
+      // Skip current user (compare by user ID via WhoAmI)
+      return users.filter((user) => user.id !== whoAmI.userId);
     } catch (error) {
       if (uiRealmInfo.userProfileProvidersEnabled) {
         addError("noUsersFoundErrorStorage", error);
@@ -217,7 +227,9 @@ export function UserDataTable() {
     continueButtonVariant: ButtonVariant.danger,
     onConfirm: async () => {
       try {
+        const accessToken = await adminClient.getAccessToken();
         for (const user of selectedRows) {
+          await tozUser.DeleteUser(user.id!, accessToken);
           await adminClient.users.del({ id: user.id! });
         }
         setSelectedRows([]);
