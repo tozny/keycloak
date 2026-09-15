@@ -354,6 +354,17 @@ export default function GroupsSection({ orgId }: { orgId?: string } = {}) {
                       </Tabs>
                     </Tab>
                   )}
+                  <Tab
+                    eventKey={6}
+                    data-testid="mpc-settings-tab"
+                    title={
+                      <TabTitleText>
+                        {t("mpcSettingsTabTitle", { defaultValue: "Settings" })}
+                      </TabTitleText>
+                    }
+                  >
+                    <GroupMpcSettings />
+                  </Tab>
                 </Tabs>
               )}
               {subGroups.length === 0 && <GroupTable refresh={refresh} />}

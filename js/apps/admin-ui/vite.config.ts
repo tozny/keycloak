@@ -77,15 +77,7 @@ export default defineConfig(({ mode }) => {
         external,
       },
     },
-    resolve: {
-      alias: {
-        "@toznysecure/sdk": path.resolve(__dirname, "node_modules/@toznysecure/sdk/index.js"),
-      },
-    },
     plugins,
-    optimizeDeps: {
-      include: ["@toznysecure/sdk"],
-    },
     test: {
       watch: false,
       environment: "jsdom",

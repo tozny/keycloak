@@ -272,6 +272,7 @@ export default function ClientDetails() {
   const credentialsTab = useRoutableTab(tab("credentials"));
   const rolesTab = useRoutableTab(tab("roles"));
   const clientScopesTab = useRoutableTab(tab("clientScopes"));
+  const accessControlTab = useRoutableTab(tab("accessControl"));
   const authorizationTab = useRoutableTab(tab("authorization"));
   const serviceAccountTab = useRoutableTab(tab("serviceAccount"));
   const sessionsTab = useRoutableTab(tab("sessions"));
@@ -599,6 +600,14 @@ export default function ClientDetails() {
                 </RoutableTabs>
               </Tab>
             )}
+            <Tab
+              id="accessControl"
+              data-testid="accessControlTab"
+              title={<TabTitleText>{t("accessControl")}</TabTitleText>}
+              {...accessControlTab}
+            >
+              <AccessControl />
+            </Tab>
             {client!.authorizationServicesEnabled &&
               !isAdminPermissionsClient &&
               (hasManageAuthorization || hasViewAuthorization) && (
