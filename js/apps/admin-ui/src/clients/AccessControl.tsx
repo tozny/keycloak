@@ -21,6 +21,7 @@ import { useParams } from "../utils/useParams";
 import type { ClientParams } from "./routes/Client";
 import { UserSelect } from "../components/users/UserSelect";
 import { GroupPickerDialog } from "../components/group/GroupPickerDialog";
+import { GroupResourceContext } from "../context/group-resource/GroupResourceContext";
 import { FormProvider, useForm } from "react-hook-form";
 
 export const AccessControl = () => {
@@ -37,10 +38,14 @@ export const AccessControl = () => {
   const [selectedGroups, setSelectedGroups] = useState<GroupRepresentation[]>(
     [],
   );
-  const [resource, setResource] = useState<ResourceRepresentation | undefined>();
+  const [resource, setResource] = useState<
+    ResourceRepresentation | undefined
+  >();
   const [uPolicy, setUPolicy] = useState<PolicyRepresentation | undefined>();
   const [gPolicy, setGPolicy] = useState<PolicyRepresentation | undefined>();
-  const [permission, setPermission] = useState<PolicyRepresentation | undefined>();
+  const [permission, setPermission] = useState<
+    PolicyRepresentation | undefined
+  >();
   const [dPolicy, setDPolicy] = useState<PolicyRepresentation | undefined>();
   const [isGroupPickerOpen, setGroupPickerOpen] = useState(false);
 
@@ -56,7 +61,7 @@ export const AccessControl = () => {
   const form = useForm<{ accessControlUsers: string[] }>({
     defaultValues: { accessControlUsers: [] },
   });
-  const { setValue, getValues, reset } = form;
+  const { getValues, reset } = form;
 
   const toggleGroupPicker = useCallback(
     () => setGroupPickerOpen((v) => !v),
@@ -73,17 +78,27 @@ export const AccessControl = () => {
   const dPolicyName = "__ToznyInternalDenyPolicy";
 
   const findResourceByName = async (name: string) => {
-    const list = await adminClient.clients.listResources({ id: clientId, name });
+    const list = await adminClient.clients.listResources({
+      id: clientId,
+      name,
+    });
     return Array.isArray(list) ? list.find((r) => r.name === name) : undefined;
   };
   const findPolicyByName = async (name: string) => {
-    const list = await adminClient.clients.listPolicies({ id: clientId, permission: "false", name });
+    const list = await adminClient.clients.listPolicies({
+      id: clientId,
+      permission: "false",
+      name,
+    });
     return Array.isArray(list)
       ? list.find((p: PolicyRepresentation) => p.name === name)
       : undefined;
   };
   const findPermissionByName = async (name: string) => {
-    const list = await adminClient.clients.findPermissions({ id: clientId, name });
+    const list = await adminClient.clients.findPermissions({
+      id: clientId,
+      name,
+    });
     return Array.isArray(list)
       ? list.find((p: PolicyRepresentation) => p.name === name)
       : undefined;
@@ -97,35 +112,43 @@ export const AccessControl = () => {
       attributes: {},
       uris: [],
     };
-    const created = await adminClient.clients.createResource({ id: clientId }, payload);
+    const created = await adminClient.clients.createResource(
+      { id: clientId },
+      payload,
+    );
     // API returns created resource; if not, fetch by name
-    return created?._id ? created : (await findResourceByName(rsrcName))!;
+    return created._id ? created : (await findResourceByName(rsrcName))!;
   };
 
-  const buildUserPolicy = (users: string[]): PolicyRepresentation => ({
-    name: uPolicyName,
-    type: "user",
-    logic: "POSITIVE",
-    decisionStrategy: "UNANIMOUS",
-    users,
-  } as unknown as PolicyRepresentation);
+  const buildUserPolicy = (users: string[]): PolicyRepresentation =>
+    ({
+      name: uPolicyName,
+      type: "user",
+      logic: "POSITIVE",
+      decisionStrategy: "UNANIMOUS",
+      users,
+    }) as unknown as PolicyRepresentation;
 
-  const buildGroupPolicy = (groups: { id: string; extendChildren?: boolean }[]): PolicyRepresentation => ({
-    name: gPolicyName,
-    type: "group",
-    logic: "POSITIVE",
-    decisionStrategy: "UNANIMOUS",
-    groups,
-  } as unknown as PolicyRepresentation);
+  const buildGroupPolicy = (
+    groups: { id: string; extendChildren?: boolean }[],
+  ): PolicyRepresentation =>
+    ({
+      name: gPolicyName,
+      type: "group",
+      logic: "POSITIVE",
+      decisionStrategy: "UNANIMOUS",
+      groups,
+    }) as unknown as PolicyRepresentation;
 
-  const buildDenyPolicy = (): PolicyRepresentation => ({
-    name: dPolicyName,
-    type: "static" as any,
-    logic: "POSITIVE",
-    decisionStrategy: "UNANIMOUS",
-    // Keycloak stores extra fields under config for some policy types; allowOrDeny is used by static policy
-    allowOrDeny: "deny" as any,
-  } as unknown as PolicyRepresentation);
+  const buildDenyPolicy = (): PolicyRepresentation =>
+    ({
+      name: dPolicyName,
+      type: "static" as any,
+      logic: "POSITIVE",
+      decisionStrategy: "UNANIMOUS",
+      // Keycloak stores extra fields under config for some policy types; allowOrDeny is used by static policy
+      allowOrDeny: "deny" as any,
+    }) as unknown as PolicyRepresentation;
 
   const saveOrUpdatePolicy = async (
     existing: PolicyRepresentation | undefined,
@@ -133,14 +156,23 @@ export const AccessControl = () => {
   ): Promise<PolicyRepresentation | undefined> => {
     if (!payload) {
       if (existing?.id) {
-        await adminClient.clients.delPolicy({ id: clientId, policyId: existing.id });
+        await adminClient.clients.delPolicy({
+          id: clientId,
+          policyId: existing.id,
+        });
       }
       return undefined;
     }
     if (!existing) {
-      return await adminClient.clients.createPolicy({ id: clientId, type: payload.type! }, payload);
+      return await adminClient.clients.createPolicy(
+        { id: clientId, type: payload.type! },
+        payload,
+      );
     }
-    await adminClient.clients.updatePolicy({ id: clientId, type: existing.type!, policyId: existing.id! }, payload);
+    await adminClient.clients.updatePolicy(
+      { id: clientId, type: existing.type!, policyId: existing.id! },
+      payload,
+    );
     // Some servers may return void; avoid re-fetch and synthesize the updated object
     return { ...existing, ...payload } as PolicyRepresentation;
   };
@@ -159,13 +191,20 @@ export const AccessControl = () => {
       policies,
     };
     if (!existing) {
-      return await adminClient.clients.createPermission({ id: clientId, type: "resource" }, common as unknown as PolicyRepresentation);
+      return await adminClient.clients.createPermission(
+        { id: clientId, type: "resource" },
+        common as unknown as PolicyRepresentation,
+      );
     }
     await adminClient.clients.updatePermission(
       { id: clientId, type: "resource", permissionId: existing.id! },
       common as unknown as PolicyRepresentation,
     );
-    return (await adminClient.clients.findOnePermission({ id: clientId, type: "resource", permissionId: existing.id! })) as PolicyRepresentation;
+    return (await adminClient.clients.findOnePermission({
+      id: clientId,
+      type: "resource",
+      permissionId: existing.id!,
+    })) as PolicyRepresentation;
   };
 
   useFetch(
@@ -189,7 +228,9 @@ export const AccessControl = () => {
         } else {
           try {
             const cfgUsers = (up as any).config?.users as string | undefined;
-            selectedUserIds = cfgUsers ? (JSON.parse(cfgUsers) as string[]) : [];
+            selectedUserIds = cfgUsers
+              ? (JSON.parse(cfgUsers) as string[])
+              : [];
           } catch {
             selectedUserIds = [];
           }
@@ -207,7 +248,10 @@ export const AccessControl = () => {
           try {
             const cfgGroups = (gp as any).config?.groups as string | undefined;
             groupEntries = cfgGroups
-              ? (JSON.parse(cfgGroups) as { id: string; extendChildren?: boolean }[])
+              ? (JSON.parse(cfgGroups) as {
+                  id: string;
+                  extendChildren?: boolean;
+                }[])
               : [];
           } catch {
             groupEntries = [];
@@ -258,33 +302,56 @@ export const AccessControl = () => {
 
       // Prepare desired policies from UI state
       const desiredUserIds = getValues("accessControlUsers");
-      const desiredGroupEntries = groupIds.map((id) => ({ id, extendChildren: false }));
+      const desiredGroupEntries = groupIds.map((id) => ({
+        id,
+        extendChildren: false,
+      }));
 
       // Determine next policy payloads
-      const nextUPolicy = desiredUserIds.length > 0 ? buildUserPolicy(desiredUserIds) : undefined;
-      const nextGPolicy = desiredGroupEntries.length > 0 ? buildGroupPolicy(desiredGroupEntries) : undefined;
+      const nextUPolicy =
+        desiredUserIds.length > 0 ? buildUserPolicy(desiredUserIds) : undefined;
+      const nextGPolicy =
+        desiredGroupEntries.length > 0
+          ? buildGroupPolicy(desiredGroupEntries)
+          : undefined;
       const nextDPolicy = enabled ? buildDenyPolicy() : undefined;
 
       // Short-circuit: if disabled, delete all UMA artifacts
       if (!enabled) {
         if (permission?.id) {
-          await adminClient.clients.delPermission({ id: clientId, type: "resource", permissionId: permission.id });
+          await adminClient.clients.delPermission({
+            id: clientId,
+            type: "resource",
+            permissionId: permission.id,
+          });
           setPermission(undefined);
         }
         if (uPolicy?.id) {
-          await adminClient.clients.delPolicy({ id: clientId, policyId: uPolicy.id });
+          await adminClient.clients.delPolicy({
+            id: clientId,
+            policyId: uPolicy.id,
+          });
           setUPolicy(undefined);
         }
         if (gPolicy?.id) {
-          await adminClient.clients.delPolicy({ id: clientId, policyId: gPolicy.id });
+          await adminClient.clients.delPolicy({
+            id: clientId,
+            policyId: gPolicy.id,
+          });
           setGPolicy(undefined);
         }
         if (dPolicy?.id) {
-          await adminClient.clients.delPolicy({ id: clientId, policyId: dPolicy.id });
+          await adminClient.clients.delPolicy({
+            id: clientId,
+            policyId: dPolicy.id,
+          });
           setDPolicy(undefined);
         }
         if (resource?._id) {
-          await adminClient.clients.delResource({ id: clientId, resourceId: resource._id });
+          await adminClient.clients.delResource({
+            id: clientId,
+            resourceId: resource._id,
+          });
           setResource(undefined);
         }
         addAlert(t("save"), AlertVariant.success);
@@ -300,9 +367,17 @@ export const AccessControl = () => {
       setGPolicy(savedGPolicy);
 
       // Update permission mapping with present policies
-      const policyIds = [savedDPolicy?.id, savedUPolicy?.id, savedGPolicy?.id].filter(Boolean) as string[];
+      const policyIds = [
+        savedDPolicy?.id,
+        savedUPolicy?.id,
+        savedGPolicy?.id,
+      ].filter(Boolean) as string[];
       if (!res) throw new Error("Resource missing after creation");
-      const updatedPerm = await createOrUpdatePermission(res, policyIds, permission);
+      const updatedPerm = await createOrUpdatePermission(
+        res,
+        policyIds,
+        permission,
+      );
       setPermission(updatedPerm);
 
       addAlert(t("save"), AlertVariant.success);
@@ -321,9 +396,12 @@ export const AccessControl = () => {
             <FormGroup
               label={t("accessControlEnabled")}
               fieldId="access-control-enabled"
-              labelIcon={ 
-                          <HelpItem helpText={t("accessControlEnabledHelp")} fieldLabelId="access-control-enabled"/>
-                        }
+              labelIcon={
+                <HelpItem
+                  helpText={t("accessControlEnabledHelp")}
+                  fieldLabelId="access-control-enabled"
+                />
+              }
             >
               <Switch
                 id="access-control-enabled"
@@ -350,11 +428,15 @@ export const AccessControl = () => {
           </StackItem>
 
           <StackItem>
-            <FormGroup label={t("allowedGroups")} 
+            <FormGroup
+              label={t("allowedGroups")}
               fieldId="allowed-groups"
-              labelIcon={ 
-                          <HelpItem helpText={t("allowedGroupsHelp")} fieldLabelId="allowed-groups"/>
-                        }
+              labelIcon={
+                <HelpItem
+                  helpText={t("allowedGroupsHelp")}
+                  fieldLabelId="allowed-groups"
+                />
+              }
             >
               {!!selectedGroups.length && (
                 <ChipGroup aria-label="Selected groups">
@@ -363,7 +445,9 @@ export const AccessControl = () => {
                       key={g.id}
                       onClick={(ev) => {
                         ev.stopPropagation();
-                        setSelectedGroups((prev) => prev.filter((sg) => sg.id !== g.id));
+                        setSelectedGroups((prev) =>
+                          prev.filter((sg) => sg.id !== g.id),
+                        );
                         setGroupIds((prev) => prev.filter((id) => id !== g.id));
                       }}
                     >
@@ -373,23 +457,25 @@ export const AccessControl = () => {
                 </ChipGroup>
               )}
               {isGroupPickerOpen && (
-                <GroupPickerDialog
-                  type="selectMany"
-                  text={{ title: "addGroups", ok: "add" }}
-                  onConfirm={(groups) => {
-                    const newGroups = groups || [];
-                    setSelectedGroups((prev) => [...prev, ...newGroups]);
-                    setGroupIds((prev) => [
-                      ...prev,
-                      ...newGroups
-                        .map((g) => g.id!)
-                        .filter((id) => !prev.includes(id)),
-                    ]);
-                    setGroupPickerOpen(false);
-                  }}
-                  onClose={toggleGroupPicker}
-                  filterGroups={selectedGroups}
-                />
+                <GroupResourceContext value={adminClient.groups}>
+                  <GroupPickerDialog
+                    type="selectMany"
+                    text={{ title: "addGroups", ok: "add" }}
+                    onConfirm={(groups) => {
+                      const newGroups = groups || [];
+                      setSelectedGroups((prev) => [...prev, ...newGroups]);
+                      setGroupIds((prev) => [
+                        ...prev,
+                        ...newGroups
+                          .map((g) => g.id!)
+                          .filter((id) => !prev.includes(id)),
+                      ]);
+                      setGroupPickerOpen(false);
+                    }}
+                    onClose={toggleGroupPicker}
+                    filterGroups={selectedGroups}
+                  />
+                </GroupResourceContext>
               )}
               <Button variant="secondary" onClick={toggleGroupPicker}>
                 {t("addGroups")}
