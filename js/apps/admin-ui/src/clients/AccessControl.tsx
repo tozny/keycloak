@@ -291,6 +291,24 @@ export const AccessControl = () => {
   );
 
   const onSave = async () => {
+    // Prepare desired policies from UI state
+    const desiredUserIds = getValues("accessControlUsers");
+    const desiredGroupEntries = groupIds.map((id) => ({
+      id,
+      extendChildren: false,
+    }));
+
+    // Allowed users/groups are only persisted as part of an enabled access
+    // control setup, so saving them while the switch is off would silently
+    // discard them.
+    if (
+      !enabled &&
+      (desiredUserIds.length > 0 || desiredGroupEntries.length > 0)
+    ) {
+      addAlert(t("accessControlEnableToSave"), AlertVariant.warning);
+      return;
+    }
+
     setSaving(true);
     try {
       // ensure resource & permission exist when enabled
@@ -299,13 +317,6 @@ export const AccessControl = () => {
         res = await createResource();
         setResource(res);
       }
-
-      // Prepare desired policies from UI state
-      const desiredUserIds = getValues("accessControlUsers");
-      const desiredGroupEntries = groupIds.map((id) => ({
-        id,
-        extendChildren: false,
-      }));
 
       // Determine next policy payloads
       const nextUPolicy =
@@ -354,7 +365,7 @@ export const AccessControl = () => {
           });
           setResource(undefined);
         }
-        addAlert(t("save"), AlertVariant.success);
+        addAlert(t("accessControlSaveSuccess"), AlertVariant.success);
         return;
       }
 
@@ -380,7 +391,7 @@ export const AccessControl = () => {
       );
       setPermission(updatedPerm);
 
-      addAlert(t("save"), AlertVariant.success);
+      addAlert(t("accessControlSaveSuccess"), AlertVariant.success);
     } catch (error) {
       addError("save", error);
     } finally {
