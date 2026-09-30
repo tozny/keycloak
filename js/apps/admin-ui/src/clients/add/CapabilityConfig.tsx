@@ -121,6 +121,9 @@ export const CapabilityConfig = ({
                         ),
                         false,
                       );
+                    } else {
+                      setValue("authorizationServicesEnabled", true);
+                      setValue("serviceAccountsEnabled", true);
                     }
                   }}
                   aria-label={t("clientAuthentication")}
