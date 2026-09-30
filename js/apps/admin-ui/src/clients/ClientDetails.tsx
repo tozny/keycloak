@@ -365,6 +365,19 @@ export default function ClientDetails() {
     }
     // reset dirty as for reason it is not resetting
     form.reset(form.getValues(), { keepDirty: false });
+    // Tozny: access control relies on authorization services, which the
+    // server only allows on confidential clients. Persisted on next save.
+    if (
+      client.protocol === "openid-connect" &&
+      !client.publicClient &&
+      !client.bearerOnly &&
+      !(client.authorizationServicesEnabled && client.serviceAccountsEnabled)
+    ) {
+      form.setValue("authorizationServicesEnabled", true, {
+        shouldDirty: true,
+      });
+      form.setValue("serviceAccountsEnabled", true, { shouldDirty: true });
+    }
   };
 
   useFetch(
