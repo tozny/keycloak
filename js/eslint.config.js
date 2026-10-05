@@ -24,6 +24,10 @@ export default tseslint.config(
       "**/.wireit/",
       "**/src/generated/doc-examples/",
       "./apps/keycloak-server/server/",
+      // Vendored third-party bundles (e.g. Tozny SDK) served as-is from public/.
+      "**/public/js/tozny/",
+      // Not resolvable by the type-aware parser; otherwise blocks lint-staged.
+      "eslint.config.js",
     ],
   },
   eslint.configs.recommended,
