@@ -64,9 +64,11 @@ export default function NewClientForm() {
       clientId: "",
       name: "",
       description: "",
-      publicClient: true,
-      authorizationServicesEnabled: false,
-      serviceAccountsEnabled: false,
+      // Tozny: new clients are confidential with authorization services and
+      // service accounts on, as in KC19, so Access Control works out of the box.
+      publicClient: false,
+      authorizationServicesEnabled: true,
+      serviceAccountsEnabled: true,
       implicitFlowEnabled: false,
       directAccessGrantsEnabled: false,
       standardFlowEnabled: true,
@@ -83,6 +85,11 @@ export default function NewClientForm() {
     if (saving) return;
     setSaving(true);
     const client = convertFormValuesToObject(getValues());
+    // Tozny: the capability step is hidden for SAML, so drop the OIDC defaults.
+    if (client.protocol !== "openid-connect") {
+      client.authorizationServicesEnabled = false;
+      client.serviceAccountsEnabled = false;
+    }
     try {
       const newClient = await adminClient.clients.create({
         ...client,
